@@ -35,6 +35,7 @@
 	var playerY = 0;
 	var playerBoostX = 0;
 	var playerBoostY = 0;
+	var playerSpeed = 2;
 	var x;
 	var y;
 	function draw()
@@ -51,7 +52,7 @@
 					}else{ctx.drawImage(air,(x*size)-camX, (y*size)-camY, size, size);}
 			}
 		}
-		ctx.fillRect(playerX*size, playerY*size, size/2, size/2);
+		ctx.fillRect(playerX, playerY, size/2, size/2);
 	}
 	var r;
 	function check(e)                                    
@@ -64,8 +65,8 @@
 	  //if(r == 37){playerBoostX=10;}
 	  //if(r == 39){playerBoostX=-10;}
 	  //if(r == 38){playerBoosty=20;}
-	  if(r == 37){playerX--;}
-	  if(r == 39){playerX++;}
+	  if(r == 37){playerX-=playerSpeed;}
+	  if(r == 39){playerX+=playerSpeed;}
 	  //playerX += playerBoostX;
 	  r = 0;
 	  draw();
