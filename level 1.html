@@ -1,7 +1,9 @@
 <!doctype html>
 <html>
+<head id = "test"></head>
 <canvas height=900 width=900 id="screen"></canvas>
-<script>
+<script>document.getElementById("test").innerHTML = 1
+
 	window.addEventListener('keydown',this.check,false);
 	var blocks = [
 	[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
