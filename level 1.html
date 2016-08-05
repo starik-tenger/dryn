@@ -74,8 +74,8 @@
 	  if(r == 39){playerX+=playerSpeed;}
 	  playerCheckX = playerX/size;
 	  playerCheckY = playerY/size;
-	  playerCheckX = playerX - (playerX%1);
-	  playerCheckY = playerY - (playerY%1);
+	  playerCheckX = playerCheckX - (playerX%1);
+	  playerCheckY = playerCheckY - (playerY%1);
 	  if(blocks[playerCheckX][playerCheckY-1] == 0){playerY+=5;}
 	  //playerX += playerBoostX;
 	  r = 0;
