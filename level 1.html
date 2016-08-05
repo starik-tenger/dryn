@@ -72,6 +72,8 @@
 	  //if(r == 38){playerBoosty=20;}
 	  if(r == 37){playerX-=playerSpeed;}
 	  if(r == 39){playerX+=playerSpeed;}
+	  playerCheckX = playerX/size;
+	  playerCheckY = playerY/size;
 	  playerCheckX = playerX - (playerX%1);
 	  playerCheckY = playerY - (playerY%1);
 	  if(blocks[playerCheckX][playerCheckY-1] == 0){playerY+=5;}
