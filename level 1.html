@@ -1,1 +1,72 @@
-
+<!doctype html>
+<html>
+<canvas height=900 width=900 id="screen"></canvas>
+<script>
+	window.addEventListener('keydown',this.check,false);
+	var blocks = [
+	[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+	[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+	[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+	[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+	[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+	[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+	[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+	[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+	[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+	[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+	[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+	[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+	[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+	[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+	[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
+];
+	var screen = document.getElementById("screen");
+	ctx     = screen.getContext('2d');
+        ctx.imageSmoothingEnabled = false;
+        simple = new Image();              
+        simple.src = 'https://starik-tenger.github.io/scott.JPG';
+        air = new Image();              
+        air.src = 'https:///starik-tenger.github.io/none.JPG';
+	//ctx.fillRect(0, 0, 620, 620);
+	var size = 60;
+	var camX = 0;
+	var camY = 0;
+	var playerX = 0;
+	var playerY = 0;
+	var playerBoostX = 0;
+	var playerBoostY = 0;
+	var x;
+	var y;
+	function draw()
+	{
+		ctx.clearRect(0, 0, size*15 , size*15);
+		for(x=0; x<15; x++)
+		{
+			for(y=0; y<15 ;y++)
+			{
+				if(blocks[y][x] == 1)
+					{       
+						ctx.fillRect((x*size)-camX, (y*size)-camY, size, size);
+						ctx.drawImage(simple,(x*size)-camX, (y*size)-camY, size, size);
+					}else{ctx.drawImage(air,(x*size)-camX, (y*size)-camY, size, size);}
+			}
+		}
+		ctx.fillRect(playerX*size, playerY*size, size/2, size/2);
+	}
+	var r;
+	function check(e)                                    
+	{
+		r = e.keyCode;
+	}
+	function play()
+	{
+	  if(r == 37){playerBoostX=10;}
+	  if(r == 39){playerBoostX=-10;}
+	  if(r == 38){playerBoosty=20;}
+	  if(r != 37 && playerBoostX!=0){playerBoostX--;}
+	  if(r != 38 && playerBoostX!=0){playerBoostX++;}
+	  playerX += playerBoostX;
+	}
+	draw();
+</script>
+</html>
