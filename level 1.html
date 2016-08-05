@@ -35,6 +35,8 @@
 	var camY = 0;
 	var playerX = 0;
 	var playerY = 0;
+	var playerCheckX = playerX - (playerX%1);
+	var playerCheckY = playerY - (playerY%1);
 	var playerBoostX = 0;
 	var playerBoostY = 0;
 	var playerSpeed = 2;
@@ -70,7 +72,9 @@
 	  //if(r == 38){playerBoosty=20;}
 	  if(r == 37){playerX-=playerSpeed;}
 	  if(r == 39){playerX+=playerSpeed;}
-	  if(playerY%size < 3){playerY+=5;}
+	  playerCheckX = playerX - (playerX%1);
+	  playerCheckY = playerY - (playerY%1);
+	  if(blocks[playerCheckX][playerCheckY-1] == 0){playerY+=5;}
 	  //playerX += playerBoostX;
 	  r = 0;
 	  draw();
