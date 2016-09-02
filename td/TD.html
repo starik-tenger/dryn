@@ -1,0 +1,542 @@
+<!doctype html>
+<html>
+ <style>
+   * {
+    margin: 0;
+    padding: 0;
+   }
+ </style>
+<canvas height=690 width=900 id="screen" onmousemove = "checkMouse()" onclick = "checkClick()"></canvas>
+<script>
+	window.addEventListener('keydown',this.check, false);
+	var blocks = [
+	[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+	[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+	[0,0,0,0,1,1,1,0,0,0,0,0,0,0,0],
+	[1,1,1,0,1,0,1,0,0,0,0,0,0,0,0],
+	[0,0,1,0,1,0,1,1,1,1,0,0,0,0,0],
+	[0,0,1,1,1,0,0,0,0,1,0,0,0,0,0],
+	[0,0,0,0,0,0,0,0,0,1,0,0,0,0,0],
+	[0,0,0,0,0,0,0,0,0,1,0,0,0,0,0],
+	[0,0,1,1,1,1,0,0,0,1,1,1,0,0,0],
+	[0,0,1,0,0,1,0,0,0,0,0,1,0,0,0],
+	[0,0,1,0,0,1,0,0,0,0,0,1,0,0,0],
+	[0,0,1,0,0,1,1,1,1,1,1,1,0,0,0],
+	[0,0,1,0,0,0,0,0,0,0,0,0,0,0,0],
+	[0,0,1,1,1,1,1,1,1,1,1,1,1,1,2],
+	[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
+	];
+	var screen = document.getElementById("screen");
+	ctx     = screen.getContext('2d');
+	
+	ctx.imageSmoothingEnabled = false;
+	
+	//пути к картинкам
+	grass = new Image();              
+        grass.src = 'textures/grass.bmp';
+	road = new Image();              
+        road.src = 'textures/road.bmp';
+	tower1 = new Image();              
+        tower1.src = 'textures/tower11.bmp';
+	tower1D = new Image();              
+        tower1D.src = 'textures/tower1.bmp';
+	tower2 = new Image();
+		tower2.src = 'textures/tower2.bmp';
+	base = new Image();
+		base.src = 'textures/base.bmp';
+	cursor = new Image();
+		cursor.src = 'textures/cursor.bmp';
+	coin = new Image();
+		coin.src = 'textures/coin.bmp';
+	heart = new Image();
+		heart.src = 'textures/heart.bmp';
+	chmo = new Image();
+		chmo.src = 'textures/bugs/chmo.bmp';
+		
+		
+	function checkWindow()
+	{
+		screen.height = document.documentElement.clientHeight;
+		screen.width = document.documentElement.clientWidth;
+		ctx.imageSmoothingEnabled = false;
+		if(screen.height<screen.width-150){pixel = screen.height/450;}
+		else{pixel = screen.width/600}
+	}
+	checkWindow();
+	var pixel = screen.height/450;
+	var size = 30;
+	var money = 100;
+	var startPointX = -1;
+	var startPointY = 3;
+	var mouseX;
+	var mouseY;
+	var x;
+	var y;
+	var cursorX = 0;
+	var cursorY = 0;
+	var hp = 100;
+	var key;
+	var click = 0;
+	var towerNow = 0;
+	var towerCount = 0;
+	var bugCount = 0;
+	var lineCount = 0;
+	var buttonLight = 0;
+	var time = 0;
+	
+	var towers = [];
+	var bugs = [];
+	var lines = [];
+	
+	//объект монстра
+	var bug = {};
+	bug.type = 0;
+	bug.x = 0;
+	bug.y = 0;
+	bug.hp = 0;
+	bug.speed = 0;
+	bug.damage = 0;
+	bug.effect = 0;
+	bug.direction = 2;
+	bug.time = 0;
+  
+  
+	//объект башни
+	var tower = {};
+	tower.x = 0;
+	tower.y = 0;
+	tower.type = 0;
+	tower.damage = 0;
+	tower.speed = 0;
+	tower.timing = 0;
+	tower.radius = 0;
+	tower.cost = 0;
+	
+	//объект волны
+	var wave = {}
+	wave.type = 0;
+	wave.hp = 0;
+	wave.speed = 0;
+	wave.damage = 0;
+	wave.timing = 0;
+	
+	//объект линии
+	var line = {};
+	line.startX = 0;
+	line.startY = 0;
+	line.endX = 0;
+	line.endY = 0;
+	
+	
+	function mod(n)
+	{
+		if(n<0){return 0-n}else{return n}
+	}
+	
+	function box(n)
+	{
+		return Math.round((n-(size/2))/size);
+	}
+	
+	function checkMouse()
+	{
+		mouseX = event.pageX/pixel;
+		mouseY = event.pageY/pixel;
+	}
+	
+	function checkClick()
+	{
+		click = 1;
+	}
+	
+	function cursorMove()
+	{
+		if(mouseX < size*15)
+		{
+			cursorX = box(mouseX);
+			cursorY = box(mouseY);
+		}
+	}
+	
+	function setBug(type, maxHp, speed, damage, cost)
+	{
+	    var bug = {};
+		bug.type = type;
+		bug.maxHp = maxHp;
+		bug.hp = maxHp;
+		bug.speed = speed*size/30;
+		bug.damage = damage;
+		bug.x = startPointX*size;
+		bug.y = startPointY*size;
+		bug.direction = 2;
+		bug.cost = cost;
+		bug.time = 0;
+		bugs[bugCount] = bug;
+		bugCount++;
+		
+	}
+	
+	function setTower(type, damage, radius, speed, cost)
+	{
+		if(money>=cost && blocks[cursorY][cursorX]==0)
+		{
+			var tower = {};
+			tower.x = cursorX*size;
+			tower.y = cursorY*size;
+			tower.type = type;
+			tower.damage  = damage;
+			tower.radius = radius;
+			tower.speed = speed;
+			tower.cost = cost;
+			tower.time = 0;
+			towers[towerCount]=tower;
+			towerCount++;
+			money-=cost;
+			blocks[cursorY][cursorX] = type;
+			//towerNow = 0;
+		}
+	}
+	
+	function setWave(type, hp, speed, damage, timing)
+	{
+		wave.type = type;
+		wave.hp = hp;
+		wave.speed = speed;
+		wave.damage = damage;
+		wave.timing = timing;
+	}
+	
+	function setLine(startPointX, startPointY, endPointX, endPointY)
+	{
+		var line = {};
+		line.startX = startPointX/pixel;
+		line.startY = startPointY/pixel;
+		line.endX = endPointX/pixel;
+		line.endY = endPointY/pixel;
+		lines[lineCount] = line;
+		lineCount++;
+	}
+	
+	function  checkTowers() //тип, урон, радиус, скорострельность, стоимость
+	{
+		if(towerNow==1)
+		{setTower(3, 2, 2, 700, 10);}
+		if(towerNow==2)
+		{setTower(4, 1, 3, 200, 30);}
+		
+	}
+	
+	function kill(n)
+	{
+		bugs.splice(n, 1);
+		bugCount--;
+	}
+	
+	function checkWay(n)
+	{
+		if(bugs[n].direction==0){bugs[n].x-=bugs[n].speed;}
+		if(bugs[n].direction==1){bugs[n].y-=bugs[n].speed;}
+		if(bugs[n].direction==2){bugs[n].x+=bugs[n].speed;}
+		if(bugs[n].direction==3){bugs[n].y+=bugs[n].speed;}
+		bugs[n].time++;
+		if(mod(box(bugs[n].x)*size-bugs[n].x)<bugs[n].speed && mod(box(bugs[n].y)*size-bugs[n].y)<bugs[n].speed)
+		{
+			checkDirection(n);
+		}
+	} 
+	
+	function checkDirection(n)
+	{
+		var bugX = box(bugs[n].x);
+		var bugY = box(bugs[n].y);
+		
+		
+		if(bugs[n].direction!=1 && blocks[bugY+1][bugX]==1){bugs[n].direction = 3;}
+		else if(bugs[n].direction!=0 && blocks[bugY][bugX+1]==1){bugs[n].direction = 2;}
+		else if(bugs[n].direction!=3 && blocks[bugY-1][bugX]==1){bugs[n].direction = 1;}
+		else if(bugs[n].direction!=2 && blocks[bugY][bugX-1]==1){bugs[n].direction = 0;}
+		if(blocks[bugY][bugX]==2)
+		{
+			hp -= bugs[n].damage;
+			kill(n);
+		}
+	
+	}
+	
+	function shoot()
+	{
+		for(var t = 0; t < towerCount; t++)
+		{
+			for(var b = 0; b < bugCount; b++)
+			{			
+				if(mod(bugs[b].x-towers[t].x)<=towers[t].radius*size && mod(bugs[b].y-towers[t].y)<=towers[t].radius*size)
+				{
+					if(towers[t].time == 0)
+					{
+						bugs[b].hp -= towers[t].damage;
+						towers[t].time = towers[t].speed;
+						setLine(towers[t].x, towers[t].y, bugs[b].x, bugs[b].y);
+					}
+				}
+				if(towers[t].time != 0){towers[t].time--;}
+				if(bugs[b].hp <= 0)
+				{
+					kill(b);
+					money += bugs[b].cost;
+				}
+			}
+		}
+	}
+	
+	function button(bX, bY, bSizeX, bSizeY, type)
+	{
+		if(mouseX>bX && mouseY>bY && mouseX<bX+bSizeX && mouseY<bY+bSizeY)
+		{
+			towerNow = type;	
+		}
+	}
+	
+	function mouseArea(bX, bY, bSizeX, bSizeY)
+	{
+		if(mouseX>bX && mouseY>bY && mouseX<bX+bSizeX && mouseY<bY+bSizeY)
+		{return 1;}else
+		{return 0;}
+	}
+	
+	
+	//функции отрисовки объектов
+	function drawLine(startPointX, startPointY, endPointX, endPointY)
+	{
+		ctx.beginPath();
+		ctx.moveTo(startPointX*pixel, startPointY*pixel);
+		ctx.lineTo(endPointX*pixel, endPointY*pixel);
+		ctx.stroke();
+	}
+	
+	function drawButton(bX, bY, type, cost)
+	{
+		var text = "$"+cost;
+		ctx.drawImage(type, bX*pixel, bY*pixel, size*pixel, size*pixel);
+		if(money >= cost){ctx.strokeStyle = "rgb(0, 255, 0)";}
+		else{ctx.strokeStyle = "rgb(255, 0, 0)";}
+		ctx.strokeRect(bX*pixel, bY*pixel, size*pixel, size*pixel);
+		ctx.font = size*pixel/3 +"px Arial";
+		ctx.fillStyle = "rgb(200, 200, 200)";
+		ctx.fillText(text, bX*pixel, bY*pixel-size*pixel/30)
+		ctx.strokeStyle = "rgb(255, 255, 255)";
+	}
+	
+	function drawNone(){ctx.drawImage(grass, x*size*pixel, y*size*pixel, size*pixel, size*pixel);}
+	function drawRoad(){ctx.drawImage(road, x*size*pixel, y*size*pixel, size*pixel, size*pixel);}
+	function drawBug(n)
+	{
+		ctx.drawImage(chmo, bugs[n].x*pixel, bugs[n].y*pixel, size*pixel, size*pixel);
+		
+	}
+	
+	function drawBugHp(n)
+	{
+		var i = bugs[n].maxHp/5;
+		ctx.fillStyle = "rgb(50, 50, 50)";
+		ctx.lineWidth = size*pixel/20;
+		ctx.fillRect(bugs[n].x*pixel, (bugs[n].y-(size/3))*pixel, size*pixel, 5*pixel)
+		if(bugs[n].hp > i*3){ctx.fillStyle = "rgb(0, 255, 0)";}
+		else if(bugs[n].hp > i*2){ctx.fillStyle = "rgb(255, 255, 0)";}
+		else{ctx.fillStyle = "rgb(255, 0, 0)";}
+		ctx.strokeStyle = "rgb(30, 30, 30";
+		ctx.fillRect(bugs[n].x*pixel, (bugs[n].y-(size/3))*pixel, (size/bugs[n].maxHp)*bugs[n].hp*pixel, 5*pixel);
+		ctx.strokeRect(bugs[n].x*pixel, (bugs[n].y-(size/3))*pixel, size*pixel, 5*pixel)
+	}
+	function drawBase(){ctx.drawImage(base, x*size*pixel, y*size*pixel, size*pixel, size*pixel);}
+	//function drawTower(){ctx.drawImage(tower1, x*size, y*size, size, size);}
+	
+	function drawRadius(n)
+	{
+		ctx.globalAlpha = 0.5;
+		ctx.fillStyle = "rgb(170, 170, 0)";
+		ctx.strokeStyle = "rgb(100, 100, 0)";
+		ctx.fillRect((cursorX-n)*size*pixel, (cursorY-n)*size*pixel, ((n*2)+1)*size*pixel, ((n*2)+1)*size*pixel);
+		ctx.globalAlpha = 1;
+		ctx.lineWidth = size/20*pixel;
+		ctx.strokeRect((cursorX-n)*size*pixel, (cursorY-n)*size*pixel, ((n*2)+1)*size*pixel, ((n*2)+1)*size*pixel);
+	}
+	
+	function drawChar(cost, damage, radius, speed, effect)
+	{
+		var text;
+		var x = mouseX;
+		var y = mouseY+10;
+		ctx.fillStyle = "rgb(10, 10, 10)";
+		ctx.globalAlpha = 0.5;
+		ctx.fillRect(mouseX*pixel, mouseY*pixel, 65*pixel, 55*pixel);
+		ctx.fillStyle = "rgb(255, 255, 255)";
+		ctx.globalAlpha = 1;
+		ctx.font= 7*pixel + "px Arial";
+		text = "стоимость: " + cost;
+		ctx.fillText(text, x*pixel, y*pixel);
+		y += 10;
+		text = "урон: " + damage;
+		ctx.fillText(text, x*pixel, y*pixel);
+		y += 10;
+		text = "дальнобойность: " + radius;
+		ctx.fillText(text, x*pixel, y*pixel);
+		y += 10;
+		text = "перезарядка: " + speed;
+		ctx.fillText(text, x*pixel, y*pixel);
+		y += 10;
+		text = "эффект: " + effect;
+		ctx.fillText(text, x*pixel, y*pixel);
+		y += 10;
+	}
+	
+	function drawCursor()
+	{
+		ctx.globalAlpha = 1;
+		ctx.strokeStyle = "rgb(150, 0, 0)";
+		ctx.lineWidth = size/10*pixel;
+		
+		if(blocks[cursorY][cursorX] != 0)
+		{
+			ctx.strokeRect(cursorX*size*pixel, cursorY*size*pixel, size*pixel, size*pixel);
+			ctx.strokeRect(cursorX*size*pixel, cursorY*size*pixel, size*pixel, size*pixel);
+			drawLine(cursorX*size, cursorY*size, (cursorX*size+size), (cursorY*size+size));
+		}
+		else{
+			ctx.globalAlpha = 0.7;
+			if(towerNow == 1)
+			{
+				ctx.drawImage(tower1, cursorX*size*pixel, (cursorY-1)*size*pixel, size*pixel, size*2*pixel);
+				drawRadius(2);
+			}
+			
+			else if(towerNow == 2)
+			{
+				ctx.drawImage(tower2, cursorX*size*pixel, (cursorY-1)*size*pixel, size*pixel, size*2*pixel);
+				drawRadius(3);
+			}else{ctx.globalAlpha = 1; ctx.drawImage(cursor, cursorX*size*pixel, cursorY*size*pixel, size*pixel, size*pixel);}
+			
+		}
+		
+	}
+
+	//функция общей отрисовки
+	function draw()
+	{
+		//проверка на траву/дорогу/камни
+		for(x=0; x<15; x++)
+		{
+			for(y=0; y<15; y++)
+			{
+				
+				if(blocks[y][x]==0){drawNone();}
+				if(blocks[y][x]==1){drawRoad();}
+				if(blocks[y][x]==2){drawBase();}
+			}
+		}
+		
+		ctx.globalAlpha = 1;
+		
+		//отрисовка жуков
+		for(a = 0; a < bugCount; a++)
+		{
+			drawBug(a);					
+		}
+		
+		//проверка на башни
+		for(x=0; x<15; x++)
+		{
+			for(y=0; y<15; y++)
+			{
+				if(blocks[y][x]==3){ctx.drawImage(tower1, x*size*pixel, (y-1)*size*pixel, size*pixel, size*2*pixel);}
+				if(blocks[y][x]==4){ctx.drawImage(tower2, x*size*pixel, (y-1)*size*pixel, size*pixel, size*2*pixel);}	
+			}
+		}
+		
+		//жизни жуков
+		for(a = 0; a < bugCount; a++)
+		{
+			drawBugHp(a);					
+		}
+		
+		//выстрелы
+		ctx.strokeStyle = "rgb(0, 0, 255)";
+		ctx.lineWidth = size/6*pixel;
+		for(var i = 0; i < lineCount; i++)
+		{
+			drawLine(lines[i].startX*pixel, lines[i].startY*pixel, lines[i].endX*pixel, lines[i].endY*pixel);
+		}
+		
+		drawCursor();
+		 
+		//отрисовка меню
+		
+		ctx.globalAlpha = 1;
+		ctx.fillStyle = "rgb(50, 50, 50)";
+		ctx.fillRect(size*15*pixel, 0, size*5*pixel, size*15*pixel);
+		
+		ctx.font=30*pixel+"px Arial";
+		ctx.drawImage(coin, 460*pixel, 10*pixel, 20*pixel, 20*pixel)
+		ctx.fillStyle = "rgb(255,255,0)";
+		ctx.fillText(money, 480*pixel, 30*pixel);
+		ctx.drawImage(heart, 460*pixel, 40*pixel, 20*pixel, 20*pixel)
+		ctx.fillStyle = "rgb(255,0,0)";
+		ctx.fillText(hp, 480*pixel, 60*pixel);
+		
+		//кнопки
+		
+		//ctx.drawImage(tower1, size*16, size*2, size, size);
+		drawButton(480, 100, tower1D, 10);
+		drawButton(540, 100, tower2, 30);
+		if(mouseArea(480, 100, size, size)==1)
+		{
+			drawChar(10, 2, 2, 700, "___"); //cost, damage, radius, speed, effect
+		}
+		if(mouseArea(540, 100, size, size)==1)
+		{
+			drawChar(30, 1, 3, 200, "___"); //cost, damage, radius, speed, effect
+		}
+		
+	}
+	
+
+	function check(e)
+	{
+		key = e.keyCode;
+	}
+
+	function play()
+	{
+		cursorMove();
+		shoot();
+		if(click == 1 && mouseX < size*15){checkTowers();}
+		if(time%1==0){checkWindow();}
+		
+		if(click == 1)
+		{
+			button(480, 100, size, size, 1);
+			button(540, 100, size, size, 2);
+		}
+		
+		//спавн жуков (тип, HP, скорость, урон, стоимость)
+		if(time%20 == 0 && time > 100 && time < 300){setBug(1, 10, 2, 5, 2);}
+		
+		
+		if(time%3 == 0){line = []; lineCount = 0;}
+		if(key==9){alert(lineCount);}
+		for(i = 0; i < bugCount; i++)
+		{
+			checkWay(i);
+		}
+		time++;
+		click = 0;
+		key = 0;
+		draw();	
+		
+		
+	}
+
+	//draw();
+
+	setInterval(play, 50);
+</script>
+</html>
