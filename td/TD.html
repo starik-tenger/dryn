@@ -52,6 +52,8 @@
 		heart.src = 'textures/heart.bmp';
 	chmo = new Image();
 		chmo.src = 'textures/bugs/chmo.bmp';
+	snail = new Image();
+		snail.src = 'textures/bugs/snail.bmp';
 		
 		
 	function checkWindow()
@@ -330,7 +332,8 @@
 	function drawRoad(){ctx.drawImage(road, x*size*pixel, y*size*pixel, size*pixel, size*pixel);}
 	function drawBug(n)
 	{
-		ctx.drawImage(chmo, bugs[n].x*pixel, bugs[n].y*pixel, size*pixel, size*pixel);
+		if(bugs[n].type == chmo){ctx.drawImage(chmo, bugs[n].x*pixel, bugs[n].y*pixel, size*pixel, size*pixel);}
+		if(bugs[n].type == snail){ctx.drawImage(snail, bugs[n].x*pixel, bugs[n].y*pixel, size*pixel, size*pixel);}
 		
 	}
 	
@@ -518,7 +521,8 @@
 		}
 		
 		//спавн жуков (тип, HP, скорость, урон, стоимость)
-		if(time%20 == 0 && time > 100 && time < 300){setBug(1, 10, 2, 5, 2);}
+		if(time%20 == 0 && time > 100 && time < 500){setBug(chmo, 10, 2, 5, 5);}
+		if(time%20 == 0 && time > 1400 && time < 1800){setBug(snail, 6, 4, 3, 3);}
 		
 		
 		if(time%3 == 0){line = []; lineCount = 0;}
