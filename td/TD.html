@@ -10,21 +10,21 @@
 <script>
 	window.addEventListener('keydown',this.check, false);
 	var blocks = [
-	[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-	[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-	[0,0,0,0,1,1,1,0,0,0,0,0,0,0,0],
-	[1,1,1,0,1,0,1,0,0,0,0,0,0,0,0],
+	[0,0,0,0,0,0,0,0,0,0,0,"s",0,0,0],
+	[0,0,0,0,0,0,0,0,0,0,0,0,0,"s",0],
+	[0,0,0,0,1,1,1,0,0,"s",0,0,0,0,0],
+	[1,1,1,0,1,0,1,0,0,0,0,"s",0,0,0],
 	[0,0,1,0,1,0,1,1,1,1,0,0,0,0,0],
 	[0,0,1,1,1,0,0,0,0,1,0,0,0,0,0],
 	[0,0,0,0,0,0,0,0,0,1,0,0,0,0,0],
-	[0,0,0,0,0,0,0,0,0,1,0,0,0,0,0],
+	[0,"s",0,0,0,0,0,0,0,1,0,0,0,0,0],
 	[0,0,1,1,1,1,0,0,0,1,1,1,0,0,0],
-	[0,0,1,0,0,1,0,0,0,0,0,1,0,0,0],
+	[0,0,1,0,0,1,0,0,"s","s",0,1,0,0,0],
 	[0,0,1,0,0,1,0,0,0,0,0,1,0,0,0],
 	[0,0,1,0,0,1,1,1,1,1,1,1,0,0,0],
-	[0,0,1,0,0,0,0,0,0,0,0,0,0,0,0],
+	[0,0,1,0,0,0,0,"s",0,0,"s",0,0,0,0],
 	[0,0,1,1,1,1,1,1,1,1,1,1,1,1,2],
-	[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
+	[0,"s",0,0,0,0,0,0,0,0,0,0,0,0,0]
 	];
 	var screen = document.getElementById("screen");
 	ctx     = screen.getContext('2d');
@@ -36,12 +36,24 @@
         grass.src = 'textures/grass.bmp';
 	road = new Image();              
         road.src = 'textures/road.bmp';
+	rock = new Image();              
+        rock.src = 'textures/stone.bmp';
+	emptyTower = new Image();
+		emptyTower.src = 'textures/emptyTower.bmp';
 	tower1 = new Image();              
         tower1.src = 'textures/tower11.bmp';
-	tower1D = new Image();              
-        tower1D.src = 'textures/tower1.bmp';
+	tower1S = new Image();              
+        tower1S.src = 'textures/shop/tower1.bmp';
 	tower2 = new Image();
 		tower2.src = 'textures/tower2.bmp';
+	tower3 = new Image();
+		tower3.src = 'textures/tower3.bmp';
+	tower3S = new Image();
+		tower3S.src = 'textures/shop/tower3S.bmp';
+	tower4 = new Image();
+		tower4.src = 'textures/tower4.bmp';
+	tower4S = new Image();
+		tower4S.src = 'textures/shop/tower4S.bmp';
 	base = new Image();
 		base.src = 'textures/base.bmp';
 	cursor = new Image();
@@ -50,10 +62,35 @@
 		coin.src = 'textures/coin.bmp';
 	heart = new Image();
 		heart.src = 'textures/heart.bmp';
+	stone = new Image();
+		stone.src = 'textures/stone.png';
+	star = new Image();
+		star.src = 'textures/star.bmp';	
+	zip = new Image();
+		zip.src = 'textures/zip.png';
+	fire = new Image();
+		fire.src = 'textures/fireball.png';
+	ice = new Image();
+		ice.src = 'textures/ice.bmp';
+		
+	//монстры
 	chmo = new Image();
 		chmo.src = 'textures/bugs/chmo.bmp';
 	snail = new Image();
 		snail.src = 'textures/bugs/snail.bmp';
+	brown = new Image();
+		brown.src = 'textures/bugs/brown.bmp';
+	gopBoss = new Image();
+		gopBoss.src = 'textures/bugs/gopBoss.bmp';
+	pituh = new Image();
+		pituh.src = 'textures/bugs/pituh.bmp';
+	baloon = new Image();
+		baloon.src = 'textures/bugs/baloon.bmp';
+	bump = new Image();
+		bump.src = 'textures/bugs/bump.bmp';
+		
+	gameOver = new Image();
+		gameOver.src = 'textures/gameOver.bmp';
 		
 		
 	function checkWindow()
@@ -61,9 +98,10 @@
 		screen.height = document.documentElement.clientHeight;
 		screen.width = document.documentElement.clientWidth;
 		ctx.imageSmoothingEnabled = false;
-		if(screen.height<screen.width-150){pixel = screen.height/450;}
-		else{pixel = screen.width/600}
+		if(screen.height*1.5<screen.width){pixel = screen.height/450;}
+		else{pixel = screen.width/775}
 	}
+	
 	checkWindow();
 	var pixel = screen.height/450;
 	var size = 30;
@@ -80,15 +118,20 @@
 	var key;
 	var click = 0;
 	var towerNow = 0;
+	var towerUp = 0;
 	var towerCount = 0;
 	var bugCount = 0;
+	var allBugs = 0;
+	var wave = 0;
 	var lineCount = 0;
+	var bulletCount = 0;
 	var buttonLight = 0;
 	var time = 0;
 	
 	var towers = [];
 	var bugs = [];
 	var lines = [];
+	var bullets = [];
 	
 	//объект монстра
 	var bug = {};
@@ -129,10 +172,24 @@
 	line.endX = 0;
 	line.endY = 0;
 	
+	//объект снаряда
+	var bullet = {};
+	bullet.startX = 0;
+	bullet.startY = 0;
+	bullet.endX = 0;
+	bullet.endY = 0;
+	bullet.X = 0;
+	bullet.Y = 0;
+	
 	
 	function mod(n)
 	{
 		if(n<0){return 0-n}else{return n}
+	}
+	
+	function randomInterval(max, min)
+	{
+		return Math.random() * (max - min) + min;
 	}
 	
 	function box(n)
@@ -166,8 +223,10 @@
 		bug.type = type;
 		bug.maxHp = maxHp;
 		bug.hp = maxHp;
-		bug.speed = speed*size/30;
+		bug.startSpeed = speed*size/30;
+		bug.speed = bug.startSpeed;
 		bug.damage = damage;
+		bug.effect = 0;
 		bug.x = startPointX*size;
 		bug.y = startPointY*size;
 		bug.direction = 2;
@@ -175,6 +234,7 @@
 		bug.time = 0;
 		bugs[bugCount] = bug;
 		bugCount++;
+		allBugs++;
 		
 	}
 	
@@ -192,20 +252,20 @@
 			tower.cost = cost;
 			tower.time = 0;
 			towers[towerCount]=tower;
+			blocks[cursorY][cursorX] = {};
+			blocks[cursorY][cursorX].type = type;
+			blocks[cursorY][cursorX].id = towerCount;
 			towerCount++;
 			money-=cost;
-			blocks[cursorY][cursorX] = type;
 			//towerNow = 0;
 		}
 	}
 	
-	function setWave(type, hp, speed, damage, timing)
+	function checkWave(wave1, time1, timing, count)
 	{
-		wave.type = type;
-		wave.hp = hp;
-		wave.speed = speed;
-		wave.damage = damage;
-		wave.timing = timing;
+		if(time == time1){wave = wave1; allBugs = 0;}
+		if(time%timing == 0 && allBugs < count && time > time1 && wave == wave1){return 1;}   
+		else{return 0;}
 	}
 	
 	function setLine(startPointX, startPointY, endPointX, endPointY)
@@ -219,12 +279,46 @@
 		lineCount++;
 	}
 	
-	function  checkTowers() //тип, урон, радиус, скорострельность, стоимость
+	function setBullet(type, startPointX, startPointY, endPointX, endPointY, time)
+	{
+		var bullet = {};
+		bullet.type = type;
+		bullet.startX = startPointX;
+		bullet.startY = startPointY;
+		bullet.endX = endPointX;
+		bullet.endY = endPointY;
+		bullet.x = bullet.startX;
+		bullet.y = bullet.startY;
+		bullet.time = time;
+		bullet.timer = time;
+		bullets[bulletCount] = bullet;
+		bulletCount++;
+		
+	}
+	
+	function moveBullet(n)
+	{
+		
+		if(bullets[n].timer > 0){
+		bullets[n].x += 0-(bullets[n].startX - bullets[n].endX)/bullets[n].time;
+		bullets[n].y += 0-(bullets[n].startY - bullets[n].endY)/bullets[n].time;
+		bullets[n].timer-=1;}
+		else{
+		if(bullets[n].type=="coin"){money+=1};
+		bullets.splice(n, 1);
+		bulletCount--;}
+	}
+	
+	function checkTowers() //тип, урон, радиус, скорострельность, стоимость
 	{
 		if(towerNow==1)
-		{setTower(3, 2, 2, 700, 10);}
+		{setTower(3, 2, 2, 100, 10);}
 		if(towerNow==2)
-		{setTower(4, 1, 3, 200, 30);}
+		{setTower(4, 1, 3, 30, 30);}
+		if(towerNow==3)
+		{setTower(5, 1, 2, 100, 60);}
+		if(towerNow==4)
+		{setTower(6, 20, 3, 200, 60);}
 		
 	}
 	
@@ -257,6 +351,8 @@
 		else if(bugs[n].direction!=0 && blocks[bugY][bugX+1]==1){bugs[n].direction = 2;}
 		else if(bugs[n].direction!=3 && blocks[bugY-1][bugX]==1){bugs[n].direction = 1;}
 		else if(bugs[n].direction!=2 && blocks[bugY][bugX-1]==1){bugs[n].direction = 0;}
+		bugs[n].x = bugX*size;
+		bugs[n].y = bugY*size;
 		if(blocks[bugY][bugX]==2)
 		{
 			hp -= bugs[n].damage;
@@ -277,16 +373,30 @@
 					{
 						bugs[b].hp -= towers[t].damage;
 						towers[t].time = towers[t].speed;
-						setLine(towers[t].x, towers[t].y, bugs[b].x, bugs[b].y);
+						//setLine(towers[t].x, towers[t].y, bugs[b].x, bugs[b].y);
+						
+						if(towers[t].type == 3){setBullet("stone",towers[t].x+(size/2), towers[t].y+(size/2), bugs[b].x+(size/2), bugs[b].y+(size/2), 10);}
+						if(towers[t].type == 4){setBullet("star",towers[t].x+(size/2), towers[t].y+(size/2), bugs[b].x+(size/2), bugs[b].y+(size/2), 6);}
+						if(towers[t].type == 5){setBullet("zip",towers[t].x+(size/2), towers[t].y+(size/2), bugs[b].x+(size/2), bugs[b].y+(size/2), 10);}
+						if(towers[t].type == 6){setBullet("fire",towers[t].x+(size/2), towers[t].y+(size/2), bugs[b].x+(size/2), bugs[b].y+(size/2), 10);}
+						
+						if(towers[t].type == 5){bugs[b].effect = "slow";}
+						if(bugs[b].effect == "slow"){bugs[b].speed = bugs[b].startSpeed/2;}
+						
+						if(bugs[b].hp <= 0)
+						{
+							//money += bugs[b].cost;
+							var interval = 20/bugs[b].cost;
+							for(i=0; i<bugs[b].cost; i++){
+							setBullet("coin", bugs[b].x+randomInterval(-40, 40), bugs[b].y+randomInterval(-40, 40), 460, 10, (i+1)*interval);}
+							kill(b);
+							
+						}
 					}
 				}
-				if(towers[t].time != 0){towers[t].time--;}
-				if(bugs[b].hp <= 0)
-				{
-					kill(b);
-					money += bugs[b].cost;
-				}
+				
 			}
+			if(towers[t].time != 0){towers[t].time--;}
 		}
 	}
 	
@@ -332,8 +442,22 @@
 	function drawRoad(){ctx.drawImage(road, x*size*pixel, y*size*pixel, size*pixel, size*pixel);}
 	function drawBug(n)
 	{
-		if(bugs[n].type == chmo){ctx.drawImage(chmo, bugs[n].x*pixel, bugs[n].y*pixel, size*pixel, size*pixel);}
-		if(bugs[n].type == snail){ctx.drawImage(snail, bugs[n].x*pixel, bugs[n].y*pixel, size*pixel, size*pixel);}
+		ctx.save();
+		ctx.translate(bugs[n].x*pixel, bugs[n].y*pixel);
+		if(bugs[n].direction == 0)
+		{
+			ctx.translate(size*pixel, 0);
+			ctx.scale(-1, 1);
+		}
+		if(bugs[n].type == chmo){ctx.drawImage(chmo, 0, 0, size*pixel, size*pixel);}
+		if(bugs[n].type == brown){ctx.drawImage(brown, 0, 0, size*pixel, size*pixel);}
+		if(bugs[n].type == snail){ctx.drawImage(snail, 0, 0, size*pixel, size*pixel);}
+		if(bugs[n].type == gopBoss){ctx.drawImage(gopBoss, 0, 0, size*pixel, size*pixel);}
+		if(bugs[n].type == pituh){ctx.drawImage(pituh, 0, 0, size*pixel, size*pixel);}
+		if(bugs[n].type == baloon){ctx.drawImage(baloon, 0, 0, size*pixel, size*pixel);}
+		if(bugs[n].type == bump){ctx.drawImage(bump, 0, 0, size*pixel, size*pixel);}
+		if(bugs[n].effect == "slow"){ctx.drawImage(ice, 0, 0, size*pixel, size*pixel);}
+		ctx.restore();
 		
 	}
 	
@@ -352,6 +476,18 @@
 	}
 	function drawBase(){ctx.drawImage(base, x*size*pixel, y*size*pixel, size*pixel, size*pixel);}
 	//function drawTower(){ctx.drawImage(tower1, x*size, y*size, size, size);}
+	
+	function drawRadiusT(n)
+	{
+		ctx.globalAlpha = 0.5;
+		ctx.fillStyle = "rgb(170, 170, 0)";
+		ctx.strokeStyle = "rgb(100, 100, 0)";
+		ctx.fillRect(towers[n].x*pixel, towers[n].y*pixel, towers[n].radius*pixel, towers[n].radius*pixel);
+		ctx.fillRect((towers[n].x-towers[n].radius)*size*pixel, (towers[n].y-towers[n].radius)*size*pixel, ((towers[n].radius*2)+1)*size*pixel, ((towers[n].radius*2)+1)*size*pixel);
+		ctx.globalAlpha = 1;
+		ctx.lineWidth = size/20*pixel;
+		ctx.strokeRect((towers[n].x-towers[n].radius)*size*pixel, (towers[n].y-towers[n].radius)*size*pixel, ((towers[n].radius*2)+1)*size*pixel, ((towers[n].radius*2)+1)*size*pixel);
+	}
 	
 	function drawRadius(n)
 	{
@@ -398,13 +534,13 @@
 		ctx.strokeStyle = "rgb(150, 0, 0)";
 		ctx.lineWidth = size/10*pixel;
 		
-		if(blocks[cursorY][cursorX] != 0)
+		if(blocks[cursorY][cursorX] == 1 || blocks[cursorY][cursorX] == "s")
 		{
 			ctx.strokeRect(cursorX*size*pixel, cursorY*size*pixel, size*pixel, size*pixel);
 			ctx.strokeRect(cursorX*size*pixel, cursorY*size*pixel, size*pixel, size*pixel);
 			drawLine(cursorX*size, cursorY*size, (cursorX*size+size), (cursorY*size+size));
 		}
-		else{
+		else if(blocks[cursorY][cursorX] == 0){
 			ctx.globalAlpha = 0.7;
 			if(towerNow == 1)
 			{
@@ -416,12 +552,53 @@
 			{
 				ctx.drawImage(tower2, cursorX*size*pixel, (cursorY-1)*size*pixel, size*pixel, size*2*pixel);
 				drawRadius(3);
-			}else{ctx.globalAlpha = 1; ctx.drawImage(cursor, cursorX*size*pixel, cursorY*size*pixel, size*pixel, size*pixel);}
+			}
 			
+			else if(towerNow == 3)
+			{
+				ctx.drawImage(tower3, cursorX*size*pixel, (cursorY-1)*size*pixel, size*pixel, size*2*pixel);
+				drawRadius(2);
+			}
+			else if(towerNow == 4)
+			{
+				ctx.drawImage(tower4, cursorX*size*pixel, (cursorY-1)*size*pixel, size*pixel, size*2*pixel);
+				drawRadius(3);
+			}else{ctx.globalAlpha = 1; ctx.drawImage(cursor, cursorX*size*pixel, cursorY*size*pixel, size*pixel, size*pixel);}	
 		}
+		
 		
 	}
 
+	function drawBullet(n)
+	{
+		ctx.save();
+		ctx.translate(bullets[n].x*pixel, bullets[n].y*pixel);
+		if(bullets[n].type=="stone")
+		{
+			ctx.rotate(1/bullets[n].timer);
+			ctx.drawImage(stone, -10*pixel, -10*pixel, 20*pixel, 20*pixel);
+		}
+		if(bullets[n].type=="coin")
+		{
+			ctx.drawImage(coin,  -10*pixel, -10*pixel, 20*pixel, 20*pixel);
+		}
+		if(bullets[n].type=="star")
+		{
+		
+			ctx.rotate(1/bullets[n].timer);
+			ctx.drawImage(star,  -10*pixel, -10*pixel, 20*pixel, 20*pixel);
+		}
+		if(bullets[n].type=="zip")
+		{
+			ctx.drawImage(zip,  -10*pixel, -10*pixel, 20*pixel, 20*pixel);
+		}
+		if(bullets[n].type=="fire")
+		{
+			ctx.drawImage(fire,  -10*pixel, -10*pixel, 20*pixel, 20*pixel);
+		}
+		ctx.restore();
+	}
+	
 	//функция общей отрисовки
 	function draw()
 	{
@@ -434,24 +611,28 @@
 				if(blocks[y][x]==0){drawNone();}
 				if(blocks[y][x]==1){drawRoad();}
 				if(blocks[y][x]==2){drawBase();}
+				if(blocks[y][x]=="s"){ctx.drawImage(rock, x*size*pixel, y*size*pixel, size*pixel, size*pixel);}
 			}
 		}
 		
 		ctx.globalAlpha = 1;
 		
 		//отрисовка жуков
+		ctx.save();
 		for(a = 0; a < bugCount; a++)
 		{
 			drawBug(a);					
 		}
-		
+		ctx.restore();
 		//проверка на башни
 		for(x=0; x<15; x++)
 		{
 			for(y=0; y<15; y++)
 			{
-				if(blocks[y][x]==3){ctx.drawImage(tower1, x*size*pixel, (y-1)*size*pixel, size*pixel, size*2*pixel);}
-				if(blocks[y][x]==4){ctx.drawImage(tower2, x*size*pixel, (y-1)*size*pixel, size*pixel, size*2*pixel);}	
+				if(blocks[y][x].type==3){ctx.drawImage(tower1, x*size*pixel, (y-1)*size*pixel, size*pixel, size*2*pixel);}
+				if(blocks[y][x].type==4){ctx.drawImage(tower2, x*size*pixel, (y-1)*size*pixel, size*pixel, size*2*pixel);}
+				if(blocks[y][x].type==5){ctx.drawImage(tower3, x*size*pixel, (y-1)*size*pixel, size*pixel, size*2*pixel);}	
+				if(blocks[y][x].type==6){ctx.drawImage(tower4, x*size*pixel, (y-1)*size*pixel, size*pixel, size*2*pixel);}					
 			}
 		}
 		
@@ -467,7 +648,9 @@
 		for(var i = 0; i < lineCount; i++)
 		{
 			drawLine(lines[i].startX*pixel, lines[i].startY*pixel, lines[i].endX*pixel, lines[i].endY*pixel);
+			//alert(lines[i].startX);
 		}
+		
 		
 		drawCursor();
 		 
@@ -475,7 +658,7 @@
 		
 		ctx.globalAlpha = 1;
 		ctx.fillStyle = "rgb(50, 50, 50)";
-		ctx.fillRect(size*15*pixel, 0, size*5*pixel, size*15*pixel);
+		ctx.fillRect(450*pixel, 0, 325*pixel, 450*pixel);
 		
 		ctx.font=30*pixel+"px Arial";
 		ctx.drawImage(coin, 460*pixel, 10*pixel, 20*pixel, 20*pixel)
@@ -488,16 +671,42 @@
 		//кнопки
 		
 		//ctx.drawImage(tower1, size*16, size*2, size, size);
-		drawButton(480, 100, tower1D, 10);
+		drawButton(480, 100, tower1S, 10);
 		drawButton(540, 100, tower2, 30);
+		drawButton(480, 145, tower3S, 60);
+		drawButton(540, 145, tower4S, 60);
+		
+		//upgrade
+		if(towerCount>0){
+		if(towers[towerUp].type == 3){ctx.drawImage(tower1, 620*pixel, 50*pixel, 100*pixel, 200*pixel); drawRadiusT(towerUp);}
+		if(towers[towerUp].type == 4){ctx.drawImage(tower2, 620*pixel, 50*pixel, 100*pixel, 200*pixel); drawRadiusT(towerUp);}
+		if(towers[towerUp].type == 5){ctx.drawImage(tower3, 620*pixel, 50*pixel, 100*pixel, 200*pixel); drawRadiusT(towerUp);}
+		if(towers[towerUp].type == 6){ctx.drawImage(tower4, 620*pixel, 50*pixel, 100*pixel, 200*pixel); drawRadiusT(towerUp);}
+		}
+		
+		//характеристики
 		if(mouseArea(480, 100, size, size)==1)
 		{
-			drawChar(10, 2, 2, 700, "___"); //cost, damage, radius, speed, effect
+			drawChar(10, 2, 2, 300, "___"); //cost, damage, radius, speed, effect
 		}
 		if(mouseArea(540, 100, size, size)==1)
 		{
-			drawChar(30, 1, 3, 200, "___"); //cost, damage, radius, speed, effect
+			drawChar(30, 1, 3, 100, "___"); //cost, damage, radius, speed, effect
 		}
+		if(mouseArea(480, 145, size, size)==1)
+		{
+			drawChar(60, 1, 2, 300, "замедление"); //cost, damage, radius, speed, effect
+		}
+		if(mouseArea(540, 145, size, size)==1)
+		{
+			drawChar(60, 20, 3, 700, "___"); //cost, damage, radius, speed, effect
+		}
+		for(var i = 0; i < bulletCount; i++)
+		{
+			drawBullet(i);
+		}
+		
+		
 		
 	}
 	
@@ -516,31 +725,68 @@
 		
 		if(click == 1)
 		{
-			button(480, 100, size, size, 1);
-			button(540, 100, size, size, 2);
+			button(480, 100, 30, 30, 1);
+			button(540, 100, 30, 30, 2);
+			button(480, 145, 30, 30, 3);
+			button(540, 145, 30, 30, 4);
+			if(mouseX > 600){towerNow = 0;}
+		}
+		
+		if(blocks[cursorY][cursorX].type > 2)
+		{
+			ctx.globalAlpha = 1; ctx.drawImage(cursor, cursorX*size*pixel, cursorY*size*pixel, size*pixel, size*pixel);
+			if(click == 1){towerUp = blocks[cursorY][cursorX].id;}
 		}
 		
 		//спавн жуков (тип, HP, скорость, урон, стоимость)
-		if(time%20 == 0 && time > 100 && time < 500){setBug(chmo, 10, 2, 5, 5);}
-		if(time%20 == 0 && time > 1400 && time < 1800){setBug(snail, 6, 4, 3, 3);}
+		//wave, time, timing, count
+		
+		
+		
+		if(checkWave(1, 50, 20, 25) == 1){setBug(chmo, 5, 2, 5, 5);}
+		if(checkWave(2, 1400, 40, 20) == 1){setBug(brown, 20, 1, 10, 10);}
+		if(checkWave(3, 3300, 15, 30) == 1){setBug(snail, 5, 6, 3, 7);}
+		if(time == 4600){setBug(gopBoss, 300, 1, 50, 120);}
+		if(checkWave(4, 6400, 13, 17) == 1){setBug(pituh, 12, 3, 5, 10);}
+		if(checkWave(5, 6900, 13, 27) == 1){setBug(baloon, 15, 2, 10, 7);}
+		if(checkWave(6, 8000, 16, 20) == 1){setBug(bump, 30, 2, 10, 15);}
 		
 		
 		if(time%3 == 0){line = []; lineCount = 0;}
 		if(key==9){alert(lineCount);}
+		
 		for(i = 0; i < bugCount; i++)
 		{
 			checkWay(i);
 		}
+		
+		for(i = 0; i < bulletCount; i++)
+		{
+			//bullets[i].x += 0-(bullets[i].startX - bullets[i].endX)/3;
+			//bullets[i].y += 0-(bullets[i].startY - bullets[i].endY)/3;
+			moveBullet(i);
+		}
+		
+		
+		
 		time++;
 		click = 0;
 		key = 0;
 		draw();	
+		
+		//смерть
+		if(hp <= 0)
+		{
+			clearInterval(timer);
+			ctx.drawImage(gameOver, 0, 0, 765*pixel, 450*pixel);
+			
+		}
 		
 		
 	}
 
 	//draw();
 
-	setInterval(play, 50);
+	var timer = setInterval(play, 50);
 </script>
 </html>
