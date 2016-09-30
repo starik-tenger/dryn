@@ -785,8 +785,10 @@
 		
 	}
 
+	ctx.font = 20*pixel+"px Arial";
+	ctx.fillText("Подождите, игра загружается", 20*pixel, 30*pixel)
 	//draw();
-
-	var timer = setInterval(play, 50);
+	ice.onload = function(){
+	timer = setInterval(play, 50);}
 </script>
 </html>
