@@ -1,0 +1,118 @@
+<!doctype html>
+<canvas height=420 width=420 id="screen" onmousemove = "checkMouse()"></canvas>
+<script>
+	var screen = document.getElementById("screen");
+	ctx = screen.getContext('2d');
+	var pixel;
+	function checkWindow()
+	{
+		screen.height = document.documentElement.clientHeight;
+		screen.width = document.documentElement.clientHeight;
+		ctx.imageSmoothingEnabled = false;
+		if(screen.height<screen.width){pixel = screen.height/450;}
+		else{pixel = screen.width/450}
+	}
+	checkWindow();
+	
+	function mod(n)
+	{
+		if(n<0){return 0-n}else{return n}
+	}
+	function randomInterval(max, min)
+	{
+		return Math.random() * (max - min) + min;
+	}
+	
+	//простейшие функции отрисовки с учётом масштабирования
+	function fillRect(x, y, a, c, r, g, b)
+	{
+		ctx.fillStyle = "rgb("+r+","+g+","+b+")";
+		ctx.fillRect(x*pixel,y*pixel,a*pixel,c*pixel);
+	}
+	function strokeRect(x, y, a, b)
+	{
+		ctx.strokeRect(x*pixel,y*pixel,a*pixel,b*pixel);
+	}
+
+	var red_apple = new Image();
+		red_apple.src = "textures/red_apple.png";
+	
+	var mouseX;
+	var mouseY;
+	var playerSize = 50;
+	var appleSize = 30;
+	var apples = [];
+	for(i=0; i<100; i++)
+	{
+		apples.push(0);
+	}
+	var speed = 5;
+	var time = 0;
+	var playerX = 225;
+	var playerY = 420;
+	var score = 0;
+	
+	function checkMouse()
+	{
+		mouseX = event.pageX/pixel;
+		mouseY = event.pageY/pixel;
+	}
+	function spawnApple()
+	{
+		for(i=0; i<apples.length; i++)
+		{
+			if(apples[i]==0)
+			{
+				apples[i] = {x: Math.round(randomInterval(0, 450)), y: 10, speed: 5, type: red_apple}
+				break;
+			}
+		}
+	}
+	
+	function draw()
+	{
+		fillRect(0, 0, 450, 450, 50, 100, 100)
+		for(i=0; i<apples.length; i++)
+		{
+			apple = apples[i].type;
+			ctx.drawImage(apple, (apples[i].x-appleSize)*pixel, (apples[i].y-appleSize)*pixel, appleSize*pixel, appleSize*pixel);
+		}
+		fillRect(playerX-playerSize, playerY, playerSize, 20, 50, 50, 0);
+		ctx.font = 30*pixel+"px Arial";
+		ctx.fillStyle = "rgb(255,255,0)";
+		ctx.fillText(score, 400*pixel, 40*pixel);
+	}
+	
+	function play()
+	{
+		if(time%Math.round(randomInterval(5, 50))==0)
+		{
+			spawnApple();
+		}
+		for(i=0; i<apples.length; i++)
+		{
+			apples[i].speed += 0.1;
+			apples[i].y+=apples[i].speed;
+			if(apples[i].y>=playerY+20 && mod(apples[i].x-playerX)<=playerSize && apples[i]!=0)
+			{
+				apples[i] = 0;
+				score+=1;
+			}
+			if(apples[i].y>450 && apples[i]!=0)
+			{
+				apples.slice(i, 1)
+			}
+		}
+		if(playerX<mouseX)
+		{
+		playerX += mod(mouseX-playerX)/10;
+		}
+		if(playerX>mouseX)
+		{
+		playerX -= mod(mouseX-playerX)/10;
+		}
+		time++;
+		draw();
+	}
+	setInterval(play, 35)
+</script>
