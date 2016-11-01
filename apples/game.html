@@ -36,6 +36,8 @@
 
 	var red_apple = new Image();
 		red_apple.src = "textures/red_apple.png";
+	var green_apple = new Image();
+		green_apple.src = "textures/green_apple.png";
 	
 	var mouseX;
 	var mouseY;
@@ -63,7 +65,13 @@
 		{
 			if(apples[i]==0)
 			{
-				apples[i] = {x: Math.round(randomInterval(0, 450)), y: 10, speed: 5, type: red_apple}
+				if(Math.floor(randomInterval(0, 2))==0)
+				{
+					apples[i] = {x: Math.round(randomInterval(0, 450)), y: 10, speed: 5, type: red_apple}
+				}else
+				{
+					apples[i] = {x: Math.round(randomInterval(0, 450)), y: 10, speed: 5, type: green_apple}
+				}
 				break;
 			}
 		}
@@ -74,8 +82,10 @@
 		fillRect(0, 0, 450, 450, 50, 100, 100)
 		for(i=0; i<apples.length; i++)
 		{
-			apple = apples[i].type;
-			ctx.drawImage(apple, (apples[i].x-appleSize)*pixel, (apples[i].y-appleSize)*pixel, appleSize*pixel, appleSize*pixel);
+			if(apples[i]!=0)
+			{
+				ctx.drawImage(apples[i].type, (apples[i].x-appleSize)*pixel, (apples[i].y-appleSize)*pixel, appleSize*pixel, appleSize*pixel);
+			}
 		}
 		fillRect(playerX-playerSize, playerY, playerSize, 20, 50, 50, 0);
 		ctx.font = 30*pixel+"px Arial";
