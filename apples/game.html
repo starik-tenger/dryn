@@ -95,7 +95,7 @@
 	
 	function play()
 	{
-		if(time%Math.round(randomInterval(5, 50))==0)
+		if(time%Math.round(randomInterval(5, 40))==0)
 		{
 			spawnApple();
 		}
@@ -105,8 +105,15 @@
 			apples[i].y+=apples[i].speed;
 			if(apples[i].y>=playerY+20 && mod(apples[i].x-playerX)<=playerSize && apples[i]!=0)
 			{
+				if(apples[i].type==red_apple)
+				{
+					score+=2;
+				}
+				if(apples[i].type==green_apple)
+				{
+					score+=1;
+				}
 				apples[i] = 0;
-				score+=1;
 			}
 			if(apples[i].y>450 && apples[i]!=0)
 			{
