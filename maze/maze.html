@@ -1,7 +1,21 @@
 <!doctype html>
-<!doctype html>
 <html>
-<canvas height=720 width=720 id="screen"></canvas>
+
+
+<table>
+  <tr>
+    <td>
+      <canvas height=720 width=720 id="screen"></canvas>
+	</td>
+    <td valign="top">
+	  <input type="text" id="size"/>
+	  <br/><br/>
+	  <button type="submit" onclick="start();">Make</button>
+	</td>
+  </tr>
+  
+</table>
+
 <script>
 	window.addEventListener('keydown',this.check,false);
 	var blocks = [];
@@ -10,6 +24,31 @@
 	var size = 11;
 	var sizeX = 61;
 	var sizeY = 61;
+	function start()
+	{
+		sizeX=document.getElementById("size").value*2+1;
+		sizeY=sizeX;
+		size = Math.floor(720/sizeX);
+		for(x=0; x<sizeX; x++)
+		{
+			blocks.push([]);
+			for(y=0; y<sizeY; y++)
+			{
+				if(x==0 || y==0)
+				{
+					blocks[x].push(2);
+				}else if((x+1)%2==0 && (y+1)%2==0)
+				{
+					blocks[x][y]=0;
+				}else
+				{
+					blocks[x][y]=1;
+				}
+			}
+	}
+		maze(1,1);
+		draw();
+	}
 	function randomInterval(max, min)
 	{
 		return Math.random() * (max - min) + min;
@@ -106,15 +145,19 @@
 			
 		}
 	}
-	maze(1, 1);
+	//maze(1, 1);
 	var a = points.length;
-	 for(x=0; x<sizeX; x++)
+	function draw()
 	{
-		for(y=0; y<sizeY; y++)
+		ctx.clearRect(0,0,720,720);
+		for(x=0; x<sizeX; x++)
 		{
-			if(blocks[x][y]!=3)
+			for(y=0; y<sizeY; y++)
 			{
-				ctx.fillRect(x*size, y*size, size, size);
+				if(blocks[x][y]!=3)
+				{
+					ctx.fillRect(x*size, y*size, size, size);
+				}
 			}
 		}
 	}

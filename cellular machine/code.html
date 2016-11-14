@@ -1,0 +1,141 @@
+<!doctype html>
+<html>
+<body>
+ <style>
+   * {
+    margin: 0;
+    padding: 0;
+   }
+ </style>
+<canvas height=920 width=920 id="screen" onmousemove = "checkMouse()" onmousedown = "checkClick()"></canvas>
+
+<script>
+	window.addEventListener('keydown',this.check,false);
+	var matrix = [];
+	var matrix1 = [];
+	var screen = document.getElementById("screen");
+	ctx     = screen.getContext('2d');
+	var pixel = 2;
+	var size = 2000;
+	var mouseX;
+	var mouseY;
+
+	function randomInterval(max, min)
+	{
+		return Math.random() * (max - min) + min;
+	}
+    function box(n)
+	{
+		return Math.round((n-(pixel/2))/pixel);
+	}
+	function setblock(x, y)
+	{
+		blocks[x][y]=1;
+		blocks1[x][y]=1;
+	}
+	function checkMouse()
+	{
+		mouseX = event.pageX;
+		mouseY = event.pageY;
+	}
+	function checkClick()
+	{
+		setblock(box(mouseX), box(mouseY));
+	}
+	
+	
+	for(x=0; x<size; x++)
+	{
+		matrix.push([]);
+		for(y=0; y<size; y++)
+		{
+			matrix[x].push(0);
+		}
+	}
+	for(x=0; x<size; x++)
+	{
+		matrix1.push([]);
+		for(y=0; y<size; y++)
+		{
+			matrix1[x].push(0);
+		}
+	}
+	
+	var blocks = matrix;
+	var blocks1 = matrix1;
+	var status = 0;
+	var neighbors = 0;
+	var interval = 0;
+	
+	for(i=0; i<1000; i++)
+	{
+		setblock(i+10, 100)
+	}
+	
+	function check()
+	{
+		if(interval==0)
+		{
+			x = setInterval(play, 100);
+		}else
+		{
+			clearInterval(x);
+		}
+		
+	}
+	
+	function draw()
+	{
+		ctx.clearRect(0,0,1000,1000)
+		for(x=1; x<size-1; x++)
+		{
+			for(y=1; y<size-1; y++)
+			{
+				if(blocks[x][y]==1)
+				{
+					ctx.fillRect(x*pixel, y*pixel, pixel, pixel);
+				}else
+				{
+					//ctx.strokeRect(x*pixel, y*pixel, pixel, pixel);
+				}
+			}
+		}
+	}
+	function play()
+	{
+		if(status==0)
+		{
+			blocks = matrix;
+			blocks1 = matrix1;
+			status = 1;
+		}else
+		{
+			blocks = matrix1;
+			blocks1 = matrix;
+			status = 0;
+		}
+		for(x=1; x<size-1; x++)
+		{
+			for(y=1; y<size-1; y++)
+			{
+				neighbors = 0;
+				if(blocks[x-1][y]==1){neighbors+=1;}
+				if(blocks[x-1][y-1]==1){neighbors+=1;}
+				if(blocks[x-1][y+1]==1){neighbors+=1;}
+				if(blocks[x][y+1]==1){neighbors+=1;}
+				if(blocks[x][y-1]==1){neighbors+=1;}
+				if(blocks[x+1][y-1]==1){neighbors+=1;}
+				if(blocks[x+1][y+1]==1){neighbors+=1;}
+				if(blocks[x+1][y]==1){neighbors+=1;}
+				//alert(neighbors);
+				if(blocks[x][y]==1 && (neighbors<2 || neighbors>3)){blocks1[x][y]=0;}
+				else if(blocks[x][y]==0 && neighbors==3){blocks1[x][y]=1;}
+				else{blocks1[x][y]=blocks[x][y]}
+			}
+		}
+		draw();
+	}
+	setInterval(draw, 10);
+</script>
+</body>
+</html>
