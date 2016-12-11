@@ -1,0 +1,213 @@
+<!doctype html>
+<html>
+
+
+<table>
+  <tr>
+    <td>
+      <canvas height=920 width=920 id="screen"></canvas>
+	</td>
+    <td valign="top">
+	  <input type="text" id="size"/>
+	  <br/><br/>
+	  <button type="submit" onclick="start();">Make</button>
+	</td>
+  </tr>
+  
+</table>
+
+<script>
+	window.addEventListener('keydown',this.check,false);
+	var screen = document.getElementById("screen");
+	ctx     = screen.getContext('2d');
+	var size = 35;
+	var sizeX = 300;
+	var sizeY = 300;
+	size = 820/sizeX;
+	function randomInterval(max, min)
+	{
+		return Math.round(Math.random() * (max - min) + min);
+	}
+	function start()
+	{
+		sizeX = document.getElementById("size").value;
+		sizeY = sizeX;
+		blocks = [];
+		walls = [];
+		counter = 0;
+		size = 820/sizeX;
+		for(x=0; x<sizeX; x++)
+		{
+			blocks.push([]);
+			for(y=0; y<sizeY; y++)
+			{
+				
+				if(x==0 || y==0 || x==sizeX || y==sizeY)
+				{
+					blocks[x].push({type: 1, index: 0});
+				}else if((x+1)%2==0 && (y+1)%2==0)
+				{
+					blocks[x].push({type: 0, index: counter});
+					counter++;
+				}else if(x%2==0 && y%2!=0 || y%2==0 && x%2!=0)
+				{
+					blocks[x].push({type: 1, index: 0});
+					walls.push({x: x, y: y});
+				}else
+				{
+					blocks[x].push({type: 1, index: 0});
+				}
+			}
+		}
+		for(i=0; i<walls.length; i++)
+		{
+			var place = walls[i];
+			var n = randomInterval(0, walls.length-1);
+			walls[i] = walls[n];
+			walls[n] = place;
+		}
+		maze();
+		draw();
+	}
+	var blocks = [];
+	var walls = [];
+	var counter = 0;
+	for(x=0; x<sizeX; x++)
+	{
+		blocks.push([]);
+		for(y=0; y<sizeY; y++)
+		{
+			
+			if(x==0 || y==0 || x==sizeX || y==sizeY)
+			{
+				blocks[x].push({type: 1, index: 0});
+			}else if((x+1)%2==0 && (y+1)%2==0)
+			{
+				blocks[x].push({type: 0, index: counter});
+				counter++;
+			}else if(x%2==0 && y%2!=0 || y%2==0 && x%2!=0)
+			{
+				blocks[x].push({type: 1, index: 0});
+				walls.push({x: x, y: y});
+			}else
+			{
+				blocks[x].push({type: 1, index: 0});
+			}
+		}
+	}
+	for(i=0; i<walls.length; i++)
+	{
+		var place = walls[i];
+		var n = randomInterval(0, walls.length-1);
+		walls[i] = walls[n];
+		walls[n] = place;
+	}
+	function maze()
+	{	
+		for(i=0; i<walls.length; i++)
+		{
+			var x = walls[i].x;
+			var y = walls[i].y;
+			var index;
+			var index1;
+			if(x<sizeX-1 && blocks[x-1][y].type==0 && blocks[x-1][y].index!=blocks[x+1][y].index)
+			{
+				blocks[x][y].type=0;
+				index = blocks[x+1][y].index;
+				index1 = blocks[x-1][y].index;
+			}
+			if(y<sizeY-1 && blocks[x][y-1].type==0 && blocks[x][y-1].index!=blocks[x][y+1].index)
+			{
+				blocks[x][y].type=0;
+				index = blocks[x][y+1].index;
+				index1 = blocks[x][y-1].index;
+			}
+			//alert(index);
+			for(X=0; X<sizeX; X++)
+			{
+				for(Y=0; Y<sizeY; Y++)
+				{
+					if(blocks[X][Y].index==index)
+					{
+						blocks[X][Y].index = index1;
+					}
+				}
+			}
+		}
+	}
+
+	//maze();
+	//draw();
+	function draw()
+	{
+		ctx.clearRect(0,0,920,920);
+		ctx.fillRect(0,0,sizeX*size+size,sizeY*size+size);
+		for(x=0; x<sizeX; x++)
+		{
+			for(y=0; y<sizeY; y++)
+			{
+				if(blocks[x][y].type==0)
+				{
+					ctx.clearRect(x*size, y*size, size*1.5, size*1.5);
+					//ctx.fillText(blocks[x][y].index, x*size+size/2, y*size+size/2)
+				}
+				//ctx.fillText(blocks[x][y].index, x*size+size/2, y*size+size/2)
+			}
+		}
+	}
+	maze();
+	draw();
+	var time = 0;
+	/*function play()
+	{
+			if(time>=walls.length)
+			{
+				clearInterval(play);
+			}
+			var i = time;
+			var x = walls[i].x;
+			var y = walls[i].y;
+			var index;
+			var index1;
+			if(x<sizeX-1 && blocks[x-1][y].type==0 && blocks[x-1][y].index!=blocks[x+1][y].index)
+			{
+				blocks[x][y].type=0;
+				index = blocks[x+1][y].index;
+				blocks[x][y].index=index;
+				index1 = blocks[x-1][y].index;for(X=0; X<sizeX; X++)
+			{
+				for(Y=0; Y<sizeY; Y++)
+				{
+					if(blocks[X][Y].index==index)
+					{
+						blocks[X][Y].index = index1;
+					}
+				}
+			}
+			}
+			if(y<sizeY-1 && blocks[x][y-1].type==0 && blocks[x][y-1].index!=blocks[x][y+1].index)
+			{
+				blocks[x][y].type=0;
+				index = blocks[x][y+1].index;
+				blocks[x][y].index=index;
+				index1 = blocks[x][y-1].index;for(X=0; X<sizeX; X++)
+			{
+				for(Y=0; Y<sizeY; Y++)
+				{
+					if(blocks[X][Y].index==index)
+					{
+						blocks[X][Y].index = index1;
+					}
+				}
+			}
+			}
+			//alert(index);
+			
+			console.log(index);
+			console.log(index1);
+			time++;
+			draw();
+	}
+	interval = setInterval(play, 1000);*/
+</script>
+</html>

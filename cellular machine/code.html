@@ -15,8 +15,8 @@
 	var matrix1 = [];
 	var screen = document.getElementById("screen");
 	ctx     = screen.getContext('2d');
-	var pixel = 2;
-	var size = 2000;
+	var pixel = 10;
+	var size = 900;
 	var mouseX;
 	var mouseY;
 
@@ -67,16 +67,12 @@
 	var neighbors = 0;
 	var interval = 0;
 	
-	for(i=0; i<1000; i++)
-	{
-		setblock(i+10, 100)
-	}
 	
 	function check()
 	{
 		if(interval==0)
 		{
-			x = setInterval(play, 100);
+			x = setInterval(play, 50);
 		}else
 		{
 			clearInterval(x);
@@ -96,7 +92,7 @@
 					ctx.fillRect(x*pixel, y*pixel, pixel, pixel);
 				}else
 				{
-					//ctx.strokeRect(x*pixel, y*pixel, pixel, pixel);
+					ctx.strokeRect(x*pixel, y*pixel, pixel, pixel);
 				}
 			}
 		}

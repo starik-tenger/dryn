@@ -1,0 +1,53 @@
+<!doctype html>
+<html>
+<body>
+ <style>
+   * {
+    margin: 0;
+    padding: 0;
+   }
+ </style>
+<canvas height=920 width=920 id="screen"></canvas>
+
+<script>
+	window.addEventListener('keydown',this.check,false);
+	var screen = document.getElementById("screen");
+	ctx     = screen.getContext('2d');
+	ctx.imageSmoothingEnabled = false;
+	
+	var pixel = 10;
+	var size = 900;
+	var mouseX;
+	var mouseY;
+	var size = 300;
+	var time = 0;
+	var fish = new Image();
+		fish.src = "fish1.png";
+	var fish1 = new Image();
+		fish1.src = "fish.png";
+		
+	ctx.translate(200, 200);
+	function draw()
+	{
+		ctx.clearRect(-200, -200, 500, 500);
+		for(i=0; i<30; i++)
+		{
+			ctx.save();
+			ctx.translate(0, -i);
+			ctx.rotate(1/100*time);
+			if(i==15)
+			{
+				ctx.drawImage(fish1, -size/2, -size/2 , size, size);
+			}else
+			{
+				ctx.drawImage(fish, -size/2, -size/2 , size, size);
+			}
+			ctx.restore();
+		}
+		time++;
+	}
+	setInterval(draw, 50)
+	
+</script>
+</body>
+</html>

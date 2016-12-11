@@ -149,14 +149,14 @@
 	var a = points.length;
 	function draw()
 	{
-		ctx.clearRect(0,0,720,720);
+		ctx.fillRect(0,0,720,720);
 		for(x=0; x<sizeX; x++)
 		{
 			for(y=0; y<sizeY; y++)
 			{
-				if(blocks[x][y]!=3)
+				if(blocks[x][y]==3)
 				{
-					ctx.fillRect(x*size, y*size, size, size);
+					ctx.clearRect(x*size*1, y*size*1, size*1.5, size*1.5);
 				}
 			}
 		}

@@ -84,7 +84,7 @@
 	
 	function badBullet()
 	{
-		badBullets.push({x: randomInterval(0, 450), y: -20, type: "asteroid", texture: asteroid, speed: 4, size: randomInterval(15, 30), rotation: randomInterval(0, 360)});
+		badBullets.push({x: randomInterval(0, 450), y: -20, type: "asteroid", texture: asteroid, speed: 4, hp: 3, size: randomInterval(15, 30), rotation: randomInterval(0, 360)});
 	}
 	
 	function drawLine(startPointX, startPointY, endPointX, endPointY)
@@ -156,7 +156,7 @@
 			}
 		}
 		
-		//плохие пули
+		//плохие пули(обработка края)
 		for(i=0; i<badBullets.length; i++)
 		{
 			badBullets[i].y+=badBullets[i].speed;
@@ -176,6 +176,7 @@
 			}
 		}
 		
+		//уничтожение плохих пуль
 		for(i=0; i<badBullets.length; i++)
 		{	
 			for(j=0; j<bullets.length; j++)
@@ -183,7 +184,11 @@
 				if(mod(bullets[j].x-badBullets[i].x)<badBullets[i].size && bullets[j].y<badBullets[i].y)
 				{
 					bullets.splice(j, 1);
-					badBullets[i].size-=1;
+					badBullets[i].hp-=1;
+					if(badBullets[i].hp<=0)
+					{
+						badBullets.splice(i, 1);
+					}
 				}
 			}
 		}
