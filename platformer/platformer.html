@@ -8,7 +8,7 @@
  </style>
 <canvas height=900 width=900 id="screen"></canvas>
 <script>
-	window.addEventListener('keydown',this.check,true);
+	window.addEventListener('keydown',this.check,false);
 	
 	var screen = document.getElementById("screen");
 	ctx     = screen.getContext('2d');
@@ -22,6 +22,8 @@
 		sky.src = 'textures/sky.jpg';
 	door = new Image();              
 		door.src = 'textures/blocks/door.bmp';
+	button = new Image();              
+		button.src = 'textures/blocks/button.bmp';
     
 
 
@@ -51,20 +53,30 @@
 	var playerA = 40;
 	var gravity = 3;
 	var friction = 3;
+	var signal = 0;
 	var pixel = 1;
 	camX = playerX-450;
 	
 	//игровые объекты
 	var blocks = [
 	[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
-	[1,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
 	[1,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
-	[1,0,0,0,0,0,0,0,0,0,0,1,0,1,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
-	[1,0,0,0,0,0,0,1,0,1,1,0,0,1,0,0,0,1,0,0,0,0,0,0,0,0,0,1,1,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
-	[1,0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,1,0,0,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
-	[1,0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0,1,0,0,0,0,1,0,1,1,1,0,0,0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+	[1,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+	[1,0,0,0,0,0,0,0,0,0,0,1,0,1,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+	[1,0,0,0,0,0,0,1,0,1,1,0,0,1,0,0,0,1,0,0,0,0,0,0,0,0,0,1,1,1,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+	[1,0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,1,0,0,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,1],
+	[1,0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0,1,0,0,0,0,1,1,1,1,1,1,1,1,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
 	[1,0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0,1,0,0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
-	[1,0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+	[1,0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+	[1,1,1,1,1,1,1,1,1,1,1,1,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+	[1,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+	[1,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,1,0,0,0,1,1,1,1,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+	[1,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,1,1,1,1,1,0,0,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+	[1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+	[1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+	[1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+	[1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+	[1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
 	[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]
 	];
 	var size = 60;
@@ -72,20 +84,26 @@
 	var sizeY = blocks[0].length;
 
 	var doors = [];
-	function setDoor(x, y, endX, endY)
+	function setDoor(x, y, endX, endY, lock)
 	{
-		doors.push({x: x, y: y, endX: endX, endY: endY});
+		doors.push({x: x, y: y, endX: endX, endY: endY, lock: lock});
 	}
 	
-	function pairDoors(x,y,x1,y1)
+	function pairDoors(x,y,x1,y1,lock)
 	{
-		setDoor(x,y,x1,y1+1);   
-		setDoor(x1,y1,x,y+1);   
+		setDoor(x,y,x1,y1+1,lock);   
+		setDoor(x1,y1,x,y+1,lock);   
+	}
+	
+	var buttons = [];
+	function setButton(x, y, signal)
+	{
+		buttons.push({x: x, y: y, signal: signal});
 	}
 	
 	function checkWindow()
 	{
-		screen.height = document.documentElement.clientHeight;
+		screen.height = document.documentElement.clientHeight-2;
 		screen.width = document.documentElement.clientWidth;
 		ctx.imageSmoothingEnabled = false;
 		pixel = screen.height/500;
@@ -100,11 +118,20 @@
 	
 	function playerIn(x, y, x1, y1)
 	{
-		return (playerX>=x && playerY>=y && playerX<=x1 && playerY<=y1);
+		return (playerX+size/2>=x && playerY+size/2>=y && playerX+size/2<=x1 && playerY+size/2<=y1);
 	}
 
-	pairDoors(19,7,15,7)
+	pairDoors(19,7,15,7,true);
+	pairDoors(18,10,29,10,false);
+	setButton(8,8,1);
 	
+	function drawLine(startPointX, startPointY, endPointX, endPointY)
+	{
+		ctx.beginPath();
+		ctx.moveTo(startPointX*pixel, startPointY*pixel);
+		ctx.lineTo(endPointX*pixel, endPointY*pixel);
+		ctx.stroke();
+	}
 	
 	function draw()
 	{
@@ -124,11 +151,28 @@
 					}
 			}
 		}
+		//двери
 		for(i=0; i<doors.length; i++)
 		{
 			ctx.drawImage(door, (doors[i].x*size-camX)*pixel, (doors[i].y*size-camY)*pixel, size*pixel, size*2*pixel);
+			if(doors[i].lock)
+			{
+				ctx.save;
+				ctx.strokeStyle = "rgb(255,0,0)";
+				ctx.lineWidth = size/10*pixel;
+				drawLine((doors[i].x*size-camX), (doors[i].y*size-camY), doors[i].x*size-camX+size, doors[i].y*size-camY+size*2);
+				drawLine((doors[i].x*size-camX), (doors[i].y*size-camY)+size*2, doors[i].x*size-camX+size, doors[i].y*size-camY);
+				ctx.restore;
+			}
 		}
+		
 		ctx.drawImage(player, (playerX-camX)*pixel, (playerY-camY)*pixel, (playerSize)*pixel, playerSize*pixel);
+		
+		//кнопки
+		for(i=0; i<buttons.length; i++)
+		{
+			ctx.drawImage(button, (buttons[i].x*size-camX)*pixel, (buttons[i].y*size-camY)*pixel, size*pixel, size*pixel);
+		}
 		
 	}
 	var key;
@@ -172,6 +216,11 @@
 		}
 	}
 	
+	function jump(h)
+	{
+		forceY = -Math.sqrt(2*gravity*h);
+	}
+
 	function move()
 	{
 		cell();
@@ -193,7 +242,7 @@
 		}
 		if(key==up && downBlock==1)
 		{
-			forceY = -playerA;
+			jump(4*size);
 		}
 		
 		if(downBlock == 0)
@@ -265,11 +314,22 @@
 	{
 		for(i=0; i<doors.length; i++)
 		{
-			if(playerIn(doors[i].x*size, doors[i].y*size, doors[i].x*size+size, doors[i].y*size+size*2) && key==space)
+			if(playerIn(doors[i].x*size, doors[i].y*size, doors[i].x*size+size, doors[i].y*size+size*2) && !doors[i].lock && key==space)
 			{
 				playerX = doors[i].endX*size;
 				playerY = doors[i].endY*size;
-				console.log(i);
+				key = 0;
+			}
+		}
+	}
+	
+	function checkButtons()
+	{
+		for(i=0; i<buttons.length; i++)
+		{
+			if(playerIn(buttons[i].x*size, buttons[i].y*size, buttons[i].x*size+size, buttons[i].y*size+size) && key==space)
+			{
+				signal = buttons[i].signal;
 				key = 0;
 			}
 		}
@@ -277,14 +337,26 @@
 	
 	function play()
 	{
+		if(signal==1)
+		{
+			doors[0].lock = !doors[0].lock;
+			doors[1].lock = !doors[1].lock;
+			signal = 0;
+		}
+	}
+	
+	function step()
+	{
 		checkWindow();
 		move();
 		camera();
 		checkDoors();
-		
+		checkButtons();
+		play();
+		console.log(playerCellX, playerCellY);
 		key = 0;
 		draw();
 	}
 	draw();
-	setInterval(play, 50);
+	setInterval(step, 50);
 </script>
