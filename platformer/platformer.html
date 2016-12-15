@@ -32,7 +32,9 @@
 	button = new Image();              
 		button.src = 'textures/blocks/button.bmp';
     
-
+	var audio = new Audio();
+		audio.src = 'sounds/button.mp3';
+	
 
 	//клавиши
 	const up = 38;
@@ -396,6 +398,7 @@
 		
 		if(blocks[playerCellY][Math.floor((playerX+size/2)/size)]==2)
 		{
+			playAudio('sounds/death.mp3');
 			start();
 		}
 		
@@ -410,6 +413,13 @@
 		
 		
 		//console.log(Math.abs((playerCellY+1)*size-playerY));
+	}
+		
+	function playAudio(src)
+	{
+		audio = new Audio();
+		audio.src = src;
+		audio.autoplay = true;
 	}
 		
 	function camera()
@@ -443,6 +453,7 @@
 			{
 				signal = buttons[i].signal;
 				console.log(signal);
+				playAudio('sounds/button.mp3');
 				key = 0;
 			}
 		}
