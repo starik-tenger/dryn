@@ -6,7 +6,7 @@
     padding: 0;
    }
  </style>
-<canvas height=900 width=900 id="screen"></canvas>
+<canvas height=900 width=900 id="screen" onmousedown = "checkMouse()" onmouseup = "resetMouse()"></canvas>
 <script>
 	window.addEventListener('keydown',this.check,false);
 	window.addEventListener('keyup',this.reset,false);
@@ -15,8 +15,10 @@
 	ctx     = screen.getContext('2d');
     ctx.imageSmoothingEnabled = false;
 	
-	var player = new Image();              
-		player.src = 'textures/player.bmp';	
+	var playerImg = new Image();              
+		playerImg.src = 'textures/player.bmp';	
+	var monster = new Image();              
+		monster.src = 'textures/monster.bmp';	
 	var grass = new Image();              
 		grass.src = 'textures/blocks/grass.bmp';
     var dirt = new Image();              
@@ -39,12 +41,13 @@
 	
 
 	//клавиши
-	const up = 38;
-	const right = 39;
-	const left = 37;
-	const down = 40;
+	const up = 87;
+	const right = 68;
+	const left = 65;
+	const down = 83;
 	const space = 32;
 	
+	var scale = 500;
 	var keyX = 0;
 	var keyY = 0;
 	
@@ -57,22 +60,43 @@
 	var rightBlock = 0;
 	var upBlock = 0;
 	var downBlock = 0;
-	var playerX = 1*size;
-	var playerY = 1*size;
-	var playerSpeed = 15;
-	var playerSize = 50;
-	var playerCellX = 0;
-	var playerCellY = 0;
-	var forceX = 0;
-	var forceY = 0;
-	var playerA = 5;
+	var player = {};
+	player.x = 1*size;
+	player.y = 1*size;
+	player.speed = 15;
+	player.size = 50;
+	player.cellX = 0;
+	player.cellY = 0;
+	player.forceX = 0;
+	player.forceY = 0;
+	player.A = 5;
 	var gravity = 3;
 	var friction = 5;
 	var signal = 0;
 	var pixel = 1;
-	var scale = 500;
-	camX = playerX-450;
+	camX = player.x-450;
 	
+	
+	var mouseX = 0;
+	var mouseY = 0;
+	function checkMouse()
+	{
+		mouseX = event.pageX/pixel;
+		mouseY = event.pageY/pixel;
+	}
+	
+	function resetMouse()
+	{
+		mouseX = screen.width/(2*pixel);
+		mouseY = screen.height/(2*pixel);
+	}
+	
+	function getCookie(name) {
+  var matches = document.cookie.match(new RegExp(
+    "(?:^|; )" + name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, '\\$1') + "=([^;]*)"
+  ));
+  return matches ? decodeURIComponent(matches[1]) : undefined;
+}
 	
 	var level = 0;
 	var levels = [];
@@ -114,8 +138,9 @@
 		setButton(47,17,3);
 		setButton(33,13,4);
 		setButton(62,8,5);
-		playerX = 1*size;
-		playerY = 1*size;
+		setMonster(47*size,14*size);
+		player.x = 2*size;
+		player.y = 1*size;
 		signal = 0;
 		}
 		
@@ -145,8 +170,7 @@
 			}
 			if(signal==5)
 			{
-				blocks[17][23] = 0;
-				blocks[17][24] = 0;
+				blocks[14][27] = 1;
 				signal = 0;
 			}
 			
@@ -161,7 +185,7 @@
 		[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
 		[1,_,_,_,_,_,_,_,1,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,1],
 		[1,_,_,_,_,_,_,_,1,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,1],
-		[1,_,_,_,_,_,_,_,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,_,_,_,1,1,1,1,1,1,1,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,1],
+		[1,_,_,_,_,_,_,_,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,_,_,_,1,1,1,1,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,1],
 		[1,1,1,1,1,1,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,1],
 		[1,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,1],
 		[1,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,1],
@@ -172,8 +196,8 @@
 		];
 	
 		
-		playerX = 2*size;
-		playerY = 2*size;
+		player.x = 2*size;
+		player.y = 2*size;
 		signal = 0;
 	
 		}
@@ -192,6 +216,120 @@
 	var sizeY;
 
 	var doors = [];
+	
+	var monsters = []
+	
+	function setMonster(x,y)
+	{
+	
+	
+		monsters.push({x: x, y: y, size: 50, cellX:0 , cellY:0})
+		var monster = monsters[monsters.length-1];
+		
+		
+		monster.cellX = 0;
+		monster.cellY = 0;
+		monster.forceX = 0;
+		monster.forceY = 0;
+		monster.direction = right;
+		monster.downBlock = 0;
+		monster.rightBlock = 0;
+		monster.leftBlock = 0;
+		
+		
+		monster.cell = function()
+		{
+			monster.cellX = Math.floor((monster.x)/size);
+			monster.cellY = Math.floor((monster.y)/size);
+		}
+		
+		monster.checkBlocks = function()
+		{
+		
+			monster.cell();
+			if((blocks[monster.cellY+1][monster.cellX]==1 || blocks[monster.cellY+1][monster.cellX-1]==1 && Math.abs((monster.cellX-1)*size-monster.x)<monster.size ||blocks[monster.cellY+1][monster.cellX+1]==1 && Math.abs((monster.cellX+1)*size-monster.x)<monster.size) && Math.abs((monster.cellY+1)*size-monster.y)<=monster.size)
+			{monster.downBlock = 1;}else{monster.downBlock = 0;}
+			
+			if((blocks[monster.cellY][monster.cellX+1]!=0 || blocks[monster.cellY+1][monster.cellX+1]!=0 && Math.abs((monster.cellY+1)*size-monster.y)<monster.size || blocks[monster.cellY-1][monster.cellX+1]!=0 && Math.abs((monster.cellY-1)*size-monster.y)<monster.size) && Math.abs((monster.cellX+1)*size-monster.x)<=monster.size)
+			{monster.rightBlock = 1;}else{monster.rightBlock = 0;}
+		
+			if((blocks[monster.cellY][monster.cellX-1]!=0 || blocks[monster.cellY+1][monster.cellX-1]!=0 && Math.abs((monster.cellY+1)*size-monster.y)<monster.size || blocks[monster.cellY-1][monster.cellX-1]!=0 && Math.abs((monster.cellY-1)*size-monster.y)<monster.size) && Math.abs((monster.cellX-1)*size-monster.x)<=size)
+			{monster.leftBlock = 1;}else{monster.leftBlock = 0;}
+			
+			if((blocks[monster.cellY-1][monster.cellX]==1 || blocks[monster.cellY-1][monster.cellX-1]==1 && Math.abs((monster.cellX-1)*size-monster.x)<monster.size ||blocks[monster.cellY-1][monster.cellX+1]==1 && Math.abs((monster.cellX+1)*size-monster.x)<monster.size) && Math.abs((monster.cellY-1)*size-monster.y)<=size)
+			{monster.upBlock = 1;}else{monster.upBlock = 0;}}
+		
+		monster.move = function()
+		{
+			for(i=0; i<Math.abs(monster.forceY); i++)
+			{
+				monster.cell();
+				monster.checkBlocks();
+				if(monster.downBlock == 0 && monster.forceY>0)
+				{
+					monster.y+=1;
+				}
+				if(monster.upBlock == 0 && monster.forceY<0)
+				{
+					monster.y-=1;
+				}else if(monster.upBlock == 1 || monster.downBlock == 1 && keyY!=up)
+				{
+					monster.forceY = 0;
+				}
+			}
+			for(i=0; i<Math.abs(monster.forceX); i++)
+			{
+				monster.cell();
+				monster.checkBlocks();
+				if(monster.rightBlock == 0 && monster.forceX>0)
+				{
+					monster.x+=1;
+				}
+				if(monster.leftBlock == 0 && monster.forceX<0)
+				{
+					monster.x-=1;
+				}
+				if(monster.rightBlock == 1 || monster.leftBlock == 1)
+				{
+					monster.forceX = 0;
+				}
+			}
+			
+			monster.checkBlocks();
+			if(monster.downBlock==0)
+			{
+				monster.forceY+=gravity;
+			}
+			if(monster.direction==right)
+			{
+				monster.forceX=5;
+			}else if(monster.direction==left)
+			{
+				monster.forceX=-5;
+			}else
+			{
+				monster.forceX=0;
+			}	
+		}
+		
+		monster.think = function()
+		{
+			if(monster.rightBlock==1)
+			{
+				monster.direction=left;monster.forceY=-10;
+			}
+			if(monster.leftBlock==1)
+			{
+				monster.direction=right;monster.forceY=-10;
+			}
+			if(playerIn(monster.x, monster.y, monster.x+monster.size, monster.y+monster.size))
+			{
+				deathSound.play();
+				start();
+			}
+		}
+	}
+	
 	function setDoor(x, y, endX, endY, lock)
 	{
 		doors.push({x: x, y: y-1, endX: endX, endY: endY-1, lock: lock});
@@ -223,15 +361,15 @@
 		//pixel = Math.round(pixel);
 	}
 	
-	function cell()
+	player.cell = function()
 	{
-		playerCellX = Math.floor((playerX)/size);
-		playerCellY = Math.floor((playerY)/size);
+		player.cellX = Math.floor((player.x)/size);
+		player.cellY = Math.floor((player.y)/size);
 	}
 	
 	function playerIn(x, y, x1, y1)
 	{
-		return (playerX+size/2>=x && playerY+size/2>=y && playerX+size/2<=x1 && playerY+size/2<=y1);
+		return (player.x+size/2>=x && player.y+size/2>=y && player.x+size/2<=x1 && player.y+size/2<=y1);
 	}
 
 	
@@ -292,7 +430,7 @@
 			}
 		}
 		
-		ctx.drawImage(player, (playerX-camX)*pixel, (playerY-camY)*pixel, (playerSize)*pixel, playerSize*pixel);
+		ctx.drawImage(playerImg, (player.x-camX)*pixel, (player.y-camY)*pixel, (player.size)*pixel, player.size*pixel);
 		
 		//кнопки
 		for(i=0; i<buttons.length; i++)
@@ -302,6 +440,12 @@
 				ctx.drawImage(button, (buttons[i].x*size-camX)*pixel, (buttons[i].y*size-camY)*pixel, size*pixel, size*pixel);
 			}
 
+		}
+		
+		//monsters
+		for(i=0; i<monsters.length; i++)
+		{
+			ctx.drawImage(monster, (monsters[i].x-camX)*pixel, (monsters[i].y-camY)*pixel, monsters[i].size*pixel, monsters[i].size*pixel);
 		}
 		
 	}
@@ -323,6 +467,7 @@
 		{
 			keyY=up;
 		}
+		console.log(key);
 		
 	}
 	
@@ -339,9 +484,9 @@
 		}
 		key = 0;
 	}
-	function checkBlocks()
+	player.checkBlocks = function()
 	{
-		if((blocks[playerCellY+1][playerCellX]==1 || blocks[playerCellY+1][playerCellX-1]==1 && Math.abs((playerCellX-1)*size-playerX)<playerSize ||blocks[playerCellY+1][playerCellX+1]==1 && Math.abs((playerCellX+1)*size-playerX)<playerSize) && Math.abs((playerCellY+1)*size-playerY)<=playerSize)
+		if((blocks[player.cellY+1][player.cellX]==1 || blocks[player.cellY+1][player.cellX-1]==1 && Math.abs((player.cellX-1)*size-player.x)<player.size ||blocks[player.cellY+1][player.cellX+1]==1 && Math.abs((player.cellX+1)*size-player.x)<player.size) && Math.abs((player.cellY+1)*size-player.y)<=player.size)
 		{
 			downBlock = 1;
 			
@@ -350,24 +495,24 @@
 		{
 			downBlock = 0;
 		}
-		if((blocks[playerCellY-1][playerCellX]==1 || blocks[playerCellY-1][playerCellX-1]==1 && Math.abs((playerCellX-1)*size-playerX)<playerSize ||blocks[playerCellY-1][playerCellX+1]==1 && Math.abs((playerCellX+1)*size-playerX)<playerSize) && Math.abs((playerCellY-1)*size-playerY)<=size)
+		if((blocks[player.cellY-1][player.cellX]==1 || blocks[player.cellY-1][player.cellX-1]==1 && Math.abs((player.cellX-1)*size-player.x)<player.size ||blocks[player.cellY-1][player.cellX+1]==1 && Math.abs((player.cellX+1)*size-player.x)<player.size) && Math.abs((player.cellY-1)*size-player.y)<=size)
 		{
 			upBlock = 1; 
 		}else
 		{
 			upBlock = 0;
 		}
-		if((blocks[playerCellY][playerCellX+1]!=0 || blocks[playerCellY+1][playerCellX+1]!=0 && Math.abs((playerCellY+1)*size-playerY)<playerSize || blocks[playerCellY-1][playerCellX+1]!=0 && Math.abs((playerCellY-1)*size-playerY)<playerSize) && Math.abs((playerCellX+1)*size-playerX)<=playerSize)
+		if((blocks[player.cellY][player.cellX+1]!=0 || blocks[player.cellY+1][player.cellX+1]!=0 && Math.abs((player.cellY+1)*size-player.y)<player.size || blocks[player.cellY-1][player.cellX+1]!=0 && Math.abs((player.cellY-1)*size-player.y)<player.size) && Math.abs((player.cellX+1)*size-player.x)<=player.size)
 		{
-			rightBlock = 1;console.log("RIGHT");
+			rightBlock = 1;
 		}else
 		{
 			rightBlock = 0;
 		}
 		
-		if((blocks[playerCellY][playerCellX-1]!=0 || blocks[playerCellY+1][playerCellX-1]!=0 && Math.abs((playerCellY+1)*size-playerY)<playerSize || blocks[playerCellY-1][playerCellX-1]!=0 && Math.abs((playerCellY-1)*size-playerY)<playerSize) && Math.abs((playerCellX-1)*size-playerX)<=size)
+		if((blocks[player.cellY][player.cellX-1]!=0 || blocks[player.cellY+1][player.cellX-1]!=0 && Math.abs((player.cellY+1)*size-player.y)<player.size || blocks[player.cellY-1][player.cellX-1]!=0 && Math.abs((player.cellY-1)*size-player.y)<player.size) && Math.abs((player.cellX-1)*size-player.x)<=size)
 		{
-			leftBlock = 1;console.log("LEFT");
+			leftBlock = 1;
 		}else
 		{
 			leftBlock = 0;
@@ -376,30 +521,30 @@
 	
 	function jump(h)
 	{
-		forceY = -Math.sqrt(2*gravity*h);
+		player.forceY = -Math.sqrt(2*gravity*h);
 	}
 
-	function move()
+	player.move = function()
 	{
-		cell();
-		checkBlocks();
-		if(keyX==right && forceX<=playerSpeed)
+		player.cell();
+		player.checkBlocks();
+		if(keyX==right && player.forceX<=player.speed)
 		{
-			forceX += playerA;
-			if(forceX>playerSpeed || downBlock==0){forceX=playerSpeed;}
-		}else if(forceX>0 && downBlock==1)
+			player.forceX += player.A;
+			if(player.forceX>player.speed || downBlock==0){player.forceX=player.speed;}
+		}else if(player.forceX>0 && downBlock==1)
 		{
-			forceX-=friction;
-			if(forceX<0){forceX=0;}
+			player.forceX-=friction;
+			if(player.forceX<0){player.forceX=0;}
 		}
-		if(keyX==left && forceX>=-playerSpeed)
+		if(keyX==left && player.forceX>=-player.speed)
 		{
-			forceX -= playerA;
-			if(forceX<-playerSpeed || downBlock==0){forceX=-playerSpeed;}
-		}else if(forceX<0 && downBlock==1)
+			player.forceX -= player.A;
+			if(player.forceX<-player.speed || downBlock==0){player.forceX=-player.speed;}
+		}else if(player.forceX<0 && downBlock==1)
 		{
-			forceX+=friction;
-			if(forceX>0){forceX=0;}
+			player.forceX+=friction;
+			if(player.forceX>0){player.forceX=0;}
 		}
 		
 		if(keyY==up && downBlock==1)
@@ -409,47 +554,47 @@
 		
 		if(downBlock == 0)
 		{
-			forceY+=gravity;
+			player.forceY+=gravity;
 		}
 		
 		
 		
 		
-		for(i=0; i<Math.abs(forceY); i++)
+		for(i=0; i<Math.abs(player.forceY); i++)
 		{
-			cell();
-			checkBlocks();
-			if(downBlock == 0 && forceY>0)
+			player.cell();
+			player.checkBlocks();
+			if(downBlock == 0 && player.forceY>0)
 			{
-				playerY+=1;
+				player.y+=1;
 			}
-			if(upBlock == 0 && forceY<0)
+			if(upBlock == 0 && player.forceY<0)
 			{
-				playerY-=1;
+				player.y-=1;
 			}else if(upBlock == 1 || downBlock == 1 && keyY!=up)
 			{
-				forceY = 0;
+				player.forceY = 0;
 			}
 		}
-		for(i=0; i<Math.abs(forceX); i++)
+		for(i=0; i<Math.abs(player.forceX); i++)
 		{
-			cell();
-			checkBlocks();
-			if(rightBlock == 0 && forceX>0)
+			player.cell();
+			player.checkBlocks();
+			if(rightBlock == 0 && player.forceX>0)
 			{
-				playerX+=1;
+				player.x+=1;
 			}
-			if(leftBlock == 0 && forceX<0)
+			if(leftBlock == 0 && player.forceX<0)
 			{
-				playerX-=1;
+				player.x-=1;
 			}
 			if(rightBlock == 1 || leftBlock == 1)
 			{
-				forceX = 0;
+				player.forceX = 0;
 			}
 		}
 		
-		if(blocks[playerCellY][Math.floor((playerX+size/2)/size)]==2)
+		if(blocks[player.cellY][Math.floor((player.x+size/2)/size)]==2)
 		{
 			deathSound.play();
 			start();
@@ -457,24 +602,28 @@
 		
 		if(rightBlock==1)
 		{
-			playerX-=1;
+			player.x-=1;
 		}
 		if(leftBlock==1)
 		{
-			playerX+=1;
+			player.x+=1;
 		}
 		
 		
-		//console.log(Math.abs((playerCellY+1)*size-playerY));
+		//console.log(Math.abs((player.cellY+1)*size-player.y));
 	}
 		
 
-		
+	var centerX = screen.width/(2*pixel);
+	var centerY = screen.height/(2*pixel);
+	var camX = 0;
+	var camY = 0;
 	function camera()
 	{
-		
-		camX += (playerX-screen.width/(2*pixel)-camX)/20;
-		camY += (playerY-screen.height/(2*pixel)-camY)/20;
+		centerX = screen.width/pixel-mouseX;
+		centerY = screen.height/pixel-mouseY;
+		camX += (player.x-centerX-camX)/20;
+		camY += (player.y-centerY-camY)/20;
 		
 		camX = Math.round(camX);
 		camY = Math.round(camY);
@@ -488,8 +637,8 @@
 			{
 				if(!doors[i].lock)
 				{
-					playerX = doors[i].endX*size;
-					playerY = doors[i].endY*size;
+					player.x = doors[i].endX*size;
+					player.y = doors[i].endY*size;
 					doorSound.play();
 					key = 0;
 				}
@@ -504,7 +653,6 @@
 			if(playerIn(buttons[i].x*size, buttons[i].y*size, buttons[i].x*size+size, buttons[i].y*size+size) && key==space)
 			{
 				signal = buttons[i].signal;
-				console.log(signal);
 				if(buttons[i].signal == EXIT)
 				{
 					doorSound.play();
@@ -515,38 +663,43 @@
 			}
 		}
 	}
-	
 	function start()
 	{
 		doors = [];
 		buttons = [];
+		monsters = [];
 		levels[level].setup();
 		sizeX = blocks.length;
 		sizeY = blocks[0].length;
+		document.cookie = "level="+level;
 	}
-	var forceX1;
 	start();
+	if(document.cookie != "")
+	{
+		level = getCookie("level");
+	}
 	var time=0;
 	function step()
 	{
-		forceX1 = forceX;
+	
+		player.forceX1 = player.forceX;
 		checkWindow();
-		move();
+		player.move();
 		/*if(key==up)
 		{
-			playerY-=20;
+			player.y-=20;
 		}
 		if(key==down)
 		{
-			playerY+=20;
+			player.y+=20;
 		}
 		if(key==right)
 		{
-			playerX+=20;
+			player.x+=20;
 		}
 		if(key==left)
 		{
-			playerX-=20;
+			player.x-=20;
 		}*/
 		camera();
 		checkDoors();
@@ -557,20 +710,26 @@
 			level++;
 			start();
 		}
-		if(forceX!=0 && forceX1==0 && downBlock==1)
+		if(player.forceX!=0 && player.forceX1==0 && downBlock==1)
 		{	
 			walkSound.play();
 		}
-		if(forceX!=0 && time%6==0 && downBlock==1)
+		if(player.forceX!=0 && time%6==0 && downBlock==1)
 		{	
 			walkSound.play();
 		}
-		//cell();
-		//console.log(playerCellX, playerCellY);
+		//player.cell();
+		//console.log(player.cellX, player.cellY);
 		
 		//key = 0;
 		time++;
 		draw();
+		for(var i=0;i<monsters.length;i++)
+		{
+			monsters[i].think();
+			monsters[i].move();
+		}
+
 		
 	}
 	draw();
