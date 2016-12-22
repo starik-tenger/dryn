@@ -663,6 +663,8 @@
 			}
 		}
 	}
+	
+	var date = new Date(new Date().getTime() + 100000000000000000000);
 	function start()
 	{
 		doors = [];
@@ -671,9 +673,10 @@
 		levels[level].setup();
 		sizeX = blocks.length;
 		sizeY = blocks[0].length;
-		document.cookie = "level="+level;
+		document.cookie = "level="+level+"expires=" + date.toUTCString();
 	}
 	start();
+
 	if(document.cookie != "")
 	{
 		level = getCookie("level");
