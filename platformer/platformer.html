@@ -675,12 +675,14 @@
 		sizeY = blocks[0].length;
 		document.cookie = "level="+level+";expires=" + date.toUTCString();
 	}
-	start();
-
 	if(document.cookie != "")
 	{
 		level = getCookie("level");
 	}
+	
+	start();
+
+	
 	var time=0;
 	function step()
 	{
