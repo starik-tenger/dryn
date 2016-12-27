@@ -20,13 +20,19 @@
 	var monster = new Image();              
 		monster.src = 'textures/monster.bmp';	
 	var grass = new Image();              
-		grass.src = 'textures/blocks/grass.bmp';
+		grass.src = 'textures/blocks/bricks.bmp';
     var dirt = new Image();              
-		dirt.src = 'textures/blocks/dirt.bmp';
+		dirt.src = 'textures/blocks/bricks.bmp';
 	var spikes = new Image();              
 		spikes.src = 'textures/blocks/spikes.png';
+	var lazer = new Image();              
+		lazer.src = 'textures/blocks/lazer.png';
+	var lazer1 = new Image();              
+		lazer1.src = 'textures/blocks/lazer1.png';
 	var sky = new Image();              
-		sky.src = 'textures/sky.jpg';
+		sky.src = 'textures/skyUnderground.jpg';
+	var wall = new Image();              
+		wall.src = 'textures/wall.bmp';
 	var door = new Image();              
 		door.src = 'textures/blocks/door.bmp';
 	var exit = new Image();              
@@ -52,6 +58,11 @@
 	var keyY = 0;
 	
 	const EXIT = 666;
+	
+	//типы монстров
+	const guardian = 0;
+	const hunter = 1;
+	const bullet = 2;
 	
 	var size = 60;
 	var camX = 0;
@@ -138,7 +149,7 @@
 		setButton(47,17,3);
 		setButton(33,13,4);
 		setButton(62,8,5);
-		setMonster(47*size,14*size);
+		setMonster(47*size,14*size, guardian, right);
 		player.x = 2*size;
 		player.y = 1*size;
 		signal = 0;
@@ -148,8 +159,8 @@
 		{
 			if(signal==1)
 			{
-				doors[0].lock = !doors[0].lock;
-				doors[1].lock = !doors[1].lock;
+				doors[0].lock = false;
+				doors[1].lock = false;
 				signal = 0;
 			}
 			if(signal==2)
@@ -164,8 +175,8 @@
 			}
 			if(signal==4)
 			{
-				doors[6].lock = !doors[6].lock;
-				doors[7].lock = !doors[7].lock;
+				doors[6].lock = false;
+				doors[7].lock = false;
 				signal = 0;
 			}
 			if(signal==5)
@@ -183,21 +194,23 @@
 		{
 			blocks = [
 		[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
-		[1,_,_,_,_,_,_,_,1,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,1],
-		[1,_,_,_,_,_,_,_,1,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,1],
-		[1,_,_,_,_,_,_,_,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,_,_,_,1,1,1,1,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,1],
-		[1,1,1,1,1,1,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,1],
 		[1,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,1],
 		[1,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,1],
-		[1,1,1,1,1,1,1,1,_,_,_,_,_,1,1,1,1,1,1,1,1,1,1,_,_,_,1,1,1,1,1,1,1,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,1],
-		[1,_,_,_,_,_,_,1,2,2,2,2,2,1,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,1],
-		[1,_,_,_,_,_,_,1,1,1,1,1,1,1,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,1],
-		[1,1,1,1,1,1,1,1,_,_,_,_,_,1,_,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]
+		[1,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,1],
+		[1,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,1],
+		[1,1,1,1,3,3,3,3,1,1,1,1,1,1,1,1,1,1,_,2,2,2,_,_,2,2,2,_,1,1,1,1,1,1,1,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,1],
+		[1,_,_,_,_,_,_,_,1,_,_,_,1,_,_,_,_,_,_,1,1,1,1,1,1,1,1,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,1],
+		[1,_,_,_,_,_,_,_,1,_,_,_,1,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,1],
+		[1,_,_,_,_,_,_,_,1,_,_,_,1,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,1],
+		[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]
 		];
 	
 		
 		player.x = 2*size;
 		player.y = 2*size;
+		setMonster(10*size,7*size, hunter, right);
+		
+		setButton(3,8,EXIT);
 		signal = 0;
 	
 		}
@@ -219,22 +232,25 @@
 	
 	var monsters = []
 	
-	function setMonster(x,y)
+	function setMonster(x,y,type,dir)
 	{
 	
 	
-		monsters.push({x: x, y: y, size: 50, cellX:0 , cellY:0})
+		monsters.push({x: x, y: y, size: 50, cellX:0 , cellY:0, type: type})
 		var monster = monsters[monsters.length-1];
 		
+		monster.id=monsters.length-1;
 		
 		monster.cellX = 0;
 		monster.cellY = 0;
 		monster.forceX = 0;
 		monster.forceY = 0;
-		monster.direction = right;
+		monster.direction = dir;
 		monster.downBlock = 0;
 		monster.rightBlock = 0;
 		monster.leftBlock = 0;
+		monster.speed = 5;
+		if(monster.type==bullet){monster.size=10; monster.speed = 20;}
 		
 		
 		monster.cell = function()
@@ -302,25 +318,30 @@
 			}
 			if(monster.direction==right)
 			{
-				monster.forceX=5;
+				monster.forceX=monster.speed;
 			}else if(monster.direction==left)
 			{
-				monster.forceX=-5;
+				monster.forceX=-monster.speed;
 			}else
 			{
 				monster.forceX=0;
 			}	
 		}
 		
-		monster.think = function()
+		monster.jump = function(h)
 		{
-			if(monster.rightBlock==1)
+			monster.forceY = -Math.sqrt(2*gravity*h);
+		}
+		if(monster.type==guardian)
+		{monster.think = function()
+		{
+			if(monster.rightBlock==1 || monster.x>player.x && Math.abs(monster.x-player.x)<size*5 && player.cellY==monster.cellY)
 			{
-				monster.direction=left;monster.forceY=-10;
+				monster.direction=left;
 			}
-			if(monster.leftBlock==1)
+			if(monster.leftBlock==1 || monster.x<player.x && Math.abs(monster.x-player.x)<size*5 && player.cellY==monster.cellY)
 			{
-				monster.direction=right;monster.forceY=-10;
+				monster.direction=right;
 			}
 			if(playerIn(monster.x, monster.y, monster.x+monster.size, monster.y+monster.size))
 			{
@@ -328,6 +349,67 @@
 				start();
 			}
 		}
+		}
+		
+		if(monster.type==hunter)
+		{monster.think = function()
+		{
+			monster.speed=10;
+			if(monster.x>player.x)
+			{
+				monster.direction=left;
+			}
+			if(monster.x<player.x)
+			{
+				monster.direction=right;
+			}
+			if(playerIn(monster.x, monster.y, monster.x+monster.size, monster.y+monster.size))
+			{
+				deathSound.play();
+				start();
+			}
+			if((monster.rightBlock==1 || monster.leftBlock==1 || monster.y-player.y>size && downBlock==1 && Math.abs(player.x-monster.x)<size*3) && monster.downBlock==1)
+			{
+				monster.jump(size*3);
+			}
+			if(Math.abs(player.x-monster.x)<size*5 && Math.abs(player.y-monster.y)<size*2 && time%15==0)
+			{
+				if(player.x<monster.x)
+				{
+					setMonster(monster.x, monster.y, bullet, left);
+				}
+				if(player.x>monster.x)
+				{
+					setMonster(monster.x, monster.y, bullet, right);
+				}
+			}
+		}
+		}
+		
+		if(monster.type==bullet)
+		{monster.think = function()
+		{
+			if(monster.rightBlock==1)
+			{
+				monsters[monster.id] = 0;return;
+			}
+			if(monster.leftBlock==1)
+			{
+				monsters[monster.id] = 0;return;
+			}
+			if(playerIn(monster.x, monster.y, monster.x+monster.size, monster.y+monster.size))
+			{
+				deathSound.play();
+				start();
+			}
+		}
+		}
+		/*if(monster.type==smth)
+		{monster.think = function()
+		{
+			
+		}
+		}*/
 	}
 	
 	function setDoor(x, y, endX, endY, lock)
@@ -369,7 +451,8 @@
 	
 	function playerIn(x, y, x1, y1)
 	{
-		return (player.x+size/2>=x && player.y+size/2>=y && player.x+size/2<=x1 && player.y+size/2<=y1);
+		//return (player.x+size/2>=x && player.y+size/2>=y && player.x+size/2<=x1 && player.y+size/2<=y1);
+		return Math.abs(player.x+player.size/2-(x1+x)/2)<(x1-x)/2+player.size/2 && Math.abs(player.y+player.size/2-(y1+y)/2)<(y1-y)/2+player.size/2;
 	}
 
 	
@@ -383,12 +466,23 @@
 	}
 	
 	//отрисовка
+	var lazerType = 0;
 	function draw()
 	{
-		ctx.drawImage(sky, 0, 0, screen.width , screen.height);
-		for(x=0; x<sizeY; x++)
+	
+		if(time%2==0)
 		{
-			for(y=0; y<sizeX ;y++)
+			if(lazerType == 0)
+			{
+				lazerType = 1;
+			}else{lazerType = 0;}
+		}
+		
+		ctx.drawImage(sky, 0, 0, screen.width , screen.height);
+		ctx.drawImage(wall, 0-camX*pixel, 0-camY*pixel, sizeX*size*pixel , sizeY*size*pixel);
+		for(x=0; x<sizeX; x++)
+		{
+			for(y=0; y<sizeY ;y++)
 			{
 				if(blocks[y][x] == 1)
 					{      
@@ -404,6 +498,15 @@
 					{       
 						ctx.drawImage(spikes, ((x*size)-camX)*pixel, ((y*size)-camY)*pixel, size*pixel, size*pixel);
 						
+					}else if(blocks[y][x] == 3)
+					{      
+						if(lazerType == 0)
+						{
+							ctx.drawImage(lazer, ((x*size)-camX)*pixel, ((y*size)-camY)*pixel, size*pixel, size*pixel);
+						}else
+						{
+							ctx.drawImage(lazer1, ((x*size)-camX)*pixel, ((y*size)-camY)*pixel, size*pixel, size*pixel);
+						}
 					}
 			}
 		}
@@ -594,7 +697,7 @@
 			}
 		}
 		
-		if(blocks[player.cellY][Math.floor((player.x+size/2)/size)]==2)
+		if(blocks[player.cellY][Math.floor((player.x+size/2)/size)]==2 || blocks[player.cellY][Math.floor((player.x+size/2)/size)]==3)
 		{
 			deathSound.play();
 			start();
@@ -612,7 +715,7 @@
 		
 		//console.log(Math.abs((player.cellY+1)*size-player.y));
 	}
-		
+	
 
 	var centerX = screen.width/(2*pixel);
 	var centerY = screen.height/(2*pixel);
@@ -671,8 +774,8 @@
 		buttons = [];
 		monsters = [];
 		levels[level].setup();
-		sizeX = blocks.length;
-		sizeY = blocks[0].length;
+		sizeX = blocks[0].length;
+		sizeY = blocks.length;
 		document.cookie = "level="+level+";expires=" + date.toUTCString();
 	}
 	if(document.cookie != "")
@@ -686,7 +789,7 @@
 	var time=0;
 	function step()
 	{
-	
+		if(key==16){signal = EXIT;}
 		player.forceX1 = player.forceX;
 		checkWindow();
 		player.move();
@@ -731,8 +834,11 @@
 		draw();
 		for(var i=0;i<monsters.length;i++)
 		{
-			monsters[i].think();
-			monsters[i].move();
+			if(monsters[i]!=0)
+			{
+				monsters[i].think();
+				monsters[i].move();
+			}
 		}
 
 		
