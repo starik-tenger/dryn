@@ -65,14 +65,15 @@
 	var blocks1 = matrix1;
 	var status = 0;
 	var neighbors = 0;
-	var interval = 0;
+	var interval = true;
 	
 	
 	function check()
 	{
-		if(interval==0)
+		interval = !interval;
+		if(interval==true)
 		{
-			x = setInterval(play, 50);
+			x = setInterval(play, 10);
 		}else
 		{
 			clearInterval(x);
@@ -82,6 +83,9 @@
 	
 	function draw()
 	{
+		ctx.fillStyle = "rgb(0,0,0)";
+		ctx.strokeStyle = "rgb(200,200,200)";
+		
 		ctx.clearRect(0,0,1000,1000)
 		for(x=1; x<size-1; x++)
 		{
@@ -89,9 +93,11 @@
 			{
 				if(blocks[x][y]==1)
 				{
+					
 					ctx.fillRect(x*pixel, y*pixel, pixel, pixel);
 				}else
 				{
+					
 					ctx.strokeRect(x*pixel, y*pixel, pixel, pixel);
 				}
 			}
