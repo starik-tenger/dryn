@@ -706,7 +706,6 @@
 		}
 		
 		ctx.drawImage(sky, 0, 0, screen.width , screen.height);
-		ctx.fillRect((0-camX)*pixel, (0-camY)*pixel, (sizeX*size)*pixel , (sizeY*size)*pixel);
 		if(fps > 15)
 		{
 			if(level==0)
@@ -716,6 +715,9 @@
 			{
 				ctx.drawImage(wall1, (0-camX)*pixel, (0-camY)*pixel, (sizeX*size)*pixel , (sizeY*size)*pixel);
 			}
+		}else
+		{
+			ctx.fillRect((0-camX)*pixel, (0-camY)*pixel, (sizeX*size)*pixel , (sizeY*size)*pixel);
 		}
 		for(x=0; x<sizeX; x++)
 		{
