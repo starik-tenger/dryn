@@ -17,6 +17,8 @@
 	
 	var playerImg = new Image();              
 		playerImg.src = 'textures/player.bmp';	
+	var deadPlayer = new Image();              
+		deadPlayer.src = 'textures/deadPlayer.bmp';	
 	var monster = new Image();              
 		monster.src = 'textures/monster.bmp';	
 	var grass = new Image();              
@@ -119,6 +121,9 @@
 	
 	var level = 0;
 	var levels = [];
+	
+	var deads = [];
+	
 	
 	
 	
@@ -764,7 +769,7 @@
 			}
 		}
 		//двери
-		for(i=0; i<doors.length; i++)
+		for(var i=0; i<doors.length; i++)
 		{
 			ctx.drawImage(door, (doors[i].x*size-camX)*pixel, (doors[i].y*size-camY)*pixel, size*pixel, size*2*pixel);
 			if(doors[i].lock)
@@ -785,6 +790,14 @@
 				ctx.drawImage(exit, (buttons[i].x*size-camX)*pixel, (buttons[i].y*size-size-camY)*pixel, size*pixel, size*pixel*2);
 			}
 		}
+		
+		//deads
+		ctx.globalAlpha = 0.3;
+		for(var i=0; i<deads.length; i++)
+		{
+			ctx.drawImage(deadPlayer, (deads[i].x-camX)*pixel, (deads[i].y-camY)*pixel, (player.size)*pixel, player.size*pixel);
+		}
+		ctx.globalAlpha = 1;
 		
 		ctx.drawImage(playerImg, (player.x-camX)*pixel, (player.y-camY)*pixel, (player.size)*pixel, player.size*pixel);
 		
@@ -1025,6 +1038,7 @@
 	var date = new Date(new Date().getTime() + 10000000);
 	function start()
 	{	
+		deads.push({x: player.x, y: player.y});
 		time=0;
 		doors = [];
 		buttons = [];
@@ -1073,6 +1087,7 @@
 		if(signal == EXIT)
 		{
 			level++;
+			deads = [];
 			start();
 		}
 		if(player.forceX!=0 && player.forceX1==0 && downBlock==1)
