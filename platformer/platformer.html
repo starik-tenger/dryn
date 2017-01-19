@@ -21,6 +21,8 @@
 		deadPlayer.src = 'textures/deadPlayer.bmp';	
 	var monster = new Image();              
 		monster.src = 'textures/monster.bmp';	
+	var crabImg = new Image();              
+		crabImg.src = 'textures/crab.png';	
 	var grass = new Image();              
 		grass.src = 'textures/blocks/bricks.bmp';
     var dirt = new Image();              
@@ -401,7 +403,7 @@
 			[1,1,1,1,1,1,_,_,_,_,_,_,_,_,_,_,_,_,_,_,1,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,1,_,_,_,_,_,_,_,1,_,_,_,_,_,_,1,1,1,1,1,_,_,_,_,_,_,1,1,1,1,1,1,1,1,1,],
 			[1,_,_,_,_,_,_,_,_,_,1,_,_,_,1,1,1,_,_,_,3,_,_,_,1,1,_,_,1,_,_,1,_,1,_,_,1,_,_,1,1,_,_,_,3,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,3,_,_,_,1,],
 			[1,_,_,_,_,_,_,1,_,_,1,_,_,_,_,_,_,_,_,_,3,_,_,_,_,_,_,_,1,_,_,_,_,1,_,_,_,_,_,1,_,_,_,_,3,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,3,_,_,_,1,],
-			[1,_,_,_,_,_,_,1,2,2,1,_,_,_,_,_,_,_,_,_,3,_,_,2,2,2,2,2,1,2,2,2,2,1,_,_,_,_,2,1,_,_,_,_,3,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,3,_,_,_,1,],
+			[1,_,_,_,_,_,_,1,2,2,1,_,_,_,_,_,_,_,_,_,3,_,_,2,2,2,2,2,1,2,2,2,2,1,_,_,_,_,2,1,_,_,_,_,3,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,1,_,_,_,3,_,_,_,1,],
 			[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,],
 			];
 			pairDoors(15,14,2,8,false);
@@ -439,14 +441,17 @@
 			if(signal==2)
 			{
 				setBlock(20,17,0); setBlock(20,16,0); setBlock(20,15,0);
+				signal = 0;
 			}
 			if(signal==3)
 			{
 				setBlock(44,17,0); setBlock(44,16,0); setBlock(44,15,0);
+				signal = 0;
 			}
 			if(signal==4)
 			{
 				setBlock(66,17,0); setBlock(66,16,0); setBlock(66,15,0);
+				signal = 0;
 			}
 			
 		}
@@ -492,7 +497,7 @@
 		monster.leftBlock = 0;
 		monster.speed = 5;
 		monster.status = 0;
-		if(monster.type==bullet){monster.size=10; monster.speed = 20;}
+		if(monster.type==bullet){monster.size=35; monster.speed = 20;}
 		
 		
 		monster.cell = function()
@@ -674,6 +679,11 @@
 		{
 			monster.size = 60;
 			monster.speed=0;
+			
+			if(monster.status==1)
+			{
+				signal = 0;
+			}
 			
 			if(signal==monster.direction)
 			{
@@ -877,13 +887,29 @@
 		//monsters
 		for(i=0; i<monsters.length; i++)
 		{
-			if(monsters[i].type==press || monsters[i].type==pressAuto)
+			ctx.save();
+			if(monsters[i].direction==left)
 			{
-				ctx.drawImage(pressImg, (monsters[i].x-camX)*pixel, (monsters[i].y-camY)*pixel, monsters[i].size*pixel, monsters[i].size*pixel);
+				ctx.translate((monsters[i].x-camX)*pixel+monsters[i].size*pixel, (monsters[i].y-camY)*pixel);
+				ctx.scale(-1,1);
 			}else
 			{
-				ctx.drawImage(monster, (monsters[i].x-camX)*pixel, (monsters[i].y-camY)*pixel, monsters[i].size*pixel, monsters[i].size*pixel);
+				ctx.translate((monsters[i].x-camX)*pixel, (monsters[i].y-camY)*pixel);
 			}
+			
+			if(monsters[i].type==press || monsters[i].type==pressAuto)
+			{
+				ctx.drawImage(pressImg, 0, 0, monsters[i].size*pixel, monsters[i].size*pixel);
+			}else if(monsters[i].type==bullet)
+			{
+				
+				ctx.drawImage(crabImg, 0, 0, monsters[i].size*pixel, monsters[i].size*pixel);
+			}else
+			{
+				ctx.drawImage(monster, 0, 0, monsters[i].size*pixel, monsters[i].size*pixel);
+			}
+			
+			ctx.restore();
 		}
 		
 	}
