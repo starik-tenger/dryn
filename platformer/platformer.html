@@ -911,6 +911,7 @@
 			
 			ctx.restore();
 		}
+	
 		
 	}
 	
@@ -1084,12 +1085,32 @@
 	var camY = 0;
 	function camera()
 	{
+		
 		centerX = screen.width/pixel-mouseX;
 		centerY = screen.height/pixel-mouseY;
+		
 		camX += (player.x-centerX-camX)/20;
 		camY += (player.y-centerY-camY)/20;
 		camX = Math.round(camX);
 		camY = Math.round(camY);
+		
+		if(camX<0)
+		{
+			camX=0;
+		}
+		if(camX+screen.width/pixel>sizeX*size)
+		{
+			camX=sizeX*size-screen.width/pixel;
+		}
+		if(camY<0)
+		{
+			camY=0;
+		}
+		//resetMouse();
+		if(camY+screen.height/pixel>sizeY*size)
+		{
+			camY=sizeY*size-screen.height/pixel;
+		}
 		
 		
 		
@@ -1141,7 +1162,8 @@
 		levels[level].setup();
 		sizeX = blocks[0].length;
 		sizeY = blocks.length;
-		document.cookie = "level="+level+";expires=" + date.toUTCString();
+		//document.cookie = "level="+level+";expires=" + date.toUTCString();
+		document.cookie = "level="+level+";expires=Fri, 20 Jan 2018 22:07:30 GMT";
 	}
 	
 	if(document.cookie != "")
