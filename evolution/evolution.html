@@ -1,0 +1,247 @@
+<!doctype html>
+<body>
+<canvas id="screen" height = 1000 width = 1000></canvas>
+<canvas id="screen1" height = 1000 width = 700></canvas>
+<br>
+Food:
+<input value = 0 type="number" step = 10 min = 0 id = "food" style = "width: 120px; height: 15px" />
+Limit:
+<input  value = 0 type="number" step = 10 min = 10 id = "limit" style = "width: 120px; height: 15px" />
+Speed:
+<input value = 0 type="number" step = 0.1 min = 0.1 max = 5 id = "speed" style = "width: 120px; height: 15px" />
+Stability:
+<input value = 0 type="number" id = "stability" min = 1 style = "width: 120px; height: 15px" />
+Population:
+<input id = "population" style = "width: 120px; height: 15px" />
+Fps:
+<input id = "fps" style = "width: 120px; height: 15px" />
+<button onclick = "restart()">RESTART</button>
+<script>
+	var screen = document.getElementById("screen");
+	ctx = screen.getContext('2d');
+	
+	var screen1 = document.getElementById("screen1");
+	ctx1 = screen1.getContext('2d');
+	
+	function inRad(num) {
+	return num * Math.PI / 180;
+	}
+	
+	function randomInterval(max, min)
+	{
+		return Math.floor(Math.random() * (max - min) + min);
+	}
+	
+	function drawLine(startPointX, startPointY, endPointX, endPointY)
+	{
+		ctx1.beginPath();
+		ctx1.moveTo(startPointX, startPointY);
+		ctx1.lineTo(endPointX, endPointY);
+		ctx1.stroke();
+	}
+	
+	ctx.fillStyle = "rgb(100,150,100)";
+	ctx.fillRect(0,0,1000,1000);
+	
+	var field = [];
+	for(var i=0;i<1000;i++)
+	{
+		field.push([]);
+		for(var j=0;j<1000;j++)
+		{
+			if(randomInterval(0,0)==0)
+			{
+				ctx.fillStyle = "rgb(50,150,50)";
+				ctx.fillRect(i,j,1,1);
+				field[i].push(1);
+			}else
+			{
+				field[i].push(0);
+			}
+		}
+	}
+	var bugs = [];
+	function setBug(x,y,food,limit,speed,stability)
+	{
+		bugs.push({x:x ,y:y, direction:0, food:food, limit:limit, speed: speed, directions: [], lastX: x, lastY: y, stability: stability, time: 0});
+		
+	}
+	setBug(500,800,500,1000,1,10);
+	//setBug(100,100,500,1000,0.1,1);
+	//setBug(700,200,500,1000,0.5);
+	//setBug(900,400,500,1000,0.5);
+	bugs[0].directions = [300,90];
+	//bugs[1].directions = [0,30,60];
+	console.log(bugs.length);
+	var deads = 0;
+	var evolve = 1;
+	function start(food,limit,speed,stability)
+	{
+		bugs = [];
+		setBug(randomInterval(0,999),randomInterval(0,999),food,limit,speed,stability);
+		//console.log(bugs[0].limit,bugs[0].speed,bugs[0].stability);
+			ctx.fillStyle = "rgb(50,150,50)";
+			ctx.fillRect(0,0,1000,1000);			
+			bugs[0].directions = [0,90,180,270];
+			for(var i=0;i<1000;i++)
+			{
+				field.push([]);
+				for(var j=0;j<1000;j++)
+				{
+					field[i].push(1);
+				}
+			}
+	}
+	function restart()
+	{
+		start(Number(document.getElementById("food").value),Number(document.getElementById("limit").value),Number(document.getElementById("speed").value),Number(document.getElementById("stability").value))
+	}
+	var population = bugs.length;
+	var time = 0;
+	var frames = 0;
+	
+	ctx1.fillRect(0,0,700,1000);
+	function play()
+	{
+		frames++;
+		time++;
+		ctx1.strokeStyle = "rgb(0,200,0)";
+		ctx1.scale(-1,1);
+		drawLine(((time-1)%7000)/10,1000,(time%7000)/10,1000-bugs.length/10);
+		population = bugs.length;
+		document.getElementById("population").value = bugs.length;
+		if(time%7000==0)
+		{
+			ctx1.fillRect(0,0,700,1000);
+		}
+		if(bugs==0)
+		{
+			
+			if(document.getElementById("food").value>0 && document.getElementById("speed").value>0  && document.getElementById("limit").value>0 && document.getElementById("stability").value>0)
+			{
+				restart();
+			}else
+			{
+				setBug(randomInterval(0,999),randomInterval(0,999),randomInterval(200,1000),randomInterval(1000,3000),randomInterval(1,40)/10,randomInterval(1,50));
+				ctx.fillStyle = "rgb(50,150,50)";
+				ctx.fillRect(0,0,1000,1000);			
+				bugs[0].directions = [0,90,180,270];
+				for(var i=0;i<1000;i++)
+				{
+					field.push([]);
+					for(var j=0;j<1000;j++)
+					{
+						field[i].push(1);
+					}
+				}
+			}
+		}
+	ctx.fillStyle = "rgb(50,150,50)";
+	//ctx.fillRect(0,0,1000,1000);
+		for(var i=0; i<bugs.length; i++)
+		{
+			
+			if(i>=bugs.length){break;}
+			
+			var bug = bugs[i];
+			bug.lastX = bug.x;
+			bug.lastY = bug.y;
+						
+			if(bug.speed==0)
+			{
+				//field[Math.floor(bug.x)][Math.floor(bug.y)] = 1;
+				ctx.fillStyle = "rgb(50,150,50)";
+				ctx.fillRect(bug.x-1,bug.y-1,3,3);
+				bugs.splice(i,1);
+			}
+			if(bug.limit<10)
+			{
+				bug.limit = 10;
+			}
+			bug.x += Math.sin(inRad(bug.direction))*bug.speed;
+			bug.y += Math.cos(inRad(bug.direction))*bug.speed;
+			if(bug.x>999)bug.x = 0;
+			if(bug.x<0)bug.x = 999;
+			if(bug.y>999)bug.y = 0;
+			if(bug.y<0)bug.y = 999;
+			if(bug.food<=0)
+			{
+				field[Math.floor(bug.x)][Math.floor(bug.y)] = 1;
+				ctx.fillStyle = "rgb(50,150,50)";
+				ctx.fillRect(bug.x-1,bug.y-1,3,3);
+				bugs.splice(i,1);
+				deads++;
+			}
+			bug.food -= bug.speed+1;
+			if(bug.time%bug.stability==0)
+			{
+				bug.direction = bug.directions[randomInterval(0,bug.directions.length)];
+			}
+			
+			if(field[Math.floor(bug.x)][Math.floor(bug.y)]==1)
+			{
+				bug.food+=10;
+				field[Math.floor(bug.x)][Math.floor(bug.y)]=0;
+				if(bug.food>=bug.limit)
+				{
+					
+					for(var k=0; k<2; k++)
+					{
+						setBug(bug.x+randomInterval(-3,3),Math.abs(bug.y+randomInterval(-3,3)),Math.abs(bug.food/2),Math.abs(bug.limit+randomInterval(-evolve,evolve)),Math.abs(bug.speed+randomInterval(-evolve/10,evolve/10)),Math.abs(bug.stability+randomInterval(-evolve*10,evolve*10)));
+						var n = bugs[bugs.length-1];
+						for(var j=0; j<bug.directions.length; j++)
+						{
+							n.directions.push(bug.directions[j]);
+						}
+						if(randomInterval(0,evolve+5)<evolve && n.directions.length>1)
+						{
+							n.directions.splice(randomInterval(0,n.directions.length),1);
+						}
+						if(randomInterval(0,evolve+5)<evolve)
+						{
+							n.directions.push(randomInterval(0,360));
+						}
+						
+					}
+					
+					field[Math.floor(bug.x)][Math.floor(bug.y)] = 1;
+					ctx.fillStyle = "rgb(50,150,50)";
+					ctx.fillRect(bug.x,bug.y,1,1);
+					bugs.splice(i,1);
+				}
+				
+			}
+			
+			
+			ctx.fillStyle = "rgb(100,150,100)";
+				ctx.fillRect(bug.lastX-1,bug.lastY-1,3,3);
+			
+			ctx.fillStyle = "rgb("+ color +",0,0)";
+			ctx.fillRect(bug.x,bug.y,1,1);
+			var color = (bug.food*255)/bug.limit;
+			color = Math.floor(color);	
+			bug.time++;
+		}
+		
+		ctx.fillStyle = "rgb(50,150,50)";
+		for(i=0; i<1000; i++)
+		{
+			x= randomInterval(0,1000);
+			y= randomInterval(0,1000);
+			field[x][y] = 1;
+			ctx.fillRect(x,y,1,1);
+		}
+		//ctx.fillStyle = "rgb(0,0,0)";
+		
+	}
+	
+	function second()
+	{
+		document.getElementById("fps").value = frames;
+		frames = 0;
+	}
+	
+	setInterval(play,0);
+	setInterval(second,1000);
+</script>
+</body>
