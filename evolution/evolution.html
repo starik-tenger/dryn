@@ -16,6 +16,19 @@ Population:
 Fps:
 <input id = "fps" style = "width: 120px; height: 15px" />
 <button onclick = "restart()">RESTART</button>
+<br>
+Average food:
+<input id = "average_food" style = "width: 60px; height: 15px" />
+Average limit:
+<input id = "average_limit" style = "width: 60px; height: 15px" />
+Average saturation(food/limit):
+<input id = "average_saturation" style = "width: 60px; height: 15px" />
+Average speed:
+<input id = "average_speed" style = "width: 60px; height: 15px" />
+Average stability:
+<input id = "average_stability" style = "width: 60px; height: 15px" />
+Average directions:
+<input id = "average_direcions" style = "width: 60px; height: 15px" />
 <script>
 	var screen = document.getElementById("screen");
 	ctx = screen.getContext('2d');
@@ -67,11 +80,7 @@ Fps:
 		
 	}
 	setBug(500,800,500,1000,1,10);
-	//setBug(100,100,500,1000,0.1,1);
-	//setBug(700,200,500,1000,0.5);
-	//setBug(900,400,500,1000,0.5);
-	bugs[0].directions = [300,90];
-	//bugs[1].directions = [0,30,60];
+	bugs[0].directions = [0,90,180,270];
 	console.log(bugs.length);
 	var deads = 0;
 	var evolve = 1;
@@ -98,7 +107,13 @@ Fps:
 	}
 	var population = bugs.length;
 	var time = 0;
-	var frames = 0;
+	var frames = 0; 
+	var all_food = 0;
+	var all_limit = 0;
+	var all_saturation = 0;
+	var all_speed = 0;
+	var all_stability = 0;
+	var all_directions = 0;
 	
 	ctx1.fillRect(0,0,700,1000);
 	function play()
@@ -136,14 +151,26 @@ Fps:
 				}
 			}
 		}
+		
+			
 	ctx.fillStyle = "rgb(50,150,50)";
 	//ctx.fillRect(0,0,1000,1000);
 		for(var i=0; i<bugs.length; i++)
 		{
+			var bug = bugs[i];
+			
+			//сбор статистики
+			all_food+=bug.food;
+			all_limit+=bug.limit;
+			all_saturation+=bug.food/bug.limit;
+			all_speed+=bug.speed;
+			all_stability+=bug.stability;
+			all_directions+=bug.directions.length;
+			
 			
 			if(i>=bugs.length){break;}
 			
-			var bug = bugs[i];
+			
 			bug.lastX = bug.x;
 			bug.lastY = bug.y;
 						
@@ -164,6 +191,8 @@ Fps:
 			if(bug.x<0)bug.x = 999;
 			if(bug.y>999)bug.y = 0;
 			if(bug.y<0)bug.y = 999;
+			
+			bug.food -= bug.speed+1;
 			if(bug.food<=0)
 			{
 				field[Math.floor(bug.x)][Math.floor(bug.y)] = 1;
@@ -172,7 +201,6 @@ Fps:
 				bugs.splice(i,1);
 				deads++;
 			}
-			bug.food -= bug.speed+1;
 			if(bug.time%bug.stability==0)
 			{
 				bug.direction = bug.directions[randomInterval(0,bug.directions.length)];
@@ -187,7 +215,7 @@ Fps:
 					
 					for(var k=0; k<2; k++)
 					{
-						setBug(bug.x+randomInterval(-3,3),Math.abs(bug.y+randomInterval(-3,3)),Math.abs(bug.food/2),Math.abs(bug.limit+randomInterval(-evolve,evolve)),Math.abs(bug.speed+randomInterval(-evolve/10,evolve/10)),Math.abs(bug.stability+randomInterval(-evolve*10,evolve*10)));
+						setBug(bug.x+randomInterval(-3,3),Math.abs(bug.y+randomInterval(-3,3)),Math.abs(bug.food/2),Math.abs(bug.limit+randomInterval(-evolve,evolve)),Math.abs(bug.speed+randomInterval(-evolve,evolve)/10),Math.abs(bug.stability+randomInterval(-evolve*10,evolve*10)));
 						var n = bugs[bugs.length-1];
 						for(var j=0; j<bug.directions.length; j++)
 						{
@@ -231,7 +259,20 @@ Fps:
 			field[x][y] = 1;
 			ctx.fillRect(x,y,1,1);
 		}
-		//ctx.fillStyle = "rgb(0,0,0)";
+		
+		//вывод статистики
+		document.getElementById("average_food").value = Math.round(all_food/bugs.length);
+		all_food = 0;
+		document.getElementById("average_limit").value = Math.round(all_limit/bugs.length);
+		all_limit = 0;
+		document.getElementById("average_saturation").value = all_saturation/bugs.length;
+		all_saturation = 0;
+		document.getElementById("average_speed").value = all_speed/bugs.length;
+		all_speed = 0;
+		document.getElementById("average_stability").value = Math.round(all_stability/bugs.length);
+		all_stability = 0;
+		document.getElementById("average_direcions").value = all_directions/bugs.length;
+		all_directions = 0;
 		
 	}
 	
