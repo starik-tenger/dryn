@@ -21,13 +21,13 @@ Average food:
 <input id = "average_food" style = "width: 60px; height: 15px" />
 Average limit:
 <input id = "average_limit" style = "width: 60px; height: 15px" />
-Average saturation(food/limit):
+<abbr title = "food/limit" style = "color: red">Average saturation:</abbr>
 <input id = "average_saturation" style = "width: 60px; height: 15px" />
-Average speed:
+<abbr style = "color: blue">Average speed:</abbr>
 <input id = "average_speed" style = "width: 60px; height: 15px" />
 Average stability:
 <input id = "average_stability" style = "width: 60px; height: 15px" />
-Average directions:
+<abbr title = "Number of directions">Average directions:</abbr>
 <input id = "average_direcions" style = "width: 60px; height: 15px" />
 <script>
 	var screen = document.getElementById("screen");
@@ -45,8 +45,9 @@ Average directions:
 		return Math.floor(Math.random() * (max - min) + min);
 	}
 	
-	function drawLine(startPointX, startPointY, endPointX, endPointY)
+	function drawLine(startPointX, startPointY, endPointX, endPointY, width)
 	{
+		ctx1.lineWidth = width;
 		ctx1.beginPath();
 		ctx1.moveTo(startPointX, startPointY);
 		ctx1.lineTo(endPointX, endPointY);
@@ -114,21 +115,15 @@ Average directions:
 	var all_speed = 0;
 	var all_stability = 0;
 	var all_directions = 0;
+	var average_speed = 0;
+	var average_saturation = 0;
 	
 	ctx1.fillRect(0,0,700,1000);
 	function play()
 	{
 		frames++;
 		time++;
-		ctx1.strokeStyle = "rgb(0,200,0)";
-		ctx1.scale(-1,1);
-		drawLine(((time-1)%7000)/10,1000,(time%7000)/10,1000-bugs.length/10);
-		population = bugs.length;
-		document.getElementById("population").value = bugs.length;
-		if(time%7000==0)
-		{
-			ctx1.fillRect(0,0,700,1000);
-		}
+		
 		if(bugs==0)
 		{
 			
@@ -261,6 +256,31 @@ Average directions:
 		}
 		
 		//вывод статистики
+		
+		ctx1.scale(-1,1);
+		
+		if(time%10==0)
+		{
+			ctx1.strokeStyle = "rgb(0,200,0)";
+			drawLine(((time-1)%7000)/10,1000,(time%7000)/10,1000-bugs.length/10,1);
+			ctx1.fillStyle = "rgb(0,0,150)";
+			ctx1.fillRect(((time-1)%7000)/10-3,1000-all_speed*100/bugs.length,3,3);
+			ctx1.strokeStyle = "rgb(150,0,0)";
+			//ctx1.fillRect(((time-1)%7000)/10-3,1000-all_saturation*1000/bugs.length,3,3);
+			drawLine(((time-1)%7000)/10,1000-all_saturation*1000/bugs.length,(time%7000)/10,1000-average_saturation,2);
+			population = bugs.length;
+			
+			average_speed = all_speed*100/bugs.length;
+			average_saturation = all_saturation*1000/bugs.length;
+		}
+		
+		document.getElementById("population").value = bugs.length;
+		if(time%7000==0)
+		{
+			ctx1.fillStyle = "rgb(0,0,0)"
+			ctx1.fillRect(0,0,700,1000);
+		}
+		
 		document.getElementById("average_food").value = Math.round(all_food/bugs.length);
 		all_food = 0;
 		document.getElementById("average_limit").value = Math.round(all_limit/bugs.length);
