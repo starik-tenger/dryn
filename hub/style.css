@@ -1,0 +1,60 @@
+body{
+	color: rgb(169,144,50);
+	background: url(images/background.png) repeat rgb(120,90,30);
+	background-size: 30%;
+	font: 64px Arial;
+	text-align: center;
+
+}
+@font-face{
+    font-family: punk; 
+    src: url(fonts/font.ttf); 
+}
+@font-face{
+    font-family: news; 
+    src: url(fonts/font_news.ttf); 
+}
+.top{
+	margin-top: 100px;
+}
+.head{
+	color: rgb(70,30,0);
+	font: italic 170px punk;
+	background: none;
+	border: none;
+	margin: 10px;
+	vertical-align: top;
+}
+.head:hover{
+	font: italic 170px punk;
+	background: none;
+	border: none;
+}
+p.icon{
+	color: rgb(70,30,0);
+	background: url(images/button.png) repeat rgb(255,100,0);
+	font: 100% punk;
+	text-align: center;
+	width: 100%;
+    vertical-align: middle;
+	height: 100px;
+	border: 5px ridge;
+	margin: 10px;
+	border-color: rgb(70,30,0);
+}
+p.icon:hover{
+	background: url(images/button1.png) repeat rgb(255,80,0);
+	text-align: center;
+	width: 102%;
+}
+p.news{
+	color: rgb(70,30,0);
+	background: url(images/button.png) repeat rgb(255,80,0);
+	font: 50% "century gothic";
+	width: 90%;
+	border: 3px ridge;
+	border-color: rgb(70,30,0);
+	margin: 10px;
+	text-align: left;
+}
+A{text-decoration: none;}

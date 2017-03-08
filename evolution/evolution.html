@@ -173,7 +173,7 @@ Stability:
 		population = bugs.length;	
 	ctx.fillStyle = "rgb(50,150,50)";
 	//ctx.fillRect(0,0,1000,1000);
-		for(var i=0; i<bugs.length && i<population; i++)
+		for(var i=0; i<population && i<bugs.length; i++)
 		{
 			var bug = bugs[i];
 			
@@ -206,11 +206,12 @@ Stability:
 			if(bug.y>999)bug.y = 0;
 			if(bug.y<0)bug.y = 999;
 			
+			ctx.fillStyle = "rgb(100,100,100)";
+				ctx.fillRect(Math.round(bug.lastX),Math.round(bug.lastY),1,1);
+			
 			bug.food -= bug.speed+1;
 			if(bug.food<=0)
 			{
-				ctx.fillStyle = "rgb(100,100,100)";
-				ctx.fillRect(Math.round(bug.lastX),Math.round(bug.lastY),1,1);
 				field[Math.floor(bug.x)][Math.floor(bug.y)] = 1;
 				ctx.fillStyle = "rgb(50,150,50)";
 				ctx.fillRect(Math.round(bug.x),Math.round(bug.y),1,1);
@@ -233,7 +234,7 @@ Stability:
 					
 					for(var k=0; k<2; k++)
 					{
-						setBug(bug.x+randomInterval(-3,3),Math.abs(bug.y+randomInterval(-3,3)),Math.abs(bug.food/2),Math.abs(bug.limit+randomInterval(-evolve,evolve)),Math.abs(bug.speed+randomInterval(-evolve,evolve)/10),Math.abs(bug.stability+randomInterval(-evolve*5,evolve*5)));
+						setBug(bug.x+randomInterval(-3,3),Math.abs(bug.y+randomInterval(-3,3)),Math.abs(bug.food/2),Math.abs(bug.limit+randomInterval(-bug.limit*evolve,bug.limit*evolve)/20),Math.abs(bug.speed+randomInterval(-evolve,evolve)/10),Math.abs(bug.stability+randomInterval(-evolve*5,evolve*5)));
 						var n = bugs[bugs.length-1];
 						for(var j=0; j<bug.directions.length; j++)
 						{
@@ -254,13 +255,14 @@ Stability:
 					ctx.fillStyle = "rgb(50,150,50)";
 					ctx.fillRect(Math.round(bug.x),Math.round(bug.y),1,1);
 					bugs.splice(i,1);
+					i--;
+					continue;
 				}
 				
 			}
 			
 			
-			ctx.fillStyle = "rgb(100,100,100)";
-				ctx.fillRect(Math.round(bug.lastX),Math.round(bug.lastY),1,1);
+			
 			var color = (bug.food*255)/bug.limit;
 			color = Math.floor(color);	
 			ctx.fillStyle = "rgb("+ color +",0,0)";
