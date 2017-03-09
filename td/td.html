@@ -35,7 +35,7 @@
 	
 	ctx.imageSmoothingEnabled = false;
 	
-	//пути к картинкам
+	//ГЇГіГІГЁ ГЄ ГЄГ Г°ГІГЁГ­ГЄГ Г¬
 	grass = new Image();              
         grass.src = 'textures/grass.bmp';
 	road = new Image();              
@@ -77,7 +77,7 @@
 	ice = new Image();
 		ice.src = 'textures/ice.bmp';
 		
-	//монстры
+	//Г¬Г®Г­Г±ГІГ°Г»
 	chmo = new Image();
 		chmo.src = 'textures/bugs/chmo.bmp';
 	snail = new Image();
@@ -137,7 +137,7 @@
 	var lines = [];
 	var bullets = [];
 	
-	//кнопки
+	//ГЄГ­Г®ГЇГЄГЁ
 	tower1Button = {x: 480, y: 100, xI: 30, yI: 30};
 	tower2Button = {x: 540, y: 100, xI: 30, yI: 30};
 	tower3Button = {x: 480, y: 145, xI: 30, yI: 30};
@@ -145,7 +145,7 @@
 	upgradeButton = {x: 620, y: 360, xI: 100, yI: 20};
 	
 	
-	//объект монстра
+	//Г®ГЎГєГҐГЄГІ Г¬Г®Г­Г±ГІГ°Г 
 	var bug = {};
 	bug.type = 0;
 	bug.x = 0;
@@ -158,7 +158,7 @@
 	bug.time = 0;
   
   
-	//объект башни
+	//Г®ГЎГєГҐГЄГІ ГЎГ ГёГ­ГЁ
 	var tower = {};
 	tower.x = 0;
 	tower.y = 0;
@@ -170,7 +170,7 @@
 	tower.upgrade = 0;
 	tower.cost = 0;
 	
-	//объект волны
+	//Г®ГЎГєГҐГЄГІ ГўГ®Г«Г­Г»
 	var wave = {}
 	wave.type = 0;
 	wave.hp = 0;
@@ -178,14 +178,14 @@
 	wave.damage = 0;
 	wave.timing = 0;
 	
-	//объект линии
+	//Г®ГЎГєГҐГЄГІ Г«ГЁГ­ГЁГЁ
 	var line = {};
 	line.startX = 0;
 	line.startY = 0;
 	line.endX = 0;
 	line.endY = 0;
 	
-	//объект снаряда
+	//Г®ГЎГєГҐГЄГІ Г±Г­Г Г°ГїГ¤Г 
 	var bullet = {};
 	bullet.startX = 0;
 	bullet.startY = 0;
@@ -322,7 +322,7 @@
 		bulletCount--;}
 	}
 	
-	function checkTowers() //тип, урон, радиус, скорострельность, стоимость
+	function checkTowers() //ГІГЁГЇ, ГіГ°Г®Г­, Г°Г Г¤ГЁГіГ±, Г±ГЄГ®Г°Г®Г±ГІГ°ГҐГ«ГјГ­Г®Г±ГІГј, Г±ГІГ®ГЁГ¬Г®Г±ГІГј
 	{
 		if(towerNow==1)
 		{setTower(3, 2, 2, 100, 10);}
@@ -430,7 +430,7 @@
 	}
 	
 	
-	//функции отрисовки объектов
+	//ГґГіГ­ГЄГ¶ГЁГЁ Г®ГІГ°ГЁГ±Г®ГўГЄГЁ Г®ГЎГєГҐГЄГІГ®Гў
 	function drawLine(startPointX, startPointY, endPointX, endPointY)
 	{
 		ctx.beginPath();
@@ -524,19 +524,19 @@
 		ctx.fillStyle = "rgb(255, 255, 255)";
 		ctx.globalAlpha = 1;
 		ctx.font= 7*pixel + "px Arial";
-		text = "стоимость: " + cost;
+		text = "Г±ГІГ®ГЁГ¬Г®Г±ГІГј: " + cost;
 		ctx.fillText(text, x*pixel, y*pixel);
 		y += 10;
-		text = "урон: " + damage;
+		text = "ГіГ°Г®Г­: " + damage;
 		ctx.fillText(text, x*pixel, y*pixel);
 		y += 10;
-		text = "дальнобойность: " + radius;
+		text = "Г¤Г Г«ГјГ­Г®ГЎГ®Г©Г­Г®Г±ГІГј: " + radius;
 		ctx.fillText(text, x*pixel, y*pixel);
 		y += 10;
-		text = "перезарядка: " + speed;
+		text = "ГЇГҐГ°ГҐГ§Г Г°ГїГ¤ГЄГ : " + speed;
 		ctx.fillText(text, x*pixel, y*pixel);
 		y += 10;
-		text = "эффект: " + effect;
+		text = "ГЅГґГґГҐГЄГІ: " + effect;
 		ctx.fillText(text, x*pixel, y*pixel);
 		y += 10;
 	}
@@ -612,10 +612,10 @@
 		ctx.restore();
 	}
 	
-	//функция общей отрисовки
+	//ГґГіГ­ГЄГ¶ГЁГї Г®ГЎГ№ГҐГ© Г®ГІГ°ГЁГ±Г®ГўГЄГЁ
 	function draw()
 	{
-		//проверка на траву/дорогу/камни
+		//ГЇГ°Г®ГўГҐГ°ГЄГ  Г­Г  ГІГ°Г ГўГі/Г¤Г®Г°Г®ГЈГі/ГЄГ Г¬Г­ГЁ
 		for(x=0; x<15; x++)
 		{
 			for(y=0; y<15; y++)
@@ -630,7 +630,7 @@
 		
 		ctx.globalAlpha = 1;
 		
-		//отрисовка жуков
+		//Г®ГІГ°ГЁГ±Г®ГўГЄГ  Г¦ГіГЄГ®Гў
 		ctx.save();
 		for(a = 0; a < bugCount; a++)
 		{
@@ -638,7 +638,7 @@
 		}
 		ctx.restore();
 		
-		//проверка на башни
+		//ГЇГ°Г®ГўГҐГ°ГЄГ  Г­Г  ГЎГ ГёГ­ГЁ
 		for(x=0; x<15; x++)
 		{
 			for(y=0; y<15; y++)
@@ -660,13 +660,13 @@
 		}
 		
 		
-		//жизни жуков
+		//Г¦ГЁГ§Г­ГЁ Г¦ГіГЄГ®Гў
 		for(a = 0; a < bugCount; a++)
 		{
 			drawBugHp(a);					
 		}
 		
-		//выстрелы
+		//ГўГ»Г±ГІГ°ГҐГ«Г»
 		ctx.strokeStyle = "rgb(0, 0, 255)";
 		ctx.lineWidth = size/6*pixel;
 		for(var i = 0; i < lineCount; i++)
@@ -682,7 +682,7 @@
 		drawRadiusT(towerUp);
 		}
 		
-		//отрисовка меню
+		//Г®ГІГ°ГЁГ±Г®ГўГЄГ  Г¬ГҐГ­Гѕ
 		ctx.globalAlpha = 1;
 		ctx.fillStyle = "rgb(50, 50, 50)";
 		ctx.fillRect(450*pixel, 0, 325*pixel, 450*pixel);
@@ -695,7 +695,7 @@
 		ctx.fillStyle = "rgb(255,0,0)";
 		ctx.fillText(hp, 480*pixel, 60*pixel);
 		
-		//кнопки
+		//ГЄГ­Г®ГЇГЄГЁ
 		drawButton(tower1Button.x, tower1Button.y, tower1S, 10);
 		drawButton(tower2Button.x, tower2Button.y, tower2, 30);
 		drawButton(tower3Button.x, tower3Button.y, tower3S, 60);
@@ -712,19 +712,19 @@
 		ctx.strokeRect(upgradeButton.x*pixel, upgradeButton.y*pixel, upgradeButton.xI*pixel, upgradeButton.yI*pixel);
 		if(towerUp!="NO"){
 		ctx.font= 10*pixel + "px Arial";
-		text = "стоимость: " + towers[towerUp].cost;
+		text = "Г±ГІГ®ГЁГ¬Г®Г±ГІГј: " + towers[towerUp].cost;
 		ctx.fillText(text, 620*pixel, 270*pixel);
-		text = "урон: " + towers[towerUp].damage;
+		text = "ГіГ°Г®Г­: " + towers[towerUp].damage;
 		ctx.fillText(text, 620*pixel, 290*pixel);
-		text = "радиус: " + towers[towerUp].radius;
+		text = "Г°Г Г¤ГЁГіГ±: " + towers[towerUp].radius;
 		ctx.fillText(text, 620*pixel, 310*pixel);
-		text = "перезарядка: " + towers[towerUp].speed;
+		text = "ГЇГҐГ°ГҐГ§Г Г°ГїГ¤ГЄГ : " + towers[towerUp].speed;
 		ctx.fillText(text, 620*pixel, 330*pixel);
-		text = "эффект: " + towers[towerUp].effect;
+		text = "ГЅГґГґГҐГЄГІ: " + towers[towerUp].effect;
 		ctx.fillText(text, 620*pixel, 350*pixel);}
 		
 		
-		//характеристики
+		//ГµГ Г°Г ГЄГІГҐГ°ГЁГ±ГІГЁГЄГЁ
 		if(mouseArea(480, 100, size, size)==1)
 		{
 			drawChar(10, 2, 2, 300, "___"); //cost, damage, radius, speed, effect
@@ -735,7 +735,7 @@
 		}
 		if(mouseArea(480, 145, size, size)==1)
 		{
-			drawChar(60, 1, 2, 300, "замедление"); //cost, damage, radius, speed, effect
+			drawChar(60, 1, 2, 300, "Г§Г Г¬ГҐГ¤Г«ГҐГ­ГЁГҐ"); //cost, damage, radius, speed, effect
 		}
 		if(mouseArea(540, 145, size, size)==1)
 		{
@@ -794,7 +794,7 @@
 		}
 		}
 		
-		//спавн жуков (тип, HP, скорость, урон, стоимость)
+		//Г±ГЇГ ГўГ­ Г¦ГіГЄГ®Гў (ГІГЁГЇ, HP, Г±ГЄГ®Г°Г®Г±ГІГј, ГіГ°Г®Г­, Г±ГІГ®ГЁГ¬Г®Г±ГІГј)
 		//wave, time, timing, count
 		if(checkWave(1, 50, 20, 25) == 1){setBug(chmo, 5, 2, 5, 5);}
 		if(checkWave(2, 1400, 40, 20) == 1){setBug(brown, 20, 1, 10, 10);}
@@ -827,7 +827,7 @@
 		key = 0;
 		draw();	
 		
-		//смерть
+		//Г±Г¬ГҐГ°ГІГј
 		if(hp <= 0)
 		{
 			clearInterval(timer);
@@ -839,7 +839,7 @@
 	}
 
 	ctx.font = 20*pixel+"px Arial";
-	ctx.fillText("Подождите, игра загружается", 20*pixel, 30*pixel)
+	ctx.fillText("ГЏГ®Г¤Г®Г¦Г¤ГЁГІГҐ, ГЁГЈГ°Г  Г§Г ГЈГ°ГіГ¦Г ГҐГІГ±Гї", 20*pixel, 30*pixel)
 	//draw();
 	ice.onload = function(){
 	timer = setInterval(play, 50);}
