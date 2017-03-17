@@ -1,18 +1,25 @@
 var pixel =1;
-var n =(cam.scale/(10*size));
+var n =(cam.scale/(screen.height))/pixel;
+
+function checkWindow()
+{
+	screen.height = document.documentElement.clientHeight-4;
+	screen.width = document.documentElement.clientWidth;
+	ctx.imageSmoothingEnabled = false;
+}
+//cam.y += screen.height;
 function draw()
 {
-	n =(cam.scale/(10*size));
+	checkWindow();
+	n =cam.scale/screen.width;
 	drawField();
-	ctx.strokeStyle="red";
-	ctx.strokeRect(scrX(player.x),scrY(player.y),300/(cam.scale/(10*size)),300/(cam.scale/(10*size)));
 }
 function drawLine(startPointX, startPointY, endPointX, endPointY, width)
 {
 	ctx.lineWidth = width;
 	ctx.beginPath();
-	ctx.moveTo(startPointX*pixel, startPointY*pixel);
-	ctx.lineTo(endPointX*pixel, endPointY*pixel);
+	ctx.moveTo(startPointX, startPointY);
+	ctx.lineTo(endPointX, endPointY);
 	ctx.stroke();
 }
 
@@ -25,9 +32,11 @@ function scrY(a)
 	return (a-cam.y)/n;
 }
 var l = 30;
+var f = screen.height/screen.width;
+
 function drawField()
 {
-	ctx.clearRect(0,0,1000,1000);
+	ctx.translate(0,-(screen.width-screen.height)/2);
 	for(var x=Math.round(cam.x/size)-Math.round(cam.scale/size)-1; x<Math.round(cam.x/size)+Math.round(cam.scale/size)+1; x++)
 	{
 		for(var y=Math.round(cam.y/size)-Math.round(cam.scale/size)-1; y<Math.round(cam.y/size)+Math.round(cam.scale/size)+1; y++)
@@ -48,9 +57,9 @@ function drawField()
 			}
 		}
 	}
-	for(var x=Math.round(cam.x/size)-Math.round(cam.scale/size)-1; x<Math.round(cam.x/size)+Math.round(cam.scale/size)+1; x++)
+	for(var y=Math.round(cam.y/size)-Math.round(cam.scale/size)-1; y<Math.round(cam.y/size)+Math.round(cam.scale/size)+1; y++)
 	{
-		for(var y=Math.round(cam.y/size)-Math.round(cam.scale/size)-1; y<Math.round(cam.y/size)+Math.round(cam.scale/size)+1; y++)
+		for(var x=Math.round(cam.x/size)-Math.round(cam.scale/size)-1; x<Math.round(cam.x/size)+Math.round(cam.scale/size)+1; x++)
 		{
 			var X=x;
 				var Y=y;
@@ -65,6 +74,12 @@ function drawField()
 				ctx.fillStyle="rgb(10,80,10)";
 				ctx.fillRect(scrX(X*size-size/2),scrY(Y*size)-250/n,(size*2)/n,size/n);
 			}
+		}
+		if(y==Math.round(Math.round(cam.y/size)+Math.round((cam.scale/size))/2)-1)
+		{
+			ctx.strokeStyle="red";
+			ctx.lineWidth=15/n;
+			ctx.strokeRect(scrX(player.x-size/2),scrY(player.y-size/2),size/n,size/n);
 		}
 	}
 }

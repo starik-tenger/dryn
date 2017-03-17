@@ -12,8 +12,8 @@ function randomInterval(max, min)
 
 function checkMouse()
 {
-	mouseX = event.pageX/pixel;
-	mouseY = event.pageY/pixel;
+	mouseX = event.pageX;
+	mouseY = event.pageY;
 }
 
 var mouseDown = 0;
@@ -110,7 +110,7 @@ for(var x=0; x<mapSize; x+=2)
 
 var size=100;
 var player={x: 250*size, y: 250*size, fX: 50, fY: 0};
-var cam={x: 0*size, y: 0*size, scale: 65*size};
+var cam={x: 0*size, y: 0*size, scale: 35*size};
 
 
 
@@ -166,13 +166,14 @@ player.move=function()
 	}
 }
 
-player.speed = 50;
+player.speed = 10;
 function interval()
 {
 	camera();
 	player.move();
-	var a = mouseX-500;
-	var b = mouseY-500;
+	var a = mouseX-screen.width/2;
+	var b = mouseY-screen.height/2;
+	console.log(a,b);
 	var c = Math.sqrt(a*a+b*b);
 	if(mouseDown==1)
 	{
@@ -182,7 +183,6 @@ function interval()
 	{
 		player.fX=0; player.fY=0;
 	}
-	document.getElementById("level1").value=document.getElementById("level").value;
 	//cam.scale+=500;
 }
 setInterval(interval, 20);
