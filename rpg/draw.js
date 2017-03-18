@@ -31,15 +31,15 @@ function scrY(a)
 {
 	return (a-cam.y)/n;
 }
-var l = 30;
+var l = 5;
 var f = screen.height/screen.width;
 
 function drawField()
 {
 	ctx.translate(0,-(screen.width-screen.height)/2);
-	for(var x=Math.round(cam.x/size)-Math.round(cam.scale/size)-1; x<Math.round(cam.x/size)+Math.round(cam.scale/size)+1; x++)
+	for(var x=Math.round(cam.x/size)-Math.round(cam.scale/size)+17; x<Math.round(cam.x/size)+Math.round(cam.scale/size)+1; x++)
 	{
-		for(var y=Math.round(cam.y/size)-Math.round(cam.scale/size)-1; y<Math.round(cam.y/size)+Math.round(cam.scale/size)+1; y++)
+		for(var y=Math.round(cam.y/size)-Math.round(cam.scale/size)+17; y<Math.round(cam.y/size)+Math.round(cam.scale/size)+1; y++)
 		{
 		var X=x;
 		var Y=y;
@@ -49,11 +49,15 @@ function drawField()
 		if(y>mapSize){Y=y-mapSize;}
 			if(blocks[X%mapSize][Y%mapSize].type==0)
 			{
-				ctx.fillStyle="rgb(0,"+(200-(8-blocks[X%mapSize][Y%mapSize].neighbors)*10)+",0)";
-				ctx.fillRect(scrX(X*size),scrY(Y*size),size/n,size/n+l);
+				if(blocks[X%mapSize][Y%mapSize].resource==sand)
+				{
+					ctx.fillStyle="rgb(170,200,10)";
+				}else
+				ctx.fillStyle="rgb(0,100,0)";
+				ctx.fillRect(scrX(X*size),scrY(Y*size),size/n+l,size/n+l);
 			}else{
-				ctx.fillStyle="rgb(0,"+((8-blocks[X%mapSize][Y%mapSize].neighbors)*30)+",255)";
-				ctx.fillRect(scrX(X*size),scrY(Y*size),size/n,size/n+l);
+				ctx.fillStyle="rgb(0,100,255)";
+				ctx.fillRect(scrX(X*size),scrY(Y*size),size/n+l,size/n+l);
 			}
 		}
 	}
