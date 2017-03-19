@@ -37,9 +37,9 @@ var f = screen.height/screen.width;
 function drawField()
 {
 	ctx.translate(0,-(screen.width-screen.height)/2);
-	for(var x=Math.round(cam.x/size)-Math.round(cam.scale/size)+17; x<Math.round(cam.x/size)+Math.round(cam.scale/size)+1; x++)
+	for(var x=Math.round(cam.x/size)-Math.round(cam.scale/size)-1; x<Math.round(cam.x/size)+Math.round(cam.scale/size)+1; x++)
 	{
-		for(var y=Math.round(cam.y/size)-Math.round(cam.scale/size)+17; y<Math.round(cam.y/size)+Math.round(cam.scale/size)+1; y++)
+		for(var y=Math.round(cam.y/size)-Math.round(cam.scale/size)-1; y<Math.round(cam.y/size)+Math.round(cam.scale/size)+1; y++)
 		{
 		var X=x;
 		var Y=y;
@@ -87,4 +87,3 @@ function drawField()
 		}
 	}
 }
-setInterval(draw, 50);

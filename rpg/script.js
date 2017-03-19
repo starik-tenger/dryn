@@ -24,6 +24,8 @@ function camera()
 	cam.y=player.y-cam.scale/2;
 	cam.x=cam.x%(mapSize*size);
 	cam.y=cam.y%(mapSize*size);
+	if(cam.scale<4*size)cam.scale=4*size;
+	if(cam.scale>100*size)cam.scale=100*szie;
 }
 
 player.x=player.x*size;
@@ -61,6 +63,7 @@ player.move=function()
 }
 
 player.speed = 10;
+var time = 0;
 function interval()
 {
 	camera();
@@ -76,6 +79,11 @@ function interval()
 	{
 		player.fX=0; player.fY=0;
 	}
-	//cam.scale+=500;
+	if(time%2==0)
+	{
+		draw(); 
+	}
+	
+	time++;
 }
 setInterval(interval, 20);
