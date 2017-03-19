@@ -25,7 +25,7 @@ function camera()
 	cam.x=cam.x%(mapSize*size);
 	cam.y=cam.y%(mapSize*size);
 	if(cam.scale<4*size)cam.scale=4*size;
-	if(cam.scale>100*size)cam.scale=100*szie;
+	if(cam.scale>100*size)cam.scale=100*size;
 }
 
 player.x=player.x*size;
