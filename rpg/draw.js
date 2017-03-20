@@ -1,6 +1,21 @@
 var pixel =1;
 var n =(cam.scale/(screen.height))/pixel;
 
+var playerImg = new Image();
+	playerImg.src="textures/player.png";
+var water = new Image();
+	water.src="textures/blocks/water/water.png";
+var water1 = new Image();
+	water1.src="textures/blocks/water/water1.png";
+var water2 = new Image();
+	water2.src="textures/blocks/water/water2.png";
+var water3 = new Image();
+	water3.src="textures/blocks/water/water3.png";
+var grass = new Image();
+	grass.src="textures/blocks/grass.png";
+var sandBlock = new Image();
+	sandBlock.src="textures/blocks/sand.png";
+
 function checkWindow()
 {
 	screen.height = document.documentElement.clientHeight-4;
@@ -52,12 +67,31 @@ function drawField()
 				if(blocks[X%mapSize][Y%mapSize].resource==sand)
 				{
 					ctx.fillStyle="rgb(170,200,10)";
+					ctx.drawImage(sandBlock, scrX(X*size),scrY(Y*size),size/n+l,size/n+l);
 				}else
-				ctx.fillStyle="rgb(0,100,0)";
-				ctx.fillRect(scrX(X*size),scrY(Y*size),size/n+l,size/n+l);
+				{
+					ctx.fillStyle="rgb(0,100,0)";
+					ctx.drawImage(grass, scrX(X*size),scrY(Y*size),size/n+l,size/n+l);
+				}
+				//ctx.fillRect(scrX(X*size),scrY(Y*size),size/n+l,size/n+l);
+				
 			}else{
 				ctx.fillStyle="rgb(0,100,255)";
 				ctx.fillRect(scrX(X*size),scrY(Y*size),size/n+l,size/n+l);
+				if(time%120<20)
+				{
+					ctx.drawImage(water, scrX(X*size),scrY(Y*size),size/n+l,size/n+l);
+				}else if(time%120<40){
+					ctx.drawImage(water1, scrX(X*size),scrY(Y*size),size/n+l,size/n+l);
+				}else if(time%120<60){
+					ctx.drawImage(water2, scrX(X*size),scrY(Y*size),size/n+l,size/n+l);
+				}else if(time%120<80){
+					ctx.drawImage(water3, scrX(X*size),scrY(Y*size),size/n+l,size/n+l);
+				}else if(time%120<100){
+					ctx.drawImage(water2, scrX(X*size),scrY(Y*size),size/n+l,size/n+l);
+				}else{
+					ctx.drawImage(water1, scrX(X*size),scrY(Y*size),size/n+l,size/n+l);
+				}
 			}
 		}
 	}
@@ -79,11 +113,12 @@ function drawField()
 				ctx.fillRect(scrX(X*size-size/2),scrY(Y*size)-250/n,(size*2)/n,size/n);
 			}
 		}
-		if(y==Math.round(Math.round(cam.y/size)+Math.round((cam.scale/size))/2)-1)
+		if(y==Math.round(player.y/size)-1)
 		{
 			ctx.strokeStyle="red";
 			ctx.lineWidth=15/n;
-			ctx.strokeRect(scrX(player.x-size/2),scrY(player.y-size/2),size/n,size/n);
+			//ctx.strokeRect(scrX(player.x-size/2),scrY(player.y-size/2),size/n,size/n);
+			ctx.drawImage(playerImg,scrX(player.x-size/2),scrY(player.y-size*2),size/n,size*2/n);
 		}
 	}
 }
