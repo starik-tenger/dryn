@@ -4,6 +4,7 @@ var mapSize=1000;
 
 const tree = 1;
 const sand = 2;
+const flower = 3;
 
 for(var x=0; x<mapSize; x++)
 {
@@ -105,13 +106,24 @@ function smooth(s)
 }
 
 smooth(3);
+//flowers
+for(var x=0; x<mapSize; x++)
+{
+	for(var y=0; y<mapSize; y++)
+	{
+		if(randomInterval(0,7)==0 && blocks[x][y].type==0)
+		{
+			blocks[x][y].resource=flower;
+		}
+	}
+}
 
 //trees
-for(var x=0; x<mapSize; x+=2)
+for(var x=0; x<mapSize; x++)
 {
-	for(var y=0; y<mapSize; y+=2)
+	for(var y=0; y<mapSize; y++)
 	{
-		if(randomInterval(0,4)==0 && blocks[x][y].type==0)
+		if(randomInterval(0,3)==0 && blocks[x][y].type==0)
 		{
 			blocks[x][y].resource=tree;
 		}
@@ -140,7 +152,7 @@ for(var i=0; i<10; i++)
 			for(var y=0; y<mapSize; y++)
 			{
 				var block=blocks[x][y];
-				if(((block.neighbors>0 && randomInterval(0,1)==0) || (randomInterval(0,4-block.sandNeighbors)<1)) && block.sandNeighbors>0)
+				if(((block.neighbors>0 && randomInterval(0,1)==0) || (randomInterval(0,4-block.sandNeighbors)<1)) && block.sandNeighbors>0 && blocks[x][y].type==0)
 				{
 					blocks[x][y].resource=sand;
 				}

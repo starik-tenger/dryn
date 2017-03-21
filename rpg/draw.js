@@ -1,6 +1,7 @@
 var pixel =1;
 var n =(cam.scale/(screen.height))/pixel;
-
+//----------------------------------------------------------------------------------------------------------------------------------------
+//images
 var playerImg = new Image();
 	playerImg.src="textures/player.png";
 var water = new Image();
@@ -15,18 +16,48 @@ var grass = new Image();
 	grass.src="textures/blocks/grass.png";
 var sandBlock = new Image();
 	sandBlock.src="textures/blocks/sand.png";
+var treeImg = new Image();
+	treeImg.src="textures/blocks/tree.png";
+var flowerImg = new Image();
+	flowerImg.src="textures/blocks/flower.png";
+	
 
+//corners
+var corner1 = new Image();
+	corner1.src = "textures/blocks/corners/corner1.png";
+var corner2 = new Image();
+	corner2.src = "textures/blocks/corners/corner2.png";
+var corner3 = new Image();
+	corner3.src = "textures/blocks/corners/corner3.png";
+var corner4 = new Image();
+	corner4.src = "textures/blocks/corners/corner4.png"
+
+
+//----------------------------------------------------------------------------------------------------------------------------------------
+function scaleImg(img)
+{
+	img.height=size/n+l;
+	img.width=size/n+l;
+}
+
+function scaleImages()
+{
+	scaleImg(grass);
+	scaleImg(water);
+	scaleImg(sandBlock);
+}
+	
 function checkWindow()
 {
 	screen.height = document.documentElement.clientHeight-4;
 	screen.width = document.documentElement.clientWidth;
 	ctx.imageSmoothingEnabled = false;
 }
-//cam.y += screen.height;
 function draw()
 {
 	checkWindow();
 	n =cam.scale/screen.width;
+	scaleImages();
 	drawField();
 }
 function drawLine(startPointX, startPointY, endPointX, endPointY, width)
@@ -36,6 +67,11 @@ function drawLine(startPointX, startPointY, endPointX, endPointY, width)
 	ctx.moveTo(startPointX, startPointY);
 	ctx.lineTo(endPointX, endPointY);
 	ctx.stroke();
+}
+
+function drawBlock(img, X, Y)
+{
+	ctx.drawImage(img, scrX(X*size),scrY(Y*size),size/n+l,size/n+l);
 }
 
 function scrX(a)
@@ -66,32 +102,38 @@ function drawField()
 			{
 				if(blocks[X%mapSize][Y%mapSize].resource==sand)
 				{
-					ctx.fillStyle="rgb(170,200,10)";
-					ctx.drawImage(sandBlock, scrX(X*size),scrY(Y*size),size/n+l,size/n+l);
+					drawBlock(sandBlock,X,Y);
 				}else
 				{
-					ctx.fillStyle="rgb(0,100,0)";
-					ctx.drawImage(grass, scrX(X*size),scrY(Y*size),size/n+l,size/n+l);
-				}
-				//ctx.fillRect(scrX(X*size),scrY(Y*size),size/n+l,size/n+l);
-				
+					drawBlock(grass,X,Y);
+				}				
 			}else{
 				ctx.fillStyle="rgb(0,100,255)";
 				ctx.fillRect(scrX(X*size),scrY(Y*size),size/n+l,size/n+l);
-				if(time%120<20)
+				var step = 7;
+				if(time%(8*step)<2*step)
 				{
 					ctx.drawImage(water, scrX(X*size),scrY(Y*size),size/n+l,size/n+l);
-				}else if(time%120<40){
+				}else if(time%(8*step)<4*step){
 					ctx.drawImage(water1, scrX(X*size),scrY(Y*size),size/n+l,size/n+l);
-				}else if(time%120<60){
-					ctx.drawImage(water2, scrX(X*size),scrY(Y*size),size/n+l,size/n+l);
-				}else if(time%120<80){
-					ctx.drawImage(water3, scrX(X*size),scrY(Y*size),size/n+l,size/n+l);
-				}else if(time%120<100){
+				}else if(time%(8*step)<6*step){
 					ctx.drawImage(water2, scrX(X*size),scrY(Y*size),size/n+l,size/n+l);
 				}else{
-					ctx.drawImage(water1, scrX(X*size),scrY(Y*size),size/n+l,size/n+l);
+					ctx.drawImage(water3, scrX(X*size),scrY(Y*size),size/n+l,size/n+l);
 				}
+			}
+			//resources
+			if(blocks[X%mapSize][Y%mapSize].resource==flower)
+			{
+				drawBlock(flowerImg,X,Y);
+			}
+			//corners
+			if(X>0 && X<mapSize-1 && Y>0 && Y<mapSize-1)
+			{
+				if(blocks[X-1][Y].type==1 && blocks[X][Y-1].type==1){drawBlock(corner1,X,Y);}
+				if(blocks[X+1][Y].type==1 && blocks[X][Y-1].type==1){drawBlock(corner2,X,Y);}
+				if(blocks[X-1][Y].type==1 && blocks[X][Y+1].type==1){drawBlock(corner3,X,Y);}
+				if(blocks[X+1][Y].type==1 && blocks[X][Y+1].type==1){drawBlock(corner4,X,Y);}
 			}
 		}
 	}
@@ -100,24 +142,22 @@ function drawField()
 		for(var x=Math.round(cam.x/size)-Math.round(cam.scale/size)-1; x<Math.round(cam.x/size)+Math.round(cam.scale/size)+1; x++)
 		{
 			var X=x;
-				var Y=y;
+			var Y=y;
 				if(x<0){X=mapSize+x;}
 				if(x>mapSize){X=x-mapSize;}
 				if(y<0){Y=mapSize+y;}
 				if(y>mapSize){Y=y-mapSize;}
-			if(blocks[X%mapSize][Y%mapSize].resource==1)
+			if(blocks[X%mapSize][Y%mapSize].resource==1) //trees
 			{
 				ctx.strokeStyle="rgb(150,150,0)";
-				drawLine(scrX(X*size+size/2),scrY(Y*size+size/2),scrX(X*size+size/2),scrY(Y*size+size/2)-200/n, 50/n);
 				ctx.fillStyle="rgb(10,80,10)";
-				ctx.fillRect(scrX(X*size-size/2),scrY(Y*size)-250/n,(size*2)/n,size/n);
+				ctx.drawImage(treeImg, scrX(X*size),scrY(Y*size-size),size/n+l,size*2/n+l);
 			}
 		}
-		if(y==Math.round(player.y/size)-1)
+		if(y==Math.round(player.y/size)-1) //player
 		{
 			ctx.strokeStyle="red";
 			ctx.lineWidth=15/n;
-			//ctx.strokeRect(scrX(player.x-size/2),scrY(player.y-size/2),size/n,size/n);
 			ctx.drawImage(playerImg,scrX(player.x-size/2),scrY(player.y-size*2),size/n,size*2/n);
 		}
 	}
