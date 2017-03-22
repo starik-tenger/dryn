@@ -1,12 +1,29 @@
 screen = document.getElementById("screen");
 ctx = screen.getContext("2d");
 
+//monster types
+const cow = 0;
+
 var mouseDown = 0;
 var size=100;
 var player={x: 250*size, y: 250*size, fX: 50, fY: 0};
-var cam={x: 0*size, y: 0*size, scale: 35*size};
+var cam={x: 0*size, y: 0*size, scale: 20*size};
 
+var monsters=[];
+function setMonster(type,x,y)
+{
+	monsters.push({type: type, x: x, y: y, direction: 0, fX: 0, fY: 0, speed: 0});
+	if(monster.type==cow)monster.speed=0;
+	monsters[monsters.lenght].move = function()
+	{
+		
+	}
+}
 
+for(var i=0; i<1000000; i++)
+{
+	
+}
 
 for(var i=0; i<1000000; i++)
 {
@@ -25,7 +42,7 @@ function camera()
 	cam.x=cam.x%(mapSize*size);
 	cam.y=cam.y%(mapSize*size);
 	if(cam.scale<4*size)cam.scale=4*size;
-	if(cam.scale>100*size)cam.scale=100*size;
+	if(cam.scale>50*size)cam.scale=50*size;
 }
 
 player.x=player.x*size;
@@ -71,7 +88,7 @@ function interval()
 	var a = mouseX-screen.width/2;
 	var b = mouseY-screen.height/2;
 	var c = Math.sqrt(a*a+b*b);
-	if(mouseDown==1)
+	if(mouseDown==1 || key.w==1)
 	{
 		player.fX=player.speed*a/c;
 		player.fY=player.speed*b/c;

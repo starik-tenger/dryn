@@ -31,6 +31,26 @@ var corner3 = new Image();
 	corner3.src = "textures/blocks/corners/corner3.png";
 var corner4 = new Image();
 	corner4.src = "textures/blocks/corners/corner4.png"
+//grass corners
+var grassCorner1 = new Image();
+	grassCorner1.src = "textures/blocks/corners/sand/corner1.png";
+var grassCorner2 = new Image();
+	grassCorner2.src = "textures/blocks/corners/sand/corner2.png";
+var grassCorner3 = new Image();
+	grassCorner3.src = "textures/blocks/corners/sand/corner3.png";
+var grassCorner4 = new Image();
+	grassCorner4.src = "textures/blocks/corners/sand/corner4.png";
+//sand corners
+var sandCorner1 = new Image();
+	sandCorner1.src = "textures/blocks/corners/sand1/corner1.png";
+var sandCorner2 = new Image();
+	sandCorner2.src = "textures/blocks/corners/sand1/corner2.png";
+var sandCorner3 = new Image();
+	sandCorner3.src = "textures/blocks/corners/sand1/corner3.png";
+var sandCorner4 = new Image();
+	sandCorner4.src = "textures/blocks/corners/sand1/corner4.png";
+	
+
 
 
 //----------------------------------------------------------------------------------------------------------------------------------------
@@ -134,6 +154,22 @@ function drawField()
 				if(blocks[X+1][Y].type==1 && blocks[X][Y-1].type==1){drawBlock(corner2,X,Y);}
 				if(blocks[X-1][Y].type==1 && blocks[X][Y+1].type==1){drawBlock(corner3,X,Y);}
 				if(blocks[X+1][Y].type==1 && blocks[X][Y+1].type==1){drawBlock(corner4,X,Y);}
+			}
+			//grass corners
+			if(X>0 && X<mapSize-1 && Y>0 && Y<mapSize-1 && (blocks[X][Y].resource==sand || blocks[X][Y].type==1))
+			{
+				if(blocks[X-1][Y].resource!=sand && blocks[X][Y-1].resource!=sand && blocks[X-1][Y].type==0 && blocks[X][Y-1].type==0){drawBlock(grassCorner1,X,Y);}
+				if(blocks[X+1][Y].resource!=sand && blocks[X][Y-1].resource!=sand && blocks[X+1][Y].type==0 && blocks[X][Y-1].type==0){drawBlock(grassCorner2,X,Y);}
+				if(blocks[X-1][Y].resource!=sand && blocks[X][Y+1].resource!=sand && blocks[X-1][Y].type==0 && blocks[X][Y+1].type==0){drawBlock(grassCorner3,X,Y);}
+				if(blocks[X+1][Y].resource!=sand && blocks[X][Y+1].resource!=sand && blocks[X+1][Y].type==0 && blocks[X][Y+1].type==0){drawBlock(grassCorner4,X,Y);}
+			}
+			//sand corners
+			if(X>0 && X<mapSize-1 && Y>0 && Y<mapSize-1 && blocks[X][Y].resource!=sand)
+			{
+				if(blocks[X-1][Y].resource==sand && blocks[X][Y-1].resource==sand && blocks[X-1][Y-1].resource==sand){drawBlock(sandCorner1,X,Y);}
+				if(blocks[X+1][Y].resource==sand && blocks[X][Y-1].resource==sand && blocks[X+1][Y-1].resource==sand){drawBlock(sandCorner2,X,Y);}
+				if(blocks[X-1][Y].resource==sand && blocks[X][Y+1].resource==sand && blocks[X-1][Y+1].resource==sand){drawBlock(sandCorner3,X,Y);}
+				if(blocks[X+1][Y].resource==sand && blocks[X][Y+1].resource==sand && blocks[X+1][Y+1].resource==sand){drawBlock(sandCorner4,X,Y);}
 			}
 		}
 	}
