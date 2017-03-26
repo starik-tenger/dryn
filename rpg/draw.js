@@ -21,6 +21,9 @@ var treeImg = new Image();
 var flowerImg = new Image();
 	flowerImg.src="textures/blocks/flower.png";
 	
+//monsters
+var cowImg = new Image();;
+	cowImg.src = "textures/monsters/cow.png";
 
 //corners
 var corner1 = new Image();
@@ -91,7 +94,7 @@ function drawLine(startPointX, startPointY, endPointX, endPointY, width)
 
 function drawBlock(img, X, Y)
 {
-	ctx.drawImage(img, scrX(X*size),scrY(Y*size),size/n+l,size/n+l);
+	ctx.drawImage(img, scrX(X*size)-l,scrY(Y*size)-l,size/n+l,size/n+l);
 }
 
 function scrX(a)
@@ -105,9 +108,57 @@ function scrY(a)
 var l = 5;
 var f = screen.height/screen.width;
 
+function data(data,x,y)
+{
+	ctx.putImageData(data,scrX(x*size),scrY(y*size)-(screen.width-screen.height)/2);
+}
+
+function newData(img,width,height)
+{
+	c.fillStyle="rgb(0,0,0)";
+	c.fillRect(0,0,1000,1000);
+	c.drawImage(img,0,0,size/n+l,size/n+l);
+		var data = c.getImageData(0,0,Math.round(size/n+l),Math.round(size/n+l));
+	pix = data.data;
+	for (var i = 0; i <pix.length; i += 4)
+	{
+		var r = pix[i],
+			g = pix[i+1],
+			b = pix[i+2],
+			a = pix[i+3];
+		//----------
+		if(r+g+b==0)
+		{
+			a=0;
+		}
+		//----------
+		pix[i] = r;
+		pix[i+1] = g;
+		pix[i+2] = b;
+		pix[i+3] = a;
+	}
+	return data;
+}
+
+var canvas = document.createElement("canvas");canvas.height=1000;canvas.width=1000;
+		var c = canvas.getContext("2d");
+		
+ctx.imageSmoothingEnabled = false;
+c.imageSmoothingEnabled = false;
 function drawField()
 {
 	ctx.translate(0,-(screen.width-screen.height)/2);
+	//creating image datas
+	c.drawImage(grass,0,0,size/n+l,size/n+l);
+		var grassData = c.getImageData(0,0,Math.round(size/n+l),Math.round(size/n+l));
+	c.drawImage(sandBlock,0,0,Math.round(size/n+l),Math.round(size/n+l));
+		var sandData = c.getImageData(0,0,Math.round(size/n+l),Math.round(size/n+l));
+	var waterData = newData(water,Math.round(size/n+l),Math.round(size/n+l));
+	
+	//corners
+	var corner1Data = newData(corner1,Math.round(size/n+l),Math.round(size/n+l));
+		
+	//-----------------------------------------------------
 	for(var x=Math.round(cam.x/size)-Math.round(cam.scale/size)-1; x<Math.round(cam.x/size)+Math.round(cam.scale/size)+1; x++)
 	{
 		for(var y=Math.round(cam.y/size)-Math.round(cam.scale/size)-1; y<Math.round(cam.y/size)+Math.round(cam.scale/size)+1; y++)
@@ -122,14 +173,17 @@ function drawField()
 			{
 				if(blocks[X%mapSize][Y%mapSize].resource==sand)
 				{
-					drawBlock(sandBlock,X,Y);
+					//drawBlock(sandBlock,X,Y);
+					data(sandData,X,Y);
 				}else
 				{
-					drawBlock(grass,X,Y);
+					//drawBlock(grass,X,Y);
+					data(grassData,X,Y);
 				}				
 			}else{
 				ctx.fillStyle="rgb(0,100,255)";
-				ctx.fillRect(scrX(X*size),scrY(Y*size),size/n+l,size/n+l);
+				data(waterData,X,Y);
+				/*ctx.fillRect(scrX(X*size),scrY(Y*size),size/n+l,size/n+l);
 				var step = 7;
 				if(time%(8*step)<2*step)
 				{
@@ -140,7 +194,7 @@ function drawField()
 					ctx.drawImage(water2, scrX(X*size),scrY(Y*size),size/n+l,size/n+l);
 				}else{
 					ctx.drawImage(water3, scrX(X*size),scrY(Y*size),size/n+l,size/n+l);
-				}
+				}*/
 			}
 			//resources
 			if(blocks[X%mapSize][Y%mapSize].resource==flower)
@@ -150,18 +204,18 @@ function drawField()
 			//corners
 			if(X>0 && X<mapSize-1 && Y>0 && Y<mapSize-1)
 			{
-				if(blocks[X-1][Y].type==1 && blocks[X][Y-1].type==1){drawBlock(corner1,X,Y);}
-				if(blocks[X+1][Y].type==1 && blocks[X][Y-1].type==1){drawBlock(corner2,X,Y);}
-				if(blocks[X-1][Y].type==1 && blocks[X][Y+1].type==1){drawBlock(corner3,X,Y);}
-				if(blocks[X+1][Y].type==1 && blocks[X][Y+1].type==1){drawBlock(corner4,X,Y);}
+				if(blocks[X-1][Y].type==1 && blocks[X][Y-1].type==1 && blocks[X][Y].type==0){drawBlock(corner1,X,Y);}
+				if(blocks[X+1][Y].type==1 && blocks[X][Y-1].type==1 && blocks[X][Y].type==0){drawBlock(corner2,X,Y);}
+				if(blocks[X-1][Y].type==1 && blocks[X][Y+1].type==1 && blocks[X][Y].type==0){drawBlock(corner3,X,Y);}
+				if(blocks[X+1][Y].type==1 && blocks[X][Y+1].type==1 && blocks[X][Y].type==0){drawBlock(corner4,X,Y);}
 			}
 			//grass corners
 			if(X>0 && X<mapSize-1 && Y>0 && Y<mapSize-1 && (blocks[X][Y].resource==sand || blocks[X][Y].type==1))
 			{
-				if(blocks[X-1][Y].resource!=sand && blocks[X][Y-1].resource!=sand && blocks[X-1][Y].type==0 && blocks[X][Y-1].type==0){drawBlock(grassCorner1,X,Y);}
-				if(blocks[X+1][Y].resource!=sand && blocks[X][Y-1].resource!=sand && blocks[X+1][Y].type==0 && blocks[X][Y-1].type==0){drawBlock(grassCorner2,X,Y);}
-				if(blocks[X-1][Y].resource!=sand && blocks[X][Y+1].resource!=sand && blocks[X-1][Y].type==0 && blocks[X][Y+1].type==0){drawBlock(grassCorner3,X,Y);}
-				if(blocks[X+1][Y].resource!=sand && blocks[X][Y+1].resource!=sand && blocks[X+1][Y].type==0 && blocks[X][Y+1].type==0){drawBlock(grassCorner4,X,Y);}
+				if(blocks[X-1][Y].resource!=sand && blocks[X][Y-1].resource!=sand && blocks[X-1][Y].type==0 && blocks[X][Y-1].type==0 && blocks[X-1][Y-1].type==0){drawBlock(grassCorner1,X,Y);}
+				if(blocks[X+1][Y].resource!=sand && blocks[X][Y-1].resource!=sand && blocks[X+1][Y].type==0 && blocks[X][Y-1].type==0 && blocks[X+1][Y-1].type==0){drawBlock(grassCorner2,X,Y);}
+				if(blocks[X-1][Y].resource!=sand && blocks[X][Y+1].resource!=sand && blocks[X-1][Y].type==0 && blocks[X][Y+1].type==0 && blocks[X-1][Y+1].type==0){drawBlock(grassCorner3,X,Y);}
+				if(blocks[X+1][Y].resource!=sand && blocks[X][Y+1].resource!=sand && blocks[X+1][Y].type==0 && blocks[X][Y+1].type==0 && blocks[X+1][Y+1].type==0){drawBlock(grassCorner4,X,Y);}
 			}
 			//sand corners
 			if(X>0 && X<mapSize-1 && Y>0 && Y<mapSize-1 && blocks[X][Y].resource!=sand)
@@ -190,11 +244,20 @@ function drawField()
 				ctx.drawImage(treeImg, scrX(X*size),scrY(Y*size-size),size/n+l,size*2/n+l);
 			}
 		}
-		if(y==Math.round(player.y/size)-1) //player
+		//player
+		if(y==Math.round(player.y/size)-1) 
 		{
 			ctx.strokeStyle="red";
 			ctx.lineWidth=15/n;
 			ctx.drawImage(playerImg,scrX(player.x-size/2),scrY(player.y-size*2),size/n,size*2/n);
 		}
+		for(var i=0; i<monsters.length; i++)
+		{
+			if(y==Math.round(monsters[i].y/size)-1) 
+			{
+				ctx.drawImage(cowImg, scrX(monsters[i].x-size/2), scrY(monsters[i].y-size), size/n, size/n);
+			}
+		}
 	}
+	
 }

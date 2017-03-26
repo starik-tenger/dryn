@@ -23,6 +23,27 @@ function checkMouse()
 	mouseY = event.pageY;
 }
 
+function distance(x,y,x1,y1)
+{
+	var a = x-x1;
+	var b = y-y1;
+	return Math.sqrt(a*a+b*b);
+}
+
+function rotation(x,y,x1,y1)
+{
+	var a = x-x1;
+	var b = y-y1;
+	var c =  Math.sqrt(a*a+b*b);
+	if(c>0)
+	{
+		return Math.asin(b/c);
+	}else
+	{
+		return -Math.asin(b/c);
+	}
+}
+
 function onWheel(e) {
   e = e || window.event;
   var delta = e.deltaY || e.detail || e.wheelDelta;
@@ -31,11 +52,13 @@ function onWheel(e) {
 
 function keydown(e)
 {
-	//console.log(e.keyCode);
 	switch(e.keyCode)
 	{
 		case 87:
 			key.w=1;
+			break;
+		case 16:
+			key.shift=1;
 			break;
 	}
 }
@@ -46,6 +69,9 @@ function keyup(e)
 	{
 		case 87:
 			key.w=0;
+			break;
+		case 16:
+			key.shift=0;
 			break;
 	}
 }
