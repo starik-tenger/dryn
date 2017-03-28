@@ -121,28 +121,23 @@ function setMonster(type,x,y)
 			this.direction=randomInterval(0,360);
 			this.fX = Math.cos(this.direction)*this.speed;
 			this.fY = Math.sin(this.direction)*this.speed;
-			if(blocks[cell(this.x)][cell(this.y)].biom!=field)
+			if(blocks[cell(this.x)][cell(this.y)].biom==forest)
 			{
-				this.speed=0;
 				if(blocks[cell(this.x)-1][cell(this.y)].biom==field)
 				{
 					this.fX=-this.speed;
-					this.fY=0;
 				}
 				if(blocks[cell(this.x)+1][cell(this.y)].biom==field)
 				{
 					this.fX=this.speed;
-					this.fY=0;
 				}
-				if(blocks[cell(this.x)][cell(this.y)-1].biom==field)
+				if(blocks[cell(this.x)][cell(this.y-1)].biom==field)
 				{
 					this.fY=-this.speed;
-					this.fX=0;
 				}
-				if(blocks[cell(this.x)][cell(this.y)+1].biom==field)
+				if(blocks[cell(this.x)][cell(this.y+1)].biom==field)
 				{
 					this.fY=this.speed;
-					this.fX=0;
 				}
 			}
 		}
