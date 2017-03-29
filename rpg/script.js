@@ -71,7 +71,8 @@ function setMonster(type,x,y)
 	monsters[monsters.length-1].move = function()
 	{
 		this.think();
-		
+		if(blocks[cell(this.x)][cell(this.y)].surface==bogSurface){this.fX=this.fX/1.5;this.fY=this.fY/1.5;}
+		if(blocks[cell(this.x)][cell(this.y)].surface==puddle){this.fX=this.fX/2;this.fY=this.fY/2;}
 		for(var i=0; i<Math.abs(this.fX); i++)
 		{	this.end();
 			if(this.fX>0 && blocks[cell(this.x+1)][cell(this.y)].type==0)
@@ -208,7 +209,7 @@ for(var i=0; i<1000000; i++)
 {
 	player.x=randomInterval(50,mapSize-50);
 	player.y=randomInterval(50,mapSize-50);
-	if(blocks[player.x][player.y].type==0)
+	if(blocks[player.x][player.y].type==0 && blocks[player.x][player.y].biom==field)
 	{
 		break;
 	}
@@ -256,6 +257,8 @@ function cell(a)
 
 player.move=function()
 {
+	if(blocks[cell(player.x)][cell(player.y)].surface==bogSurface){player.fX=player.fX/1.5;player.fY=player.fY/1.5;}
+	if(blocks[cell(player.x)][cell(player.y)].surface==puddle){player.fX=player.fX/2;player.fY=player.fY/2;}
 	for(var i=0; i<Math.abs(player.fX); i++)
 	{
 		if(player.fX>0 && blocks[cell(player.x+1)][cell(player.y)].type==0)
@@ -304,7 +307,7 @@ function interval()
 			var a = player.x-dropList[i].x;
 			var b = player.y-dropList[i].y;
 			var c = Math.sqrt(a*a+b*b);
-			var speed = (3-distance(dropList[i].x,dropList[i].y,player.x,player.y)/size)*3;
+			var speed = (3-distance(dropList[i].x,dropList[i].y,player.x,player.y)/size)*10;
 			dropList[i].fX=a*speed/c;
 			dropList[i].fY=b*speed/c;
 		}else

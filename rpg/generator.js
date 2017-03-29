@@ -16,11 +16,13 @@ const water=1;
 const grass=2;
 const sand=3;
 const bogSurface = 4;
+const puddle = 5;
 
 //resorces const
 const tree = 1;
 const cactus = 2;
 const flower = 3;
+const stone = 4;
 
 for(var x=0; x<mapSize; x++)
 {
@@ -270,6 +272,11 @@ for(var x=0; x<mapSize; x++)
 				blocks[x][y].type=1;
 				blocks[x][y].surface=water;
 			}
+			if(randomInterval(0,5)==0)
+			{
+				blocks[x][y].type=0;
+				blocks[x][y].surface=puddle;
+			}
 		}
 	}
 }
@@ -278,6 +285,7 @@ for(var x=0; x<mapSize; x++)
 //resources
 var trees = 3;
 var cactuses = 8;
+var stones = 10;
 for(var x=0; x<mapSize; x++)
 {
 	for(var y=0; y<mapSize; y++)
@@ -293,6 +301,11 @@ for(var x=0; x<mapSize; x++)
 		if(randomInterval(0,cactuses)==0 && blocks[x][y].biom==desert && blocks[x][y].surface==sand)
 		{
 			blocks[x][y].resource=cactus;
+		}
+		if(randomInterval(0,stones)==0 && blocks[x][y].biom==bog && blocks[x][y].surface==bogSurface)
+		{
+			blocks[x][y].resource=stone;
+			blocks[x][y].type=1;
 		}
 	}
 }

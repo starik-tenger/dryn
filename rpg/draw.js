@@ -20,6 +20,8 @@ var sandBlock = new Image();
 	sandBlock.src="textures/blocks/sand.png";
 var bogImg = new Image();
 	bogImg.src="textures/blocks/bog.png";
+var puddleImg = new Image();
+	puddleImg.src="textures/blocks/puddle.png";
 	
 //resources
 var treeImg = new Image();
@@ -28,6 +30,8 @@ var cactusImg = new Image();
 	cactusImg.src="textures/blocks/cactus.png";
 var flowerImg = new Image();
 	flowerImg.src="textures/blocks/flower.png";
+var stoneImg = new Image();
+	stoneImg.src="textures/blocks/stone.png";
 	
 //monsters
 var cowImg = new Image();
@@ -180,6 +184,9 @@ function drawField()
 	c.drawImage(grassImg,0,0,Math.round(size/n+l),Math.round(size/n+l));
 	c.drawImage(bogImg,0,0,Math.round(size/n+l),Math.round(size/n+l));
 		var bogData = c.getImageData(0,0,Math.round(size/n+l),Math.round(size/n+l));
+	c.drawImage(grassImg,0,0,Math.round(size/n+l),Math.round(size/n+l));
+	c.drawImage(puddleImg,0,0,Math.round(size/n+l),Math.round(size/n+l));
+		var puddleData = c.getImageData(0,0,Math.round(size/n+l),Math.round(size/n+l));
 	
 	//corners
 	var corner1Data = newData(corner1,Math.round(size/n+l),Math.round(size/n+l));
@@ -195,19 +202,24 @@ function drawField()
 		if(x>mapSize){X=x-mapSize;}
 		if(y<0){Y=mapSize+y;}
 		if(y>mapSize){Y=y-mapSize;}
-			if(blocks[X%mapSize][Y%mapSize].surface==sand)
+			switch(blocks[X%mapSize][Y%mapSize].surface)
 			{
-				data(sandData,X,Y);
-			}else if(blocks[X%mapSize][Y%mapSize].surface==grass)
-			{
-				data(grassData,X,Y);
-			}else if(blocks[X%mapSize][Y%mapSize].surface==water)
-			{
-				data(waterData,X,Y);
-			}else if(blocks[X%mapSize][Y%mapSize].surface==bogSurface)
-			{
-				data(bogData,X,Y);
-			}				
+				case sand: 
+					data(sandData,X,Y);
+					break;
+				case grass:
+					data(grassData,X,Y);
+					break;
+				case water:
+					data(waterData,X,Y);
+					break;
+				case bogSurface:
+					data(bogData,X,Y);
+					break;
+				case puddle:
+					data(puddleData,X,Y);
+					break;
+			}
 			//resources
 			if(blocks[X%mapSize][Y%mapSize].resource==flower)
 			{
@@ -257,6 +269,9 @@ function drawField()
 					break;
 				case cactus:
 					ctx.drawImage(cactusImg, scrX(X*size),scrY(Y*size-size*1.5),size/n+l,size*2/n+l);
+					break;
+				case stone:
+					ctx.drawImage(stoneImg, scrX(X*size),scrY(Y*size-size*1.5),size/n+l,size*2/n+l);
 					break;
 			}
 		}
