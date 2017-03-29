@@ -62,15 +62,11 @@ function drop(type)
 var monsters=[];
 function setMonster(type,x,y)
 {
-	monsters.push({type: type, x: x, y: y, direction: randomInterval(0,360), fX: 40, fY: 0, speed: 0, time: 0});
+	monsters.push({type: type, x: x, y: y, direction: randomInterval(0,360), fX: 0, fY: 0, speed: 0, time: 0});
 	if(monsters[monsters.length-1].type==cow)monsters[monsters.length-1].speed=2;
 	if(monsters[monsters.length-1].type==wolf)monsters[monsters.length-1].speed=5;
 	monsters[monsters.length-1].end = function()
 	{
-		if(this.x<1)this.x=mapSize*size-1;
-		if(this.x>mapSize*size-1)this.x=1;
-		if(this.y<1)this.y=mapSize*size-1;
-		if(this.y>mapSize*size-1)this.y=1;
 	}
 	monsters[monsters.length-1].move = function()
 	{
@@ -115,15 +111,15 @@ function setMonster(type,x,y)
 			var c = Math.sqrt(a*a+b*b);
 			this.fX=-a*this.speed/c;
 			this.fY=-b*this.speed/c;
-		}else if(this.time%50==0)
+		}else 
 		{
+			
 			this.speed=2;
-			this.direction=randomInterval(0,360);
+			if(this.time%50==0){this.direction=randomInterval(0,360);}
 			this.fX = Math.cos(this.direction)*this.speed;
 			this.fY = Math.sin(this.direction)*this.speed;
 			if(blocks[cell(this.x)][cell(this.y)].biom!=field)
 			{
-				this.speed=0;
 				if(blocks[cell(this.x)-1][cell(this.y)].biom==field)
 				{
 					this.fX=-this.speed;
@@ -187,21 +183,25 @@ function setMonster(type,x,y)
 	}
 }
 //monsters
-for(var x=50; x<mapSize-50; x++)
+function generateMonsters()
 {
-	for(var y=50; y<mapSize-50; y++)
+	for(var x=50; x<mapSize-50; x++)
 	{
-		if(blocks[x][y].type==0 && randomInterval(0,100)==0 && blocks[x][y].biom==field)
+		for(var y=50; y<mapSize-50; y++)
 		{
-			setMonster(cow,x*size,y*size);
-		}
-		if(blocks[x][y].type==0 && randomInterval(0,100)==0 && blocks[x][y].biom==forest)
-		{
-			setMonster(wolf,x*size,y*size);
+			if(randomInterval(0,100)==0 && blocks[x][y].biom==field)
+			{
+				setMonster(cow,x*size,y*size);
+				//console.log(blocks[x][y].biom);
+			}
+			if(randomInterval(0,100)==0 && blocks[x][y].biom==forest)
+			{
+				setMonster(wolf,x*size,y*size);
+			}
 		}
 	}
 }
-
+generateMonsters()
 //--------------------------------------------------------------------------------------------------------------------------------
 //spawn player
 for(var i=0; i<1000000; i++)

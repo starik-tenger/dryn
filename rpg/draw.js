@@ -11,18 +11,15 @@ var cursorImg = new Image();
 var woodImg = new Image();
 	woodImg.src="textures/resources/wood.png";
 	
+//surfaces
 var waterImg = new Image();
 	waterImg.src="textures/blocks/water/water.png";
-var water1 = new Image();
-	water1.src="textures/blocks/water/water1.png";
-var water2 = new Image();
-	water2.src="textures/blocks/water/water2.png";
-var water3 = new Image();
-	water3.src="textures/blocks/water/water3.png";
 var grassImg = new Image();
 	grassImg.src="textures/blocks/grass.png";
 var sandBlock = new Image();
 	sandBlock.src="textures/blocks/sand.png";
+var bogImg = new Image();
+	bogImg.src="textures/blocks/bog.png";
 	
 //resources
 var treeImg = new Image();
@@ -180,6 +177,9 @@ function drawField()
 	c.drawImage(sandBlock,0,0,Math.round(size/n+l),Math.round(size/n+l));
 		var sandData = c.getImageData(0,0,Math.round(size/n+l),Math.round(size/n+l));
 	var waterData = newData(waterImg,Math.round(size/n+l),Math.round(size/n+l));
+	c.drawImage(grassImg,0,0,Math.round(size/n+l),Math.round(size/n+l));
+	c.drawImage(bogImg,0,0,Math.round(size/n+l),Math.round(size/n+l));
+		var bogData = c.getImageData(0,0,Math.round(size/n+l),Math.round(size/n+l));
 	
 	//corners
 	var corner1Data = newData(corner1,Math.round(size/n+l),Math.round(size/n+l));
@@ -204,6 +204,9 @@ function drawField()
 			}else if(blocks[X%mapSize][Y%mapSize].surface==water)
 			{
 				data(waterData,X,Y);
+			}else if(blocks[X%mapSize][Y%mapSize].surface==bogSurface)
+			{
+				data(bogData,X,Y);
 			}				
 			//resources
 			if(blocks[X%mapSize][Y%mapSize].resource==flower)
@@ -213,18 +216,18 @@ function drawField()
 			//corners
 			if(X>0 && X<mapSize-1 && Y>0 && Y<mapSize-1)
 			{
-				if(blocks[X-1][Y].type==1 && blocks[X][Y-1].type==1 && blocks[X][Y].type==0){drawBlock(corner1,X,Y);}
-				if(blocks[X+1][Y].type==1 && blocks[X][Y-1].type==1 && blocks[X][Y].type==0){drawBlock(corner2,X,Y);}
-				if(blocks[X-1][Y].type==1 && blocks[X][Y+1].type==1 && blocks[X][Y].type==0){drawBlock(corner3,X,Y);}
-				if(blocks[X+1][Y].type==1 && blocks[X][Y+1].type==1 && blocks[X][Y].type==0){drawBlock(corner4,X,Y);}
+				if(blocks[X-1][Y].surface==water && blocks[X][Y-1].surface==water && blocks[X][Y].surface!=water){drawBlock(corner1,X,Y);}
+				if(blocks[X+1][Y].surface==water && blocks[X][Y-1].surface==water && blocks[X][Y].surface!=water){drawBlock(corner2,X,Y);}
+				if(blocks[X-1][Y].surface==water && blocks[X][Y+1].surface==water && blocks[X][Y].surface!=water){drawBlock(corner3,X,Y);}
+				if(blocks[X+1][Y].surface==water && blocks[X][Y+1].surface==water && blocks[X][Y].surface!=water){drawBlock(corner4,X,Y);}
 			}
 			//grass corners
-			if(X>0 && X<mapSize-1 && Y>0 && Y<mapSize-1 && (blocks[X][Y].surface==sand || blocks[X][Y].type==1))
+			if(X>0 && X<mapSize-1 && Y>0 && Y<mapSize-1 && (blocks[X][Y].surface==sand || blocks[X][Y].surface==water))
 			{
-				if(blocks[X-1][Y].surface!=sand && blocks[X][Y-1].surface!=sand && blocks[X-1][Y].type==0 && blocks[X][Y-1].type==0 && blocks[X-1][Y-1].type==0){drawBlock(grassCorner1,X,Y);}
-				if(blocks[X+1][Y].surface!=sand && blocks[X][Y-1].surface!=sand && blocks[X+1][Y].type==0 && blocks[X][Y-1].type==0 && blocks[X+1][Y-1].type==0){drawBlock(grassCorner2,X,Y);}
-				if(blocks[X-1][Y].surface!=sand && blocks[X][Y+1].surface!=sand && blocks[X-1][Y].type==0 && blocks[X][Y+1].type==0 && blocks[X-1][Y+1].type==0){drawBlock(grassCorner3,X,Y);}
-				if(blocks[X+1][Y].surface!=sand && blocks[X][Y+1].surface!=sand && blocks[X+1][Y].type==0 && blocks[X][Y+1].type==0 && blocks[X+1][Y+1].type==0){drawBlock(grassCorner4,X,Y);}
+				if(blocks[X-1][Y].surface!=sand && blocks[X][Y-1].surface!=sand && blocks[X-1][Y].surface!=water && blocks[X][Y-1].surface!=water && blocks[X-1][Y-1].surface!=water){drawBlock(grassCorner1,X,Y);}
+				if(blocks[X+1][Y].surface!=sand && blocks[X][Y-1].surface!=sand && blocks[X+1][Y].surface!=water && blocks[X][Y-1].surface!=water && blocks[X+1][Y-1].surface!=water){drawBlock(grassCorner2,X,Y);}
+				if(blocks[X-1][Y].surface!=sand && blocks[X][Y+1].surface!=sand && blocks[X-1][Y].surface!=water && blocks[X][Y+1].surface!=water && blocks[X-1][Y+1].surface!=water){drawBlock(grassCorner3,X,Y);}
+				if(blocks[X+1][Y].surface!=sand && blocks[X][Y+1].surface!=sand && blocks[X+1][Y].surface!=water && blocks[X][Y+1].surface!=water && blocks[X+1][Y+1].surface!=water){drawBlock(grassCorner4,X,Y);}
 			}
 			//sand corners
 			if(X>0 && X<mapSize-1 && Y>0 && Y<mapSize-1 && blocks[X][Y].surface!=sand)
@@ -247,17 +250,18 @@ function drawField()
 				if(x>mapSize){X=x-mapSize;}
 				if(y<0){Y=mapSize+y;}
 				if(y>mapSize){Y=y-mapSize;}
-			if(blocks[X%mapSize][Y%mapSize].resource==tree) //trees
+			switch(blocks[X%mapSize][Y%mapSize].resource)
 			{
-				ctx.drawImage(treeImg, scrX(X*size),scrY(Y*size-size),size/n+l,size*2/n+l);
-			}
-			if(blocks[X%mapSize][Y%mapSize].resource==cactus) //cactuses
-			{
-				ctx.drawImage(cactusImg, scrX(X*size),scrY(Y*size-size),size/n+l,size*2/n+l);
+				case tree:
+					ctx.drawImage(treeImg, scrX(X*size),scrY(Y*size-size*1.5),size/n+l,size*2/n+l);
+					break;
+				case cactus:
+					ctx.drawImage(cactusImg, scrX(X*size),scrY(Y*size-size*1.5),size/n+l,size*2/n+l);
+					break;
 			}
 		}
 		//player
-		if(y==Math.round((player.y-size/2)/size)-1) 
+		if(y==Math.round((player.y-size/4)/size)-1) //
 		{
 			ctx.strokeStyle="red";
 			ctx.lineWidth=15/n;
@@ -266,7 +270,7 @@ function drawField()
 		//monsters
 		for(var i=0; i<monsters.length; i++)
 		{
-			if(y==Math.round((monsters[i].y-size/2)/size)-1) 
+			if(y==Math.round((monsters[i].y-size/4)/size)-1) //
 			{
 				if(monsters[i].type==cow)ctx.drawImage(cowImg, scrX(monsters[i].x-size/2), scrY(monsters[i].y-size), size/n, size/n);
 				if(monsters[i].type==wolf)ctx.drawImage(wolfImg, scrX(monsters[i].x-size/2), scrY(monsters[i].y-size), size/n, size/n);

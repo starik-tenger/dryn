@@ -9,11 +9,13 @@ var lakes = 300;
 const field = 1;
 const forest = 2;
 const desert = 3;
+const bog = 4;
 
 //surface const
 const water=1;
 const grass=2;
 const sand=3;
+const bogSurface = 4;
 
 //resorces const
 const tree = 1;
@@ -30,6 +32,7 @@ for(var x=0; x<mapSize; x++)
 		{
 			blocks[x][y].surface=water;
 			blocks[x][y].type=1;
+			blocks[x][y].biom=0;
 		}
 	}
 }
@@ -93,6 +96,7 @@ function map()
 			{
 				blocks[x][y].type=1;
 				blocks[x][y].surface=water;
+				blocks[x][y].biom=0;
 			}
 		}
 	}
@@ -111,6 +115,7 @@ for(var x=0; x<mapSize; x+=1)
 		{
 			blocks[x][y].type=1;
 			blocks[x][y].surface=water;
+			blocks[x][y].biom=0;
 		}
 	}
 }
@@ -133,6 +138,7 @@ function smooth(s)
 				{
 					blocks[x][y].type=1;
 					blocks[x][y].surface=water;
+					blocks[x][y].biom=0;
 				}
 			}
 		}
@@ -170,8 +176,9 @@ for(var i=0; i<10; i++)
 		}
 }
 
-var forestStart = 1000;
-var desertStart = 2000;
+var forestStart = 10000;
+var desertStart = 15000;
+var bogStart = 20000;
 for(var x=0; x<mapSize; x++)
 {
 	for(var y=0; y<mapSize; y++)
@@ -184,9 +191,13 @@ for(var x=0; x<mapSize; x++)
 		{
 			blocks[x][y].biom=desert;
 		}
+		if(randomInterval(0,bogStart)==0 && blocks[x][y].type==0)
+		{
+			blocks[x][y].biom=bog;
+		}
 	}
 }
-for(var i=0; i<60; i++)
+for(var i=0; i<110; i++)
 {
 	biomNeighbor(desert);
 	for(var x=0; x<mapSize; x++)
@@ -196,7 +207,6 @@ for(var i=0; i<60; i++)
 			if(randomInterval(0,4-blocks[x][y].biomNeighbors)==0 && blocks[x][y].type==0 && blocks[x][y].biomNeighbors>0)
 			{
 				blocks[x][y].biom=desert;
-				blocks[x][y].surface=sand;
 			}
 		}
 	}
@@ -211,8 +221,22 @@ for(var i=0; i<60; i++)
 				blocks[x][y].surface=grass;
 			}
 		}
-	}	
+	}
+	biomNeighbor(bog);
+	for(var x=0; x<mapSize; x++)
+	{
+		for(var y=0; y<mapSize; y++)
+		{
+			if(randomInterval(0,4-blocks[x][y].biomNeighbors)==0 && blocks[x][y].type==0 && blocks[x][y].biomNeighbors>0)
+			{
+				blocks[x][y].biom=bog;
+			}
+		}
+	}
 }
+
+
+
 //field biom
 for(var i=0; i<15; i++)
 {
@@ -229,7 +253,26 @@ for(var i=0; i<15; i++)
 	}
 }
 
-
+//sand in desert, bog
+for(var x=0; x<mapSize; x++)
+{
+	for(var y=0; y<mapSize; y++)
+	{
+		if(blocks[x][y].biom==desert)
+		{
+			blocks[x][y].surface=sand;
+		}
+		if(blocks[x][y].biom==bog)
+		{
+			blocks[x][y].surface=bogSurface;
+			if(randomInterval(0,5)==0)
+			{
+				blocks[x][y].type=1;
+				blocks[x][y].surface=water;
+			}
+		}
+	}
+}
 
 
 //resources
@@ -239,7 +282,7 @@ for(var x=0; x<mapSize; x++)
 {
 	for(var y=0; y<mapSize; y++)
 	{
-		if((randomInterval(0,trees)==0 && blocks[x][y].biom==forest || randomInterval(0,trees*15)==0) && blocks[x][y].surface==grass)
+		if(((randomInterval(0,trees)==0 && blocks[x][y].biom==forest || randomInterval(0,trees*15)==0) && blocks[x][y].surface==grass) || randomInterval(0,trees*5)==0 && blocks[x][y].surface==bogSurface)
 		{
 			blocks[x][y].resource=tree;
 		}
@@ -253,3 +296,4 @@ for(var x=0; x<mapSize; x++)
 		}
 	}
 }
+
