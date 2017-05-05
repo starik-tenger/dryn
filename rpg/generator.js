@@ -1,7 +1,7 @@
 var start=10000;
 var blocks=[];
 var mapSize=1000;
-var steps = 70;;
+var steps = 100;
 var lakeSize = 5;
 var lakes = 300;
 
@@ -24,6 +24,7 @@ const cactus = 2;
 const flower = 3;
 const stone = 4;
 
+//creating matrix
 for(var x=0; x<mapSize; x++)
 {
 	blocks.push([]);
@@ -104,11 +105,12 @@ function map()
 	}
 	neighbor();
 }
-
+//water
 for(var i=0; i<steps-lakeSize; i++)
 {
 	map();
 }
+//start points for lakes
 for(var x=0; x<mapSize; x+=1)
 {
 	for(var y=0; y<mapSize; y+=1)
@@ -179,7 +181,7 @@ for(var i=0; i<10; i++)
 }
 
 var forestStart = 10000;
-var desertStart = 15000;
+var desertStart = 30000;
 var bogStart = 20000;
 for(var x=0; x<mapSize; x++)
 {
@@ -199,7 +201,7 @@ for(var x=0; x<mapSize; x++)
 		}
 	}
 }
-for(var i=0; i<110; i++)
+for(var i=0; i<150; i++)
 {
 	biomNeighbor(desert);
 	for(var x=0; x<mapSize; x++)
@@ -255,7 +257,7 @@ for(var i=0; i<15; i++)
 	}
 }
 
-//sand in desert, bog
+//surfaces
 for(var x=0; x<mapSize; x++)
 {
 	for(var y=0; y<mapSize; y++)
@@ -302,7 +304,7 @@ for(var x=0; x<mapSize; x++)
 		{
 			blocks[x][y].resource=cactus;
 		}
-		if(randomInterval(0,stones)==0 && blocks[x][y].biom==bog && blocks[x][y].surface==bogSurface)
+		if(randomInterval(0,stones)==0 && blocks[x][y].biom==bog && blocks[x][y].surface==bogSurface || randomInterval(0,stones*20)==0 && blocks[x][y].biom!=0)
 		{
 			blocks[x][y].resource=stone;
 			blocks[x][y].type=1;

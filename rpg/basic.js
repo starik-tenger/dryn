@@ -63,6 +63,12 @@ function keydown(e)
 		case 69:
 			key.e=1;
 			break;
+		case 37:
+			key.left=1;
+			break;
+		case 39:
+			key.right=1;
+			break;
 	}
 }
 
@@ -78,6 +84,12 @@ function keyup(e)
 			break;
 		case 69:
 			key.e=0;
+			break;
+		case 37:
+			key.left=0;
+			break;
+		case 39:
+			key.right=0;
 			break;
 	}
 }

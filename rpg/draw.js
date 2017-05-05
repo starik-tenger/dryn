@@ -2,14 +2,27 @@ var pixel =1;
 var n =(cam.scale/(screen.height))/pixel;
 //----------------------------------------------------------------------------------------------------------------------------------------
 //images
+{
 var playerImg = new Image();
 	playerImg.src="textures/player.png";
 var cursorImg = new Image();
 	cursorImg.src="textures/cursor.png";
-
+var heart = new Image();
+	heart.src="textures/heart.png";
+var halfHeart = new Image();
+	halfHeart.src="textures/half-heart.png";
+var voidHeart = new Image();
+	voidHeart.src="textures/void-heart.png";
+	
 //rersources(player)
 var woodImg = new Image();
 	woodImg.src="textures/resources/wood.png";
+
+//tools
+var axeImg = new Image();
+	axeImg.src="textures/tools/axe.png";
+var gunImg = new Image();
+	gunImg.src="textures/tools/gun.png";
 	
 //surfaces
 var waterImg = new Image();
@@ -66,7 +79,7 @@ var sandCorner3 = new Image();
 	sandCorner3.src = "textures/blocks/corners/sand1/corner3.png";
 var sandCorner4 = new Image();
 	sandCorner4.src = "textures/blocks/corners/sand1/corner4.png";
-	
+}
 
 
 
@@ -104,10 +117,45 @@ function draw()
 		ctx.drawImage(woodImg,scrX(dropList[i].x),scrY(dropList[i].y),size/2/n,size/2/n);
 	}
 	
-	ctx.drawImage(woodImg,20,(screen.width-screen.height)/2+20,64,64);
+	ctx.drawImage(woodImg,20,(screen.width-screen.height)/2+138,64,64);
 	ctx.font= "60px Arial";
 	ctx.fillStyle="black";
-	ctx.fillText(player.resources.wood, 84, (screen.width-screen.height)/2+84);
+	ctx.fillText(player.resources.wood, 84, (screen.width-screen.height)/2+128+64);
+	
+	for(var i=0; i<player.tools.length; i++)
+	{
+		if(i==player.tool)
+		{
+			ctx.drawImage(cursorImg,screen.width/2-64*player.tools.length+i*128,(screen.width-screen.height)/2+screen.height-138,128,128);
+		}
+		ctx.globalAlpha = 1-player.tools[i].time/player.tools[i].recharge;
+		switch(player.tools[i].type)
+		{
+			case axe:
+				ctx.drawImage(axeImg,screen.width/2-64*player.tools.length+i*128,(screen.width-screen.height)/2+screen.height-138,128,128);
+				break;
+			case gun:
+				ctx.drawImage(gunImg,screen.width/2-64*player.tools.length+i*128,(screen.width-screen.height)/2+screen.height-138,128,128);
+				break;
+		}
+		ctx.globalAlpha=1;
+		ctx.fillStyle="black";
+		ctx.font= "30px Arial";
+		ctx.fillText(player.tools[i].strength, screen.width/2-64*player.tools.length+i*128+32, (screen.width-screen.height)/2+screen.height-10);
+	}
+	
+	//HP
+	for(var i=0; i<player.maxHP/2; i++)
+	{
+		if(player.HP/2>i)
+		{
+			ctx.drawImage(heart, i*54, (screen.width-screen.height)/2, 64, 64);
+			if(player.HP/2-i<1)ctx.drawImage(halfHeart, i*54, (screen.width-screen.height)/2, 64, 64);
+		}else
+		{
+			ctx.drawImage(voidHeart, i*54, (screen.width-screen.height)/2, 64, 64);
+		}
+	}
 	
 }
 function drawLine(startPointX, startPointY, endPointX, endPointY, width)
@@ -198,10 +246,8 @@ function drawField()
 		{
 		var X=x;
 		var Y=y;
-		if(x<0){X=mapSize+x;}
-		if(x>mapSize){X=x-mapSize;}
-		if(y<0){Y=mapSize+y;}
-		if(y>mapSize){Y=y-mapSize;}
+		if(x<0 || x>=mapSize || y<0 || y>=mapSize){continue;}
+
 			switch(blocks[X%mapSize][Y%mapSize].surface)
 			{
 				case sand: 
@@ -258,10 +304,7 @@ function drawField()
 		{
 			var X=x;
 			var Y=y;
-				if(x<0){X=mapSize+x;}
-				if(x>mapSize){X=x-mapSize;}
-				if(y<0){Y=mapSize+y;}
-				if(y>mapSize){Y=y-mapSize;}
+			if(x<0 || x>=mapSize || y<0 || y>=mapSize){continue;}
 			switch(blocks[X%mapSize][Y%mapSize].resource)
 			{
 				case tree:
@@ -292,6 +335,6 @@ function drawField()
 			}
 		}
 	}
-	drawBlock(cursorImg,cursor.x,cursor.y)
+	drawBlock(cursorImg,cell(cursor.x),cell(cursor.y));
 	
 }

@@ -5,7 +5,12 @@ ctx = screen.getContext("2d");
 const cow = 0;
 const wolf = 1;
 
+//resources const
 const wood=1;
+
+//tools const
+const axe = 1;
+const gun = 2;
 
 var mouseDown = 0;
 var size=100;
@@ -14,18 +19,22 @@ var player={
 	y: 250*size, 
 	fX: 50, 
 	fY: 0, 
-	resources: {wood: 0}
+	HP: 20,
+	maxHP: 20,
+	resources: {wood: 0},
+	tools: [{type: axe, strength: 100, recharge: 50, time: 0}, {type: gun, strength: 100, recharge: 100, time: 0}],
+	tool: 0
 };
 var cam={x: 0*size, y: 0*size, scale: 20*size};
 var cursor={x: 0, y: 0};
 
 //drop
 var dropList=[];
-function drop(type)
+function drop(type,x,y)
 {
 	dropList.push({
-		x: cursor.x*size+randomInterval(-size/2,size/2),
-		y: cursor.y*size+randomInterval(-size/2,size/2),
+		x: x+randomInterval(-size/2,size/2),
+		y: y+randomInterval(-size/2,size/2),
 		fX: 0,
 		fY: 0,
 		type: type,
@@ -63,8 +72,10 @@ var monsters=[];
 function setMonster(type,x,y)
 {
 	monsters.push({type: type, x: x, y: y, direction: randomInterval(0,360), fX: 0, fY: 0, speed: 0, time: 0});
-	if(monsters[monsters.length-1].type==cow)monsters[monsters.length-1].speed=2;
-	if(monsters[monsters.length-1].type==wolf)monsters[monsters.length-1].speed=5;
+	var monster = monsters[monsters.length-1];
+	if(monster.type==cow)monsters[monsters.length-1].speed=2;
+	if(monster.type==wolf)monsters[monsters.length-1].speed=5;
+	monster.wait = 100;
 	monsters[monsters.length-1].end = function()
 	{
 	}
@@ -181,14 +192,20 @@ function setMonster(type,x,y)
 				}
 			}
 		}
+		if(distance(player.x,player.y,this.x,this.y)<1*size && this.wait>100)
+		{
+			player.HP-=3;
+			this.wait=0;
+		}
+		this.wait++;
 	}
 }
 //monsters
 function generateMonsters()
 {
-	for(var x=50; x<mapSize-50; x++)
+	for(var x=00; x<mapSize-1; x++)
 	{
-		for(var y=50; y<mapSize-50; y++)
+		for(var y=0; y<mapSize-1; y++)
 		{
 			if(randomInterval(0,100)==0 && blocks[x][y].biom==field)
 			{
@@ -207,8 +224,8 @@ generateMonsters()
 //spawn player
 for(var i=0; i<1000000; i++)
 {
-	player.x=randomInterval(50,mapSize-50);
-	player.y=randomInterval(50,mapSize-50);
+	player.x=randomInterval(0,mapSize-1);
+	player.y=randomInterval(0,mapSize-1);
 	if(blocks[player.x][player.y].type==0 && blocks[player.x][player.y].biom==field)
 	{
 		break;
@@ -228,22 +245,31 @@ function camera()
 
 function cursorMove()
 {
-	cursor.x=cell(mouseX*n+cam.x);
-	cursor.y=cell((mouseY+(screen.width-screen.height)/2)*n+cam.y);
+	cursor.x=mouseX*n+cam.x;
+	cursor.y=(mouseY+(screen.width-screen.height)/2)*n+cam.y;
 	if(mouseDown)
 	{
-		if(blocks[cursor.x][cursor.y].resource==tree)
+		if(blocks[cell(cursor.x)][cell(cursor.y)].resource==tree && player.tools[player.tool].type==axe && player.tools[player.tool].time<=0)
 		{
-			/*dropList.push({
-				x: cursor.x*size+randomInterval(-size/2,size/2),
-				y: cursor.y*size+randomInterval(-size/2,size/2),
-				type: wood
-			});*/
-			drop(wood);
-			drop(wood);
-			drop(wood);
-			blocks[cursor.x][cursor.y].resource=0;
+			var count = randomInterval(1,5);
+			for(var i=0; i<count; i++)
+			{
+				drop(wood,cursor.x,cursor.y);
+			}
+			player.tools[player.tool].strength--;
+			player.tools[player.tool].time=50;
+			blocks[cell(cursor.x)][cell(cursor.y)].resource=0;
 		}
+		if(player.tools[player.tool].type==gun && player.tools[player.tool].time<=0)
+		{
+			setMonster(cow,cursor.x,cursor.y);
+			player.tools[player.tool].time=player.tools[player.tool].recharge;
+		}
+	}
+	player.tools[player.tool].time--;
+	if(player.tools[player.tool].time<0)
+	{
+		player.tools[player.tool].time=0;
 	}
 }
 
@@ -257,6 +283,10 @@ function cell(a)
 
 player.move=function()
 {
+	if(player.HP<=0)
+	{
+		clearInterval(game);
+	}
 	if(blocks[cell(player.x)][cell(player.y)].surface==bogSurface){player.fX=player.fX/1.5;player.fY=player.fY/1.5;}
 	if(blocks[cell(player.x)][cell(player.y)].surface==puddle){player.fX=player.fX/2;player.fY=player.fY/2;}
 	for(var i=0; i<Math.abs(player.fX); i++)
@@ -285,6 +315,7 @@ player.move=function()
 
 player.speed = 10;
 var time = 0;
+var keyTime=0;
 function interval()
 {
 	
@@ -295,6 +326,12 @@ function interval()
 	{
 		player.speed=10;
 	}
+	if(time%4==0)
+	{
+		if(key.right && player.tool<player.tools.length-1)player.tool++;
+		if(key.left && player.tool>0)player.tool--;
+	}
+	
 	camera();
 	cursorMove();
 	player.move();
@@ -344,4 +381,4 @@ function interval()
 	
 	time++;
 }
-setInterval(interval, 20);
+var game = setInterval(interval, 20);
