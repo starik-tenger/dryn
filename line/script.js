@@ -81,31 +81,117 @@ function onWheel(e) {
   cam.FOCUS+=delta/20;
 }
 
-//--------------------------------------------------------------------------------------------------------------------------------
+//math functions--------------------------------------------------------------------------------------------------------------------------------
 
 function random(min, max)
 {
  return Math.floor(Math.random() * (max - min + 1)) + min;
 }
+
+function inRad(num) {
+	return num * Math.PI / 180;
+	}
+	
 //--------------------------------------------------------------------------------------------------------------------------------
 var screen=document.getElementById("screen");
 var ctx = screen.getContext("2d");
-
-var cam = {height: 1000, width: 1000, FOCUS: 500, x: 1666, y: 1666, z: 0};
+//instructions--------------------------------------------------------------------------------------------------------------------------------
+alert("Управление: \n Движение: w,a,s,d \n Поворот: leftkey, rightkey, мышка");
+//--------------------------------------------------------------------------------------------------------------------------------
+function checkWindow()
+{
+	screen.height = document.documentElement.clientHeight-4;
+	screen.width = document.documentElement.clientWidth;
+	cam.height=screen.height;
+	cam.width=screen.width;
+	//ctx.imageSmoothingEnabled = false;
+}
+//camera--------------------------------------------------------------------------------------------------------------------------------
+var cam = {height: 1000, width: 1000, FOCUS: 500, x: 0, y: -2000, z: 0, distance: 50000, directionXZ: 0};
+//points
 var points=[];
 function setPoint(x,y,z)
 {
 	points.push({x: x, y: y, z: z});
 }
-//--------------------------------------------------------------------------------------------------------------------------------
-function projection(n)
+//polygons--------------------------------------------------------------------------------------------------------------------------------
+var polygons=[];
+function setPolygon(x,y,z,x1,y1,z1,x2,y2,z2,color)
 {
-	var point = points[n];
+	polygons.push({
+		point1: {x: x, y: y, z: z}, 
+		point2: {x: x1, y: y1, z: z1}, 
+		point3: {x: x2, y: y2, z: z2}, 
+		color: color, 
+		x: (x+x1+x2)/3, 
+		y: (y+y1+y2)/3, 
+		z: (z+z1+z2)/3,
+		setDistance: function()
+		{
+			this.distance = Math.sqrt(
+				(this.x-cam.x-cam.width/2)*(this.x-cam.x-cam.width/2)+
+				(this.y-cam.y-cam.height/2)*(this.y-cam.y-cam.height/2)+
+				(this.z-cam.z)*(this.z-cam.z)
+			);
+		}
+	});
+	
+}
+
+function drawPolygon(polygon)
+{
+	ctx.beginPath();
+	ctx.moveTo(projection(polygon.point1).x, projection(polygon.point1).y);
+	ctx.lineTo(projection(polygon.point2).x, projection(polygon.point2).y);
+	ctx.lineTo(projection(polygon.point3).x, projection(polygon.point3).y);
+	ctx.closePath();
+	ctx.fillStyle = polygon.color;
+	ctx.lineWidth=2;
+	ctx.strokeStyle="black";
+	ctx.fill();
+}
+
+var polygonsOrder=[];
+function sortPolygons()
+{
+	polygonsOrder=[];
+	for(var i=0; i<polygons.length; i++)
+	{
+		polygons[i].setDistance();
+		if(polygons[i].distance<cam.distance)
+		{
+			polygonsOrder.push(i);
+		}
+	}
+	var buffer;
+	for(var i=0; i<polygonsOrder.length; i++)
+	{
+		for(var j=i+1; j<polygonsOrder.length; j++)
+		{
+			if(polygons[polygonsOrder[j]].distance>polygons[polygonsOrder[i]].distance)
+			{
+				buffer=polygonsOrder[j];
+				polygonsOrder[j]=polygonsOrder[i];
+				polygonsOrder[i]=buffer;
+			}
+		}
+	}
+}
+//projection--------------------------------------------------------------------------------------------------------------------------------
+function projection(point)
+{
+	cam.direction=cam.directionXZ%360;
+	var directionXZ = inRad(cam.direction);
 	var x = point.x-cam.x;
 	var y = point.y-cam.y;
 	var z = point.z-cam.z;
+	var x1 = x*Math.cos(directionXZ)-z*Math.sin(directionXZ);
+	var z1 = x*Math.sin(directionXZ)+z*Math.cos(directionXZ);
+	x=x1;
+	z=z1;
 	var pX= ((cam.width/2 - x) * z) / (z + cam.FOCUS) + x;
 	var pY= ((cam.height/2 - y) * z) / (z + cam.FOCUS) + y;
+	if(z<0)return false;
 	return {x: pX, y: pY};
 }
 //--------------------------------------------------------------------------------------------------------------------------------
@@ -143,49 +229,53 @@ function drawLine(startPointX, startPointY, endPointX, endPointY, width)
 	ctx.stroke();
 }
 
-//--------------------------------------------------------------------------------------------------------------------------------
+//mouse--------------------------------------------------------------------------------------------------------------------------------
+var mouseX=0;
+var mouseXprev=0;
+var sensitivity = 0.05;
+var mouseDown=0;
 
+function mouseD()
+{
+	mouseX=event.pageX;
+	mouseXprev=event.pageX;
+}
+function checkMouse()
+{
+	if(mouseDown==1)
+	{
+		mouseXprev=mouseX;
+		mouseX=event.pageX;
+		cam.directionXZ-=(mouseX-mouseXprev)*sensitivity;
+		console.log(mouseX-mouseXprev);
+	}
+}
+//model--------------------------------------------------------------------------------------------------------------------------------
+for(var i=0; i<1000; i++)
+{
+	var d = randomInterval(-100,100)*1000;
+	var x = randomInterval(-100,100)*1000;
+	var y = randomInterval(-2000,-200);
+	setPolygon(0+x,0,0+d,1000+x,0,0+d,500+x,y,500+d,"red");
+	setPolygon(1000+x,0,1000+d,1000+x,0,0+d,500+x,y,500+d,"yellow");
+	setPolygon(0+x,0,0+d,0+x,0,1000+d,500+x,y,500+d,"blue");
+	setPolygon(0+x,0,1000+d,1000+x,0,1000+d,500+x,y,500+d,"green");
+	
+}
+sortPolygons();
+//draw--------------------------------------------------------------------------------------------------------------------------------
 function draw()
 {
-	ctx.fillRect(0,0,1000,1000);
-	ctx.strokeStyle="white";
-	//ctx.beginPath();
-	//ctx.moveTo(projection(0).x, projection(0).y);
-	prevX = projection(0).x;
-	prevY = projection(0).y;
-	for(var i=0; i<points.length-0; i++)
+	sortPolygons();
+	ctx.clearRect(0,0,cam.width,cam.height);
+	for(var i=0; i<polygonsOrder.length; i++)
 	{
-		//ctx.lineWidth = points[i].z/100;
-		//ctx.lineTo(projection(i).x, projectokion(i).y);
-		var color = points[i].z/10;
-		var point=points[i];
-		//ctx.strokeStyle="rgb("+color+","+color+","+color+")";
-		if(points[i].z>cam.z && points[i].z-cam.z<50000){
-		drawLine(prevX, prevY, projection(i).x, projection(i).y, 2);
-		//drawCube(point.x,point.y,point.z,1000);
-		}
-		prevX = projection(i).x;
-		prevY = projection(i).y;
-		//ctx.fillRect(projection(i).x, projection(i).y,10,10);
+		drawPolygon(polygons[polygonsOrder[i]]);
 	}
+	ctx.fillStyle="black";
+	ctx.fillText(FPS,10,10);
 }
 
-//--------------------------------------------------------------------------------------------------------------------------------
-setSquare();
-//--------------------------------------------------------------------------------------------------------------------------------
-for(var i=0; i<666; i++)
-{
-	setSquare();
-	var d=randomInterval(500,1000);
-	var d1=randomInterval(-100,100);
-	var d2=randomInterval(-100,100);
-	for(var j=0; j<points.length; j++)
-	{
-		points[j].z+=d;
-		points[j].x+=d1;
-		points[j].y+=d2;
-	}
-}
 //--------------------------------------------------------------------------------------------------------------------------------
 var sX=300;
 var sY=300;
@@ -194,30 +284,50 @@ var sStep = 20;
 var choose=randomInterval(2,5);
 var time=0;
 //--------------------------------------------------------------------------------------------------------------------------------
-var speed = 50;
+var speed = 150;
+
+var FRAMES = 0;
+var FPS=0;
+function second()
+{
+	FPS=FRAMES;
+	FRAMES=0;
+}
+
 function step()
 {
-
-	//setPoint(sX,sY,sZ);
-	if(time%100==0)
+	checkWindow();
+	if(key.w)
 	{
-		choose=randomInterval(2,5);
-		//setSquare();
+		cam.x+=Math.sin(inRad(cam.direction)) *speed;
+		cam.z+=Math.cos(inRad(cam.direction)) *speed;
 	}
-	//points.splice(0,1);
-	
-	if(key.w)cam.z+=speed;
-	if(key.s)cam.z-=speed;
-	if(key.a)cam.x-=speed;
-	if(key.d)cam.x+=speed;
+	if(key.s)
+	{
+		cam.x-=Math.sin(inRad(cam.direction)) *speed;
+		cam.z-=Math.cos(inRad(cam.direction)) *speed;
+	}
+	if(key.a)
+	{
+		cam.x+=Math.sin(inRad(cam.direction-90)) *speed;
+		cam.z+=Math.cos(inRad(cam.direction-90)) *speed;
+	}
+	if(key.d)
+	{
+		cam.x+=Math.sin(inRad(cam.direction+90)) *speed;
+		cam.z+=Math.cos(inRad(cam.direction+90)) *speed;
+	}
+	if(key.left)cam.directionXZ-=3;
+	if(key.right)cam.directionXZ+=3;
 	if(key.shift)cam.y+=speed;
 	if(key.space)cam.y-=speed;
 	
 	time++;
-	//cam.FOCUS-=2;
+	FRAMES++;
 	draw();
 }
 //--------------------------------------------------------------------------------------------------------------------------------
 setInterval(step,50);
+setInterval(second,1000);
 
 
