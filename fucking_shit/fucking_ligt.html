@@ -1,0 +1,36 @@
+<!doctype html>
+<head>
+	<title>Fucking spaceship</title>
+</head>
+<body>
+	<canvas id="screen">You browser is a shit. Download new one</canvas>
+	<script>
+		var screen = document.getElementById("screen");
+			var ctx = screen.getContext("2d");
+		var time = 0;
+		function fuck()
+		{
+			screen.height = document.documentElement.clientHeight-4;
+			screen.width = document.documentElement.clientWidth;
+			if(time%2==0)
+			{
+				ctx.fillRect(0, 0, screen.width, screen.height);
+			}else
+			{
+				ctx.clearRect(0, 0, screen.width, screen.height);
+			}
+			frames++;
+			time++;
+		}
+		var frames=0;
+		var fps=0;
+		function second()
+		{
+			fps = frames;
+			frames=0;
+			console.log(fps);
+		}
+		setInterval(fuck,0);
+		setInterval(second,1000);
+	</script>
+</body>
