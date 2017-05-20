@@ -1,6 +1,16 @@
-screen = document.getElementById("screen");
-ctx = screen.getContext("2d");
+//HTML objects
+var screen = document.getElementById("screen");
+var ctx = screen.getContext("2d");
 
+var input=document.getElementById("input");
+var inputSize=document.getElementById("size");
+var inputStart=document.getElementById("startWaterPoints");
+var inputSteps=document.getElementById("steps");
+var inputStartLake=document.getElementById("startLakePoints");
+var inputLakeSize=document.getElementById("lakesSize");
+var inputSmoothing=document.getElementById("smoothing");
+
+//--------------------------------------------------------------------------------------------------------------------------------
 //monster types
 const cow = 0;
 const wolf = 1;
@@ -219,17 +229,22 @@ function generateMonsters()
 		}
 	}
 }
-generateMonsters()
+
 //--------------------------------------------------------------------------------------------------------------------------------
 //spawn player
-for(var i=0; i<1000000; i++)
+function spawnPlayer()
 {
-	player.x=randomInterval(0,mapSize-1);
-	player.y=randomInterval(0,mapSize-1);
-	if(blocks[player.x][player.y].type==0 && blocks[player.x][player.y].biom==field)
+	for(var i=0; i<1000000; i++)
 	{
-		break;
-	}
+		player.x=randomInterval(0,mapSize-1);
+		player.y=randomInterval(0,mapSize-1);
+		if(blocks[player.x][player.y].type==0 && blocks[player.x][player.y].biom==field)
+		{
+			break;
+		}
+	}	
+	player.x=player.x*size;
+	player.y=player.y*size;
 }
 
 var maxZoom = 100;
@@ -273,9 +288,6 @@ function cursorMove()
 	}
 }
 
-player.x=player.x*size;
-player.y=player.y*size;
-
 function cell(a)
 {
 	return Math.round((a)/size-0.5);
@@ -313,7 +325,7 @@ player.move=function()
 	}
 }
 
-player.speed = 10;
+
 var time = 0;
 var keyTime=0;
 function interval()
@@ -381,4 +393,73 @@ function interval()
 	
 	time++;
 }
-var game = setInterval(interval, 20);
+
+function startGame()
+{
+	input.className = "invisible";
+	screen.className = "visible";
+	
+	ctx.font = "500% Arial";
+	ctx.fillText("LOADING",100,100);
+	
+	setTimeout(startWorld, 100);
+}
+
+function startWorld()
+{
+	
+	generate(
+		inputSize.value,
+		inputStart.value,
+		inputSteps.value,
+		inputStartLake.value,
+		inputLakeSize.value,
+		inputSmoothing.value
+	);
+	player={
+		x: 250*size, 
+		y: 250*size, 
+		fX: 50, 
+		fY: 0, 
+		HP: 20,
+		maxHP: 20,
+		speed: 10,
+		resources: {wood: 0},
+		tools: [{type: axe, strength: 100, recharge: 50, time: 0}, {type: gun, strength: 100, recharge: 100, time: 0}],
+		tool: 0,
+		move: function()
+		{
+			if(player.HP<=0)
+			{
+				clearInterval(game);
+			}
+			if(blocks[cell(player.x)][cell(player.y)].surface==bogSurface){player.fX=player.fX/1.5;player.fY=player.fY/1.5;}
+			if(blocks[cell(player.x)][cell(player.y)].surface==puddle){player.fX=player.fX/2;player.fY=player.fY/2;}
+			for(var i=0; i<Math.abs(player.fX); i++)
+			{
+				if(player.fX>0 && blocks[cell(player.x+1)][cell(player.y)].type==0)
+				{
+					player.x++;
+				}else if(player.fX<0 && blocks[cell(player.x-1)][cell(player.y)].type==0)
+				{
+					player.x--;
+				}else
+				{player.fX=0;}
+			}
+			for(var i=0; i<Math.abs(player.fY); i++)
+			{
+				if(player.fY>0 && blocks[cell(player.x)][cell(player.y+1)].type==0)
+				{
+					player.y++;
+				}else if(player.fY<0 && blocks[cell(player.x)][cell(player.y-1)].type==0)
+				{
+					player.y--;
+				}else
+				{player.fY=0;}
+			}
+		}
+	};
+	spawnPlayer();
+	generateMonsters();
+	var game = setInterval(interval, 20);
+}

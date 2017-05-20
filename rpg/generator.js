@@ -1,6 +1,6 @@
-var start=10000;
 var blocks=[];
 var mapSize=1000;
+var start=10000;
 var steps = 100;
 var lakeSize = 5;
 var lakes = 300;
@@ -23,22 +23,6 @@ const tree = 1;
 const cactus = 2;
 const flower = 3;
 const stone = 4;
-
-//creating matrix
-for(var x=0; x<mapSize; x++)
-{
-	blocks.push([]);
-	for(var y=0; y<mapSize; y++)
-	{
-		blocks[x].push({type: 0, neighbors: 0, resource: 0, sandNeighbors: 0, surface: grass, biom: field});
-		if(randomInterval(0,start)==0 || x==0 || y==0 || x==mapSize-1 || y==mapSize-1)
-		{
-			blocks[x][y].surface=water;
-			blocks[x][y].type=1;
-			blocks[x][y].biom=0;
-		}
-	}
-}
 
 function neighbor()
 {
@@ -87,7 +71,7 @@ function biomNeighbor(biom)
 		}
 	}
 }
-neighbor();
+
 
 function map()
 {
@@ -105,28 +89,8 @@ function map()
 	}
 	neighbor();
 }
-//water
-for(var i=0; i<steps-lakeSize; i++)
-{
-	map();
-}
-//start points for lakes
-for(var x=0; x<mapSize; x+=1)
-{
-	for(var y=0; y<mapSize; y+=1)
-	{
-		if(randomInterval(0,lakes)==0)
-		{
-			blocks[x][y].type=1;
-			blocks[x][y].surface=water;
-			blocks[x][y].biom=0;
-		}
-	}
-}
-for(var i=0; i<lakeSize; i++)
-{
-	map();
-}
+
+
 
 //smoothing
 function smooth(s)
@@ -148,166 +112,223 @@ function smooth(s)
 		}
 	}
 }
-smooth(3);
 
-//sand
-neighbor();
-for(var x=0; x<mapSize; x++)
-{
-	for(var y=0; y<mapSize; y++)
-	{
-		if(blocks[x][y].neighbors>0 && blocks[x][y].type==0 && randomInterval(0,17)==0)
-		{
-			blocks[x][y].surface=sand;
-		}
-	}
-}
 
-sandNeighbor();
-for(var i=0; i<10; i++)
+
+
+function generate(size, startWaterPoints, step, lakesCount, lakesSize, smoothing)//mapSize, startWaterPoints, steps, lakes, lakeSize, smoothing
 {
-	sandNeighbor();
+	blocks=[];
+	mapSize=size;
+	start=startWaterPoints;
+	steps = step;
+	lakeSize = lakesSize;
+	lakes = lakesCount;
+	
+	//creating matrix
 	for(var x=0; x<mapSize; x++)
+	{
+		blocks.push([]);
+		for(var y=0; y<mapSize; y++)
 		{
-			for(var y=0; y<mapSize; y++)
+			blocks[x].push({type: 0, neighbors: 0, resource: 0, sandNeighbors: 0, surface: grass, biom: field});
+			if(randomInterval(0,start)==0 || x==0 || y==0 || x==mapSize-1 || y==mapSize-1)
 			{
-				var block=blocks[x][y];
-				if(((block.neighbors>0 && randomInterval(0,1)==0) || (randomInterval(0,4-block.sandNeighbors)<1)) && block.sandNeighbors>0 && blocks[x][y].type==0)
-				{
-					blocks[x][y].surface=sand;
-				}
+				blocks[x][y].surface=water;
+				blocks[x][y].type=1;
+				blocks[x][y].biom=0;
 			}
 		}
-}
-
-var forestStart = 10000;
-var desertStart = 30000;
-var bogStart = 20000;
-for(var x=0; x<mapSize; x++)
-{
-	for(var y=0; y<mapSize; y++)
+	}
+	
+	neighbor();
+	
+	//water
+	for(var i=0; i<steps-lakeSize; i++)
 	{
-		if(randomInterval(0,forestStart)==0 && blocks[x][y].type==0)
+		map();
+	}
+	
+	//start points for lakes
+	for(var x=0; x<mapSize; x+=1)
+	{
+		for(var y=0; y<mapSize; y+=1)
 		{
-			blocks[x][y].biom=forest;
-		}
-		if(randomInterval(0,desertStart)==0 && blocks[x][y].type==0)
-		{
-			blocks[x][y].biom=desert;
-		}
-		if(randomInterval(0,bogStart)==0 && blocks[x][y].type==0)
-		{
-			blocks[x][y].biom=bog;
+			if(randomInterval(0,lakes)==0)
+			{
+				blocks[x][y].type=1;
+				blocks[x][y].surface=water;
+				blocks[x][y].biom=0;
+			}
 		}
 	}
-}
-for(var i=0; i<150; i++)
-{
-	biomNeighbor(desert);
+	
+	for(var i=0; i<lakeSize; i++)
+	{
+		map();
+	}
+	
+	smooth(smoothing);
+	
+	//sand
+	neighbor();
 	for(var x=0; x<mapSize; x++)
 	{
 		for(var y=0; y<mapSize; y++)
 		{
-			if(randomInterval(0,4-blocks[x][y].biomNeighbors)==0 && blocks[x][y].type==0 && blocks[x][y].biomNeighbors>0)
+			if(blocks[x][y].neighbors>0 && blocks[x][y].type==0 && randomInterval(0,17)==0)
+			{
+				blocks[x][y].surface=sand;
+			}
+		}
+	}
+
+	sandNeighbor();
+	for(var i=0; i<10; i++)
+	{
+		sandNeighbor();
+		for(var x=0; x<mapSize; x++)
+			{
+				for(var y=0; y<mapSize; y++)
+				{
+					var block=blocks[x][y];
+					if(((block.neighbors>0 && randomInterval(0,1)==0) || (randomInterval(0,4-block.sandNeighbors)<1)) && block.sandNeighbors>0 && blocks[x][y].type==0)
+					{
+						blocks[x][y].surface=sand;
+					}
+				}
+			}
+	}
+
+	var forestStart = 10000;
+	var desertStart = 30000;
+	var bogStart = 20000;
+	for(var x=0; x<mapSize; x++)
+	{
+		for(var y=0; y<mapSize; y++)
+		{
+			if(randomInterval(0,forestStart)==0 && blocks[x][y].type==0)
+			{
+				blocks[x][y].biom=forest;
+			}
+			if(randomInterval(0,desertStart)==0 && blocks[x][y].type==0)
 			{
 				blocks[x][y].biom=desert;
 			}
-		}
-	}
-	biomNeighbor(forest);
-	for(var x=0; x<mapSize; x++)
-	{
-		for(var y=0; y<mapSize; y++)
-		{
-			if(randomInterval(0,4-blocks[x][y].biomNeighbors)==0 && blocks[x][y].type==0 && blocks[x][y].biomNeighbors>0)
-			{
-				blocks[x][y].biom=forest;
-				blocks[x][y].surface=grass;
-			}
-		}
-	}
-	biomNeighbor(bog);
-	for(var x=0; x<mapSize; x++)
-	{
-		for(var y=0; y<mapSize; y++)
-		{
-			if(randomInterval(0,4-blocks[x][y].biomNeighbors)==0 && blocks[x][y].type==0 && blocks[x][y].biomNeighbors>0)
+			if(randomInterval(0,bogStart)==0 && blocks[x][y].type==0)
 			{
 				blocks[x][y].biom=bog;
 			}
 		}
 	}
-}
+	for(var i=0; i<150; i++)
+	{
+		biomNeighbor(desert);
+		for(var x=0; x<mapSize; x++)
+		{
+			for(var y=0; y<mapSize; y++)
+			{
+				if(randomInterval(0,4-blocks[x][y].biomNeighbors)==0 && blocks[x][y].type==0 && blocks[x][y].biomNeighbors>0)
+				{
+					blocks[x][y].biom=desert;
+				}
+			}
+		}
+		biomNeighbor(forest);
+		for(var x=0; x<mapSize; x++)
+		{
+			for(var y=0; y<mapSize; y++)
+			{
+				if(randomInterval(0,4-blocks[x][y].biomNeighbors)==0 && blocks[x][y].type==0 && blocks[x][y].biomNeighbors>0)
+				{
+					blocks[x][y].biom=forest;
+					blocks[x][y].surface=grass;
+				}
+			}
+		}
+		biomNeighbor(bog);
+		for(var x=0; x<mapSize; x++)
+		{
+			for(var y=0; y<mapSize; y++)
+			{
+				if(randomInterval(0,4-blocks[x][y].biomNeighbors)==0 && blocks[x][y].type==0 && blocks[x][y].biomNeighbors>0)
+				{
+					blocks[x][y].biom=bog;
+				}
+			}
+		}
+	}
 
 
 
-//field biom
-for(var i=0; i<15; i++)
-{
-	biomNeighbor(field);
+	//field biom
+	for(var i=0; i<15; i++)
+	{
+		biomNeighbor(field);
+		for(var x=0; x<mapSize; x++)
+		{
+			for(var y=0; y<mapSize; y++)
+			{
+				if(randomInterval(0,4-blocks[x][y].biomNeighbors)==0 && blocks[x][y].type==0 && blocks[x][y].biomNeighbors>0)
+				{
+					blocks[x][y].biom=field;
+				}
+			}
+		}
+	}
+
+	//surfaces
 	for(var x=0; x<mapSize; x++)
 	{
 		for(var y=0; y<mapSize; y++)
 		{
-			if(randomInterval(0,4-blocks[x][y].biomNeighbors)==0 && blocks[x][y].type==0 && blocks[x][y].biomNeighbors>0)
+			if(blocks[x][y].biom==desert)
 			{
-				blocks[x][y].biom=field;
+				blocks[x][y].surface=sand;
+			}
+			if(blocks[x][y].biom==bog)
+			{
+				blocks[x][y].surface=bogSurface;
+				if(randomInterval(0,5)==0)
+				{
+					blocks[x][y].type=1;
+					blocks[x][y].surface=water;
+				}
+				if(randomInterval(0,5)==0)
+				{
+					blocks[x][y].type=0;
+					blocks[x][y].surface=puddle;
+				}
 			}
 		}
 	}
-}
 
-//surfaces
-for(var x=0; x<mapSize; x++)
-{
-	for(var y=0; y<mapSize; y++)
+
+	//resources
+	var trees = 3;
+	var cactuses = 8;
+	var stones = 10;
+	for(var x=0; x<mapSize; x++)
 	{
-		if(blocks[x][y].biom==desert)
+		for(var y=0; y<mapSize; y++)
 		{
-			blocks[x][y].surface=sand;
-		}
-		if(blocks[x][y].biom==bog)
-		{
-			blocks[x][y].surface=bogSurface;
-			if(randomInterval(0,5)==0)
+			if(((randomInterval(0,trees)==0 && blocks[x][y].biom==forest || randomInterval(0,trees*15)==0) && blocks[x][y].surface==grass) || randomInterval(0,trees*5)==0 && blocks[x][y].surface==bogSurface)
 			{
+				blocks[x][y].resource=tree;
+			}
+			if((randomInterval(0,4)==0 && blocks[x][y].biom==field || randomInterval(0,10)==0) && blocks[x][y].surface==grass)
+			{
+				blocks[x][y].resource=flower;
+			}
+			if(randomInterval(0,cactuses)==0 && blocks[x][y].biom==desert && blocks[x][y].surface==sand)
+			{
+				blocks[x][y].resource=cactus;
+			}
+			if(randomInterval(0,stones)==0 && blocks[x][y].biom==bog && blocks[x][y].surface==bogSurface || randomInterval(0,stones*20)==0 && blocks[x][y].biom!=0)
+			{
+				blocks[x][y].resource=stone;
 				blocks[x][y].type=1;
-				blocks[x][y].surface=water;
 			}
-			if(randomInterval(0,5)==0)
-			{
-				blocks[x][y].type=0;
-				blocks[x][y].surface=puddle;
-			}
-		}
-	}
-}
-
-
-//resources
-var trees = 3;
-var cactuses = 8;
-var stones = 10;
-for(var x=0; x<mapSize; x++)
-{
-	for(var y=0; y<mapSize; y++)
-	{
-		if(((randomInterval(0,trees)==0 && blocks[x][y].biom==forest || randomInterval(0,trees*15)==0) && blocks[x][y].surface==grass) || randomInterval(0,trees*5)==0 && blocks[x][y].surface==bogSurface)
-		{
-			blocks[x][y].resource=tree;
-		}
-		if((randomInterval(0,4)==0 && blocks[x][y].biom==field || randomInterval(0,10)==0) && blocks[x][y].surface==grass)
-		{
-			blocks[x][y].resource=flower;
-		}
-		if(randomInterval(0,cactuses)==0 && blocks[x][y].biom==desert && blocks[x][y].surface==sand)
-		{
-			blocks[x][y].resource=cactus;
-		}
-		if(randomInterval(0,stones)==0 && blocks[x][y].biom==bog && blocks[x][y].surface==bogSurface || randomInterval(0,stones*20)==0 && blocks[x][y].biom!=0)
-		{
-			blocks[x][y].resource=stone;
-			blocks[x][y].type=1;
 		}
 	}
 }

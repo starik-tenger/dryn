@@ -1,0 +1,16 @@
+*{
+	margin: 0;
+	pading: 0;
+}
+canvas{
+	/*cursor: none;*/
+}
+.visible{
+	display: block;
+}
+.invisible{
+	display: none;
+}
+input{
+	background-color: #CCFFCC;
+}

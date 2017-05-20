@@ -1,20 +1,35 @@
 <!doctype html>
 <html>
-<style>
-*{
-	margin: 0;
-	pading: 0;
-}
-canvas{
-	/*cursor: none;*/
-}
-</style>
-<body>
 <title>Geography</title>
-<canvas id="screen" height=1000 width=1000 onmousemove="checkMouse()" onmousedown="mouseDown=1;" onmouseup="mouseDown=0;" onwheel="onWheel();"></canvas>
-<script src="basic.js"></script>
-<script src="generator.js"></script>
-<script src="script.js"></script>
-<script src="draw.js"></script>
+<link rel="stylesheet" href="style.css">
+<meta charset="UTF-8">
+<body>
+	<canvas id="screen" height=1000 width=1000 onmousemove="checkMouse()" onmousedown="mouseDown=1;" onmouseup="mouseDown=0;" onwheel="onWheel();" class=invisible></canvas>
+	<!--mapSize, startWaterPoints, steps, startLakePoints, lakeSize, smoothing-->
+	<div align=center class=visible id="input">
+		<p style="font: 200% Arial">
+			Welcome to the RPG survivle. <br>
+			Please configure your world:
+		</p>
+		World size:                 <input id="size" class=visible type=number value="1000" title="Размер мира"></input>
+		
+		Start ocean points rarity:<input id="startWaterPoints" class=visible type=number value="10000" title="Редкость стартовых точек океана"></input>
+		
+		Generator steps:          <input id="steps" class=visible type=number value="100" title="Количество циклов"></input>
+		
+		Lakes rarity: <input id="startLakePoints" class=visible type=number value="300" title="Редкость озёр"></input>
+		
+		Lakes size: <input id="lakesSize" class=visible type=number value="10" title="Размер озёр"></input>
+		
+		Smoothing:                <input id="smoothing" class=visible type=number value="3" title="Уровень сглаживания"></input>
+		<br>
+		<button style="height: 50px; width: 25%; background-color: #00FF00; font: 200% Arial" onclick="startGame()" title=" ">START</button>
+	</div>
+	
+	
+	<script src="basic.js"></script>
+	<script src="generator.js"></script>
+	<script src="script.js"></script>
+	<script src="draw.js"></script>
 </body>
 </html>
