@@ -13,4 +13,18 @@ canvas{
 }
 input{
 	background-color: #CCFFCC;
+	color: #004400;
+	width: 200px;
+}
+
+button{
+	border-color: #00CC00;
+	height: 50px; 
+	width: 200px; 
+	background-color: #00FF00; 
+	font: 200% Arial
+}
+
+button:hover{
+	background-color: #00DD00;
 }

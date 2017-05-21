@@ -4,6 +4,12 @@ var start=10000;
 var steps = 100;
 var lakeSize = 5;
 var lakes = 300;
+var beachesRarity = 17;
+var beachesSize = 10;
+var biomSize = 150;
+var forestStart = 10000;
+var desertStart = 30000;
+var bogStart = 20000;
 
 //bioms const
 const field = 1;
@@ -114,9 +120,19 @@ function smooth(s)
 }
 
 
-
-
-function generate(size, startWaterPoints, step, lakesCount, lakesSize, smoothing)//mapSize, startWaterPoints, steps, lakes, lakeSize, smoothing
+function generate(
+ size,
+ startWaterPoints, step,
+ lakesCount,
+ lakesSize,
+ smoothing,
+ _beachesRarity,
+ _beachesSize,
+ _biomSize,
+ _forestRarity,
+ _desertRarity,
+ _bogRarity
+)//mapSize, startWaterPoints, steps, lakes, lakeSize, smoothing
 {
 	blocks=[];
 	mapSize=size;
@@ -124,6 +140,13 @@ function generate(size, startWaterPoints, step, lakesCount, lakesSize, smoothing
 	steps = step;
 	lakeSize = lakesSize;
 	lakes = lakesCount;
+	beachesRarity = _beachesRarity;
+	beachesSize = _beachesSize;
+	biomSize = _biomSize;
+	
+	forestStart = _forestRarity;
+	desertStart = _desertRarity;
+	bogStart = _bogRarity;
 	
 	//creating matrix
 	for(var x=0; x<mapSize; x++)
@@ -176,7 +199,7 @@ function generate(size, startWaterPoints, step, lakesCount, lakesSize, smoothing
 	{
 		for(var y=0; y<mapSize; y++)
 		{
-			if(blocks[x][y].neighbors>0 && blocks[x][y].type==0 && randomInterval(0,17)==0)
+			if(blocks[x][y].neighbors>0 && blocks[x][y].type==0 && randomInterval(0,beachesRarity)==0)
 			{
 				blocks[x][y].surface=sand;
 			}
@@ -184,7 +207,7 @@ function generate(size, startWaterPoints, step, lakesCount, lakesSize, smoothing
 	}
 
 	sandNeighbor();
-	for(var i=0; i<10; i++)
+	for(var i=0; i<beachesSize; i++)
 	{
 		sandNeighbor();
 		for(var x=0; x<mapSize; x++)
@@ -200,9 +223,7 @@ function generate(size, startWaterPoints, step, lakesCount, lakesSize, smoothing
 			}
 	}
 
-	var forestStart = 10000;
-	var desertStart = 30000;
-	var bogStart = 20000;
+	//start biom points
 	for(var x=0; x<mapSize; x++)
 	{
 		for(var y=0; y<mapSize; y++)

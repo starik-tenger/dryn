@@ -1,14 +1,20 @@
 //HTML objects
 var screen = document.getElementById("screen");
-var ctx = screen.getContext("2d");
-
-var input=document.getElementById("input");
-var inputSize=document.getElementById("size");
-var inputStart=document.getElementById("startWaterPoints");
-var inputSteps=document.getElementById("steps");
-var inputStartLake=document.getElementById("startLakePoints");
-var inputLakeSize=document.getElementById("lakesSize");
-var inputSmoothing=document.getElementById("smoothing");
+	var ctx = screen.getContext("2d");
+//input
+var input = document.getElementById("input");
+var inputSize = document.getElementById("size");
+var inputStart = document.getElementById("startWaterPoints");
+var inputSteps = document.getElementById("steps");
+var inputStartLake = document.getElementById("startLakePoints");
+var inputLakeSize = document.getElementById("lakesSize");
+var inputSmoothing = document.getElementById("smoothing");
+var inputBeachesRarity = document.getElementById("beachesRarity");
+var inputBeachesSize = document.getElementById("beachesSize");
+var inputBiomSize = document.getElementById("biomSize");
+var inputForestRarity = document.getElementById("forestRarity");
+var inputDesertRarity = document.getElementById("desertRarity");
+var inputBogRarity = document.getElementById("bogRarity");
 
 //--------------------------------------------------------------------------------------------------------------------------------
 //monster types
@@ -414,7 +420,13 @@ function startWorld()
 		inputSteps.value,
 		inputStartLake.value,
 		inputLakeSize.value,
-		inputSmoothing.value
+		inputSmoothing.value,
+		inputBeachesRarity.value,
+		inputBeachesSize.value,
+		inputBiomSize.value,
+		inputForestRarity.value,
+		inputDesertRarity.value,
+		inputBogRarity.value
 	);
 	player={
 		x: 250*size, 
