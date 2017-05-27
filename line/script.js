@@ -35,6 +35,12 @@ function keydown(e)
 		case 39:
 			key.right=1;
 			break;
+		case 38:
+			key.up=1;
+			break;
+		case 40:
+			key.down=1;
+			break;
 
 	}
 }
@@ -71,6 +77,13 @@ function keyup(e)
 		case 39:
 			key.right=0;
 			break;
+		case 38:
+			key.up=0;
+			break;
+		case 40:
+			key.down=0;
+			break;
+
 	}
 }
 //--------------------------------------------------------------------------------------------------------------------------------
@@ -83,9 +96,20 @@ function onWheel(e) {
 
 //math functions--------------------------------------------------------------------------------------------------------------------------------
 
-function random(min, max)
+function randomInterval(min, max)
 {
  return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+function normal(a,b,n)
+{
+	var s=0;
+	for(var i=0; i<n; i++)
+	{
+		s+=randomInterval(a,b);
+	}
+	s=Math.round(s/n);
+	return s;
 }
 
 function inRad(num) {
@@ -107,7 +131,7 @@ function checkWindow()
 	//ctx.imageSmoothingEnabled = false;
 }
 //camera--------------------------------------------------------------------------------------------------------------------------------
-var cam = {height: 1000, width: 1000, FOCUS: 500, x: 0, y: -2000, z: 0, distance: 50000, directionXZ: 0};
+var cam = {height: 1000, width: 1000, FOCUS: 500, x: 0, y: 98*1000, z: 0, distance: 10000, directionXZ: 0, directionZY: 0};
 //points
 var points=[];
 function setPoint(x,y,z)
@@ -182,6 +206,7 @@ function projection(point)
 {
 	cam.direction=cam.directionXZ%360;
 	var directionXZ = inRad(cam.direction);
+	var directionZY = inRad(cam.directionZY%360);
 	var x = point.x-cam.x;
 	var y = point.y-cam.y;
 	var z = point.z-cam.z;
@@ -189,36 +214,19 @@ function projection(point)
 	var z1 = x*Math.sin(directionXZ)+z*Math.cos(directionXZ);
 	x=x1;
 	z=z1;
+	
+	z1 = z*Math.cos(directionZY)-y*Math.sin(directionZY);
+	y1 = z*Math.sin(directionZY)+y*Math.cos(directionZY);
+	z=z1;
+	y=y1;
+	
 	var pX= ((cam.width/2 - x) * z) / (z + cam.FOCUS) + x;
 	var pY= ((cam.height/2 - y) * z) / (z + cam.FOCUS) + y;
 	if(z<0)return false;
 	return {x: pX, y: pY};
 }
+
 //--------------------------------------------------------------------------------------------------------------------------------
-function randomInterval(min, max)
-{
-	return Math.floor(Math.random() * (max - min + 1)) + min;
-}
-//--------------------------------------------------------------------------------------------------------------------------------
-function setSquare()
-{
-setPoint(0,0,1000);//1
-setPoint(0,1000,1000);//2
-setPoint(1000,1000,1000);//3
-setPoint(1000,0,1000);//4
-setPoint(0,0,1000);
-setPoint(0,0,500);//1
-setPoint(0,1000,500);//2
-	setPoint(0,1000,1000);
-	setPoint(0,1000,500);
-setPoint(1000,1000,500);//3
-	setPoint(1000,1000,1000);
-	setPoint(1000,1000,500);
-setPoint(1000,0,500);//4
-	setPoint(1000,0,1000);
-	setPoint(1000,0,500);
-setPoint(0,0,500);
-}
 
 function drawLine(startPointX, startPointY, endPointX, endPointY, width)
 {
@@ -232,13 +240,18 @@ function drawLine(startPointX, startPointY, endPointX, endPointY, width)
 //mouse--------------------------------------------------------------------------------------------------------------------------------
 var mouseX=0;
 var mouseXprev=0;
-var sensitivity = 0.05;
+var mouseY=0;
+var mouseYprev=0;
+var sensitivityXZ = 0.05;
+var sensitivityZY = 0.05;
 var mouseDown=0;
 
 function mouseD()
 {
 	mouseX=event.pageX;
 	mouseXprev=event.pageX;
+	mouseY=event.pageY;
+	mouseYprev=event.pageY;
 }
 function checkMouse()
 {
@@ -246,22 +259,15 @@ function checkMouse()
 	{
 		mouseXprev=mouseX;
 		mouseX=event.pageX;
-		cam.directionXZ-=(mouseX-mouseXprev)*sensitivity;
-		console.log(mouseX-mouseXprev);
+		cam.directionXZ-=(mouseX-mouseXprev)*sensitivityXZ;
+		
+		mouseYprev=mouseY;
+		mouseY=event.pageY;
+		cam.directionZY+=(mouseY-mouseYprev)*sensitivityZY;
 	}
 }
-//model--------------------------------------------------------------------------------------------------------------------------------
-for(var i=0; i<1000; i++)
-{
-	var d = randomInterval(-100,100)*1000;
-	var x = randomInterval(-100,100)*1000;
-	var y = randomInterval(-2000,-200);
-	setPolygon(0+x,0,0+d,1000+x,0,0+d,500+x,y,500+d,"red");
-	setPolygon(1000+x,0,1000+d,1000+x,0,0+d,500+x,y,500+d,"yellow");
-	setPolygon(0+x,0,0+d,0+x,0,1000+d,500+x,y,500+d,"blue");
-	setPolygon(0+x,0,1000+d,1000+x,0,1000+d,500+x,y,500+d,"green");
-	
-}
+
+
 sortPolygons();
 //draw--------------------------------------------------------------------------------------------------------------------------------
 function draw()
@@ -284,7 +290,7 @@ var sStep = 20;
 var choose=randomInterval(2,5);
 var time=0;
 //--------------------------------------------------------------------------------------------------------------------------------
-var speed = 150;
+var speed = 400;
 
 var FRAMES = 0;
 var FPS=0;
@@ -294,8 +300,17 @@ function second()
 	FRAMES=0;
 }
 
+var time=0;
 function step()
 {
+	if(time%3 == 0)
+	{
+		model();
+	}
+	if(time==0)
+	{
+		model();
+	}
 	checkWindow();
 	if(key.w)
 	{
@@ -317,14 +332,20 @@ function step()
 		cam.x+=Math.sin(inRad(cam.direction+90)) *speed;
 		cam.z+=Math.cos(inRad(cam.direction+90)) *speed;
 	}
+	
 	if(key.left)cam.directionXZ-=3;
 	if(key.right)cam.directionXZ+=3;
+	if(key.up)cam.directionZY+=1;
+	if(key.down)cam.directionZY-=1;
+	
 	if(key.shift)cam.y+=speed;
 	if(key.space)cam.y-=speed;
-	
+	player.move();
 	time++;
 	FRAMES++;
 	draw();
+	
+	time++;
 }
 //--------------------------------------------------------------------------------------------------------------------------------
 setInterval(step,50);
