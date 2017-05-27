@@ -1,5 +1,5 @@
 var gravity = 10;
-var player={x: 1000, y: -5000, z: 1000, fX: 0, fY: 0, fZ: 0};
+var player={x: 2000, y: -50*1000, z: 2000, fX: 0, fY: 0, fZ: 0};
 player.move = function()
 {
 	this.fY+=gravity;
@@ -77,9 +77,9 @@ for(var x=0; x<100; x++)
 }
 
 
-for(var i=0; i<10000; i++)
+for(var i=0; i<10000000; i++)
 {
-	field[normal(0,99,2)][normal(0,99,2)]++;
+	field[normal(0,99,3)][normal(0,99,3)]+=0.01;
 }
 
 for(var x=0; x<100; x++)

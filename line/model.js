@@ -50,7 +50,7 @@ function setTetragon(
 }
 
 var mapSize=100;
-var modelDistance = 10;
+var modelDistance = 20;
 
 function cell()
 {

@@ -131,7 +131,8 @@ function checkWindow()
 	//ctx.imageSmoothingEnabled = false;
 }
 //camera--------------------------------------------------------------------------------------------------------------------------------
-var cam = {height: 1000, width: 1000, FOCUS: 500, x: 0, y: 98*1000, z: 0, distance: 10000, directionXZ: 0, directionZY: 0};
+var cam = {height: 1000, width: 1000, FOCUS: 500, x: 0, y: 98*1000, z: 0, distance: 20000, directionXZ: 0, directionZY: 0};
+
 //points
 var points=[];
 function setPoint(x,y,z)
@@ -272,14 +273,18 @@ sortPolygons();
 //draw--------------------------------------------------------------------------------------------------------------------------------
 function draw()
 {
+	ctx.save();
+	ctx.globalAlpha = alphaInput.value;
 	sortPolygons();
 	ctx.clearRect(0,0,cam.width,cam.height);
 	for(var i=0; i<polygonsOrder.length; i++)
 	{
 		drawPolygon(polygons[polygonsOrder[i]]);
 	}
+	ctx.restore();
 	ctx.fillStyle="black";
-	ctx.fillText(FPS,10,10);
+	ctx.font = "200% Arial";
+	ctx.fillText(FPS,30,30);
 }
 
 //--------------------------------------------------------------------------------------------------------------------------------
@@ -300,9 +305,27 @@ function second()
 	FRAMES=0;
 }
 
+
+var alphaInput = document.getElementById("alpha");
+var alphaText = document.getElementById("alphaValue");
+var drawInput = document.getElementById("draw");
+var drawText = document.getElementById("drawValue");
+var modelInput = document.getElementById("model");
+var modelText = document.getElementById("modelValue");
+
 var time=0;
 function step()
 {
+	//HTML
+	ctx.globalAlpha = alphaInput.value;
+	alphaText.innerHTML = alphaInput.value;
+	
+	cam.distance = Number(drawInput.value*blockSize);
+	drawText.innerHTML = drawInput.value;
+	
+	modelDistance = Number(modelInput.value);
+	modelText.innerHTML = modelInput.value;
+	
 	if(time%3 == 0)
 	{
 		model();
@@ -314,13 +337,13 @@ function step()
 	checkWindow();
 	if(key.w)
 	{
-		cam.x+=Math.sin(inRad(cam.direction)) *speed;
-		cam.z+=Math.cos(inRad(cam.direction)) *speed;
+		cam.x+=Math.sin(inRad(cam.directionXZ)) *speed;
+		cam.z+=Math.cos(inRad(cam.directionXZ)) *speed;
 	}
 	if(key.s)
 	{
-		cam.x-=Math.sin(inRad(cam.direction)) *speed;
-		cam.z-=Math.cos(inRad(cam.direction)) *speed;
+		cam.x-=Math.sin(inRad(cam.directionXZ)) *speed;
+		cam.z-=Math.cos(inRad(cam.directionXZ)) *speed;
 	}
 	if(key.a)
 	{

@@ -10,12 +10,34 @@
 	canvas{
 		/*cursor: none;*/
 	}
+	input{
+		width: 200px;
+	}
 	</style>
     </head>
 <body>
  <canvas id="screen" height=1000 width=1000 onwheel="onWheel();" onmousemove="checkMouse()" onmousedown="mouseDown=1;mouseD();" onmouseup="mouseDown=0;">ваш браузер - говно</canvas>
- <script src="script.js"></script>
- <script src="physics.js"></script>
- <script src="model.js"></script>
+ <!-- Alpha -->
+	 <div style="position: fixed; background-color: white; top: 40px; left: 15px">
+		Alpha: <text id="alphaValue"></text> <br>
+		<input type="range" min=0 max=1 id = "alpha" value=1 step=0.01  ></input>
+	 </div>
+ 
+  <!-- Cam distance -->
+	 <div style="position: fixed; background-color: white; top: 80px; left: 15px">
+		Draw distance: <text id="drawValue"></text> <br>
+		<input type="range" min=1 max=100 id = "draw" value=20 step=1  ></input>
+	 </div>
+ 
+  <!-- Model distance -->
+	 <div style="position: fixed; background-color: white; top: 120px; left: 15px">
+		Load distance: <text id="modelValue"></text> <br>
+		<input type="range" min=1 max=100 id = "model" value=20 step=1  ></input>
+	 </div>
+ 
+ <!-- Scripts -->
+	 <script src="script.js"></script>
+	 <script src="physics.js"></script>
+	 <script src="model.js"></script>
 </body>
 </html>
