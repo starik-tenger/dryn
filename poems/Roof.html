@@ -1,0 +1,24 @@
+<!doctype HTML>
+<html>
+	<div>
+		Сижу я один ноги свесив с крыши.<br>
+		<text id="number">20</text> этаж - куда ещё выше? <br>
+		И всё подо мною: и птицы и люди.<br>
+		И город предстал, словно на блюде.<br>
+		И я выше всех, я один лишь такой.<br>
+		Огромны громады домов подо мной.<br>
+		Вдруг скрипнул карниз,<br>
+		И я подскользнулся.<br>
+		Я падаю вниз,<br>
+		Мир перевернулся.<br>
+		Так быстро достиг я конца своего,<br>
+		А мир всё стоит - ему ничего.<br>
+	</div>
+	<script>
+		function randomInterval(min, max)
+		{
+		 return Math.floor(Math.random() * (max - min + 1)) + min;
+		}
+		number.innerHTML = randomInterval(9,35);
+	</script>
+</html>
