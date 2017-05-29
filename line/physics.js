@@ -1,14 +1,94 @@
-var gravity = 10;
-var player={x: 2000, y: -50*1000, z: 2000, fX: 0, fY: 0, fZ: 0};
-player.move = function()
+var gravity = 40;
+var player =
 {
-	this.fY+=gravity;
-	this.x+=this.fX;
-	if(player.y<100*blockSize)
+	x: 5*1000, 
+	y: 80*1000, 
+	z: 5*1000, 
+	fX: 0, 
+	fY: 0, 
+	fZ: 0,
+	speed: 100,
+	cell: function()
 	{
-		this.y+=this.fY;
+		var x = Math.round(this.x/blockSize);
+		var y = Math.round((this.y-blockSize/2)/blockSize);
+		var z = Math.round(this.z/blockSize);
+		return {x, y, z};
+	},
+	move: function()
+	{
+		//Y		----------------------------------------------------------------
+		this.fY+=gravity;
+		for(var i=0; i<Math.abs(this.fY); i++)
+		{
+			if(blocks[this.cell().x][this.cell().y][this.cell().z].value==0 && player.fY>0)
+			{
+				this.y++;
+			}
+			if(blocks[this.cell().x][this.cell().y][this.cell().z].value==0 && player.fY<0)
+			{
+				this.y--;
+			}
+		}
+		if(blocks[this.cell().x][this.cell().y][this.cell().z].value==1){
+			if(player.fY>0)
+			{
+				this.y--;
+			}
+			if(player.fY<0)
+			{
+				this.y++;
+			}
+			player.fY = 0;
+		}
+		//X		----------------------------------------------------------------
+		for(var i=0; i<Math.abs(this.fX); i++)
+		{
+			if(blocks[this.cell().x][this.cell().y][this.cell().z].value==0 && player.fX>0)
+			{
+				this.x++;
+			}
+			if(blocks[this.cell().x][this.cell().y][this.cell().z].value==0 && player.fX<0)
+			{
+				this.x--;
+			}
+		}
+		if(player.fX>0)
+		{
+			this.x--;
+		}
+		if(player.fX<0)
+		{
+			this.x++;
+		}
+		//Z		----------------------------------------------------------------
+		for(var i=0; i<Math.abs(this.fZ); i++)
+		{
+			if(blocks[this.cell().x][this.cell().y][this.cell().z].value==0 && player.fZ>0)
+			{
+				this.z++;
+			}
+			if(blocks[this.cell().x][this.cell().y][this.cell().z].value==0 && player.fZ<0)
+			{
+				this.z--;
+			}
+		}
+		if(player.fZ>0)
+		{
+			this.z--;
+		}
+		if(player.fZ<0)
+		{
+			this.z++;
+		}
+		//----------------------------------------------------------------
 	}
-	this.z+=this.fZ;
+};
+
+function playerCell(n)
+{
+	n = Math.round(n/blockSize);
+	return n;
 }
 
 var blocks = [];
@@ -20,14 +100,12 @@ for(var x=0; x<100; x++)
 		blocks[x].push([]);
 		for(var z=0; z<100; z++)
 		{
-
-			if(y!=100)
-			{
-				blocks[x][y].push(0);
-			}else{
-				blocks[x][y].push(1);
-			}
-
+			blocks[x][y].push({
+				value: 0, 
+				color: "rgb("+randomInterval(0,20)+","+(150+randomInterval(-50,50))+","+randomInterval(0,20)+")",
+				color_top: 
+					"rgb("+(51+randomInterval(-10,10))+","+(25+randomInterval(-10,10))+","+(0+randomInterval(0,10))+")"
+			});
 		}
 	}
 }
@@ -38,7 +116,7 @@ var sZ=10;
 
 function setBlock(x, y, z)
 {
-	blocks[x][y][z]=1;
+	blocks[x][y][z].value=1;
 }
 
 
@@ -79,7 +157,34 @@ for(var x=0; x<100; x++)
 
 for(var i=0; i<10000000; i++)
 {
-	field[normal(0,99,3)][normal(0,99,3)]+=0.01;
+	field[normal(0,99,3)][normal(0,99,3)]+=0.1;
+}
+
+for(var x=0; x<100; x++)
+{
+	field.push([]);
+	for(var y=0; y<100; y++)
+	{
+		field[x][y]=Math.sqrt(field[x][y]);
+	}
+}
+
+function bomb(r)
+{
+	var p = player.cell();
+	for(var x=0; x<100; x++)
+	{
+		for(var y=0; y<100; y++)
+		{
+			for(var z=0; z<100; z++)
+			{
+				if((p.x-x)*(p.x-x) + (p.y-y)*(p.y-y) + (p.z-z)*(p.z-z) < r*r)
+				{
+					blocks[x][y][z].value=0;
+				}
+			}
+		}
+	}
 }
 
 for(var x=0; x<100; x++)

@@ -45,7 +45,7 @@ function setTetragon(
 	setPolygon(x1, y1, z1, x2, y2, z2, x3, y3, z3, color);
 	setPolygon(x1, y1, z1, x4, y4, z4, x3, y3, z3, color);
 	
-	//etPolygon(x1, y1, z1, x2, y2, z2, x4, y4, z4, color);
+	//setPolygon(x1, y1, z1, x2, y2, z2, x4, y4, z4, color);
 	//setPolygon(x2, y2, z2, x4, y4, z4, x3, y3, z3, color);
 }
 
@@ -64,69 +64,70 @@ function model()
 {
 	polygons=[];
 	var p = cell();
+	//if(time%(21-FPS)==0)
 	for (var x = p.x - modelDistance; x < p.x + modelDistance; x++)
 	{
-		//for (var y = p.y - modelDistance; y < p.y + modelDistance; y++)
-		for(var y=0; y<100; y++)
+		for (var y = p.y - modelDistance*2; y < p.y + modelDistance*2; y++)
+		//for(var y=0; y<100; y++)
 		{
 			for (var z = p.z - modelDistance; z < p.z + modelDistance; z++)
 			{
 				
-				if(x>0 && y>0 && z>0 && x<mapSize && y<mapSize && z<mapSize &&  blocks[x][y][z]==1)
+				if(x>0 && y>0 && z>0 && x<mapSize && y<mapSize && z<mapSize &&  blocks[x][y][z].value==1)
 				{
-					if((x+1 < mapSize && x+1 > 0 && blocks[x+1][y][z]==0 || x==mapSize-1) && x < p.x)
+					if((x+1 < mapSize && x+1 > 0 && blocks[x+1][y][z].value==0 || x==mapSize-1) && x < p.x)
 					{
 						setTetragon(
 						(x+1)*blockSize, (y)*blockSize, (z)*blockSize, 
 						(x+1)*blockSize, (y)*blockSize, (z+1)*blockSize, 
 						(x+1)*blockSize, (y+1)*blockSize, (z+1)*blockSize, 
 						(x+1)*blockSize, (y+1)*blockSize, (z)*blockSize,
-						"yellow");
+						blocks[x][y][z].color);
 					}
-					if((y+1 < mapSize && y+1 > 0 && blocks[x][y+1][z]==0 || y==mapSize-1) && y < p.y)
+					if((y+1 < mapSize && y+1 > 0 && blocks[x][y+1][z].value==0 || y==mapSize-1) && y < p.y)
 					{
 						setTetragon(
 						(x)*blockSize,   (y+1)*blockSize, (z+1)*blockSize, 
 						(x+1)*blockSize, (y+1)*blockSize, (z+1)*blockSize, 
 						(x+1)*blockSize, (y+1)*blockSize, (z)*blockSize, 
 						(x)*blockSize,   (y+1)*blockSize, (z)*blockSize,
-						"brown");
+						blocks[x][y][z].color);
 					}
-					if((z+1 < mapSize && z+1 > 0 &&  blocks[x][y][z+1]==0 || z==mapSize-1) && z < p.z)
+					if((z+1 < mapSize && z+1 > 0 &&  blocks[x][y][z+1].value==0 || z==mapSize-1) && z < p.z)
 					{
 						setTetragon(
 						(x)*blockSize,   (y)*blockSize, (z+1)*blockSize, 
 						(x+1)*blockSize, (y)*blockSize, (z+1)*blockSize, 
 						(x+1)*blockSize, (y+1)*blockSize, (z+1)*blockSize, 
 						(x)*blockSize,   (y+1)*blockSize, (z+1)*blockSize,
-						"black");
+						blocks[x][y][z].color);
 					}
-					if((x-1 < mapSize && x-1 > 0 && blocks[x-1][y][z]==0 || x==1) && x > p.x)
+					if((x-1 < mapSize && x-1 > 0 && blocks[x-1][y][z].value==0 || x==1) && x > p.x)
 					{
 						setTetragon(
 						(x)*blockSize, (y)*blockSize, (z)*blockSize, 
 						(x)*blockSize, (y)*blockSize, (z+1)*blockSize, 
 						(x)*blockSize, (y+1)*blockSize, (z+1)*blockSize, 
 						(x)*blockSize, (y+1)*blockSize, (z)*blockSize,
-						"yellow");
+						blocks[x][y][z].color);
 					}
-					if((y-1 < mapSize && y-1 > 0 && blocks[x][y-1][z]==0 || y==1) && y > p.y)
+					if((y-1 < mapSize && y-1 > 0 && blocks[x][y-1][z].value==0 || y==1) && y > p.y)
 					{
 						setTetragon(
 						(x)*blockSize,   (y)*blockSize, (z)*blockSize, 
 						(x+1)*blockSize, (y)*blockSize, (z)*blockSize, 
 						(x+1)*blockSize, (y)*blockSize, (z+1)*blockSize, 
 						(x)*blockSize,   (y)*blockSize, (z+1)*blockSize,
-						"brown");
+						blocks[x][y][z].color_top);
 					}
-					if((z-1 < mapSize && z-1 > 0 && blocks[x][y][z-1]==0 || z==1) && z > p.z)
+					if((z-1 < mapSize && z-1 > 0 && blocks[x][y][z-1].value==0 || z==1) && z > p.z)
 					{
 						setTetragon(
 						(x)*blockSize, (y)*blockSize, (z)*blockSize, 
 						(x+1)*blockSize, (y)*blockSize, (z)*blockSize, 
 						(x+1)*blockSize, (y+1)*blockSize, (z)*blockSize, 
 						(x)*blockSize, (y+1)*blockSize, (z)*blockSize,
-						"black");
+						blocks[x][y][z].color);
 					}
 					//setConus(x,y,z);
 					
@@ -134,4 +135,6 @@ function model()
 			}
 		}
 	}
+	//end of blocks
+	setConus(player.x,player.y,player.z);
 }

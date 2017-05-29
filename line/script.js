@@ -41,6 +41,9 @@ function keydown(e)
 		case 40:
 			key.down=1;
 			break;
+		case 66:
+			key.b=1;
+			break;
 
 	}
 }
@@ -83,6 +86,9 @@ function keyup(e)
 		case 40:
 			key.down=0;
 			break;
+		case 66:
+			key.b=0;
+			break;
 
 	}
 }
@@ -91,7 +97,7 @@ function keyup(e)
 function onWheel(e) {
   e = e || window.event;
   var delta = e.deltaY || e.detail || e.wheelDelta;
-  cam.FOCUS+=delta/20;
+  playerDistance+=delta/1000;
 }
 
 //math functions--------------------------------------------------------------------------------------------------------------------------------
@@ -112,6 +118,11 @@ function normal(a,b,n)
 	return s;
 }
 
+function compare(a, b) 
+{
+  return b.distance - a.distance;
+}
+
 function inRad(num) {
 	return num * Math.PI / 180;
 	}
@@ -119,6 +130,8 @@ function inRad(num) {
 //--------------------------------------------------------------------------------------------------------------------------------
 var screen=document.getElementById("screen");
 var ctx = screen.getContext("2d");
+
+
 //instructions--------------------------------------------------------------------------------------------------------------------------------
 alert("Управление: \n Движение: w,a,s,d \n Поворот: leftkey, rightkey, мышка \n Изменение высоты: shift, space");
 //--------------------------------------------------------------------------------------------------------------------------------
@@ -171,9 +184,10 @@ function drawPolygon(polygon)
 	ctx.lineTo(projection(polygon.point3).x, projection(polygon.point3).y);
 	ctx.closePath();
 	ctx.fillStyle = polygon.color;
-	ctx.lineWidth=2;
-	ctx.strokeStyle="black";
+	ctx.lineWidth=1;
+	ctx.strokeStyle= polygon.color;
 	ctx.fill();
+	ctx.stroke();
 }
 
 var polygonsOrder=[];
@@ -224,13 +238,17 @@ function projection(point)
 	var pX= ((cam.width/2 - x) * z) / (z + cam.FOCUS) + x;
 	var pY= ((cam.height/2 - y) * z) / (z + cam.FOCUS) + y;
 	if(z<0)return false;
-	return {x: pX, y: pY};
+	return {x: Math.round(pX), y: Math.round(pY)};
 }
 
 //--------------------------------------------------------------------------------------------------------------------------------
 
 function drawLine(startPointX, startPointY, endPointX, endPointY, width)
 {
+	startPointX = Math.round(startPointX);
+	startPointY = Math.round(startPointY);
+	endPointX = Math.round(endPointX);
+	endPointY = Math.round(endPointY);
 	ctx.lineWidth = width;
 	ctx.beginPath();
 	ctx.moveTo(startPointX, startPointY);
@@ -275,11 +293,20 @@ function draw()
 {
 	ctx.save();
 	ctx.globalAlpha = alphaInput.value;
-	sortPolygons();
-	ctx.clearRect(0,0,cam.width,cam.height);
-	for(var i=0; i<polygonsOrder.length; i++)
+	
+	
+	for(var i=0; i<polygons.length; i++)
 	{
-		drawPolygon(polygons[polygonsOrder[i]]);
+		polygons[i].setDistance();
+	}
+	//sortPolygons();
+	polygons.sort(compare);
+	ctx.clearRect(0,0,cam.width,cam.height);
+	//for(var i=0; i<polygonsOrder.length; i++)
+	for(var i=0; i<polygons.length; i++)
+	{
+		//drawPolygon(polygons[polygonsOrder[i]]);
+		drawPolygon(polygons[i]);
 	}
 	ctx.restore();
 	ctx.fillStyle="black";
@@ -305,37 +332,23 @@ function second()
 	FRAMES=0;
 }
 
-
+//HTML objects
 var alphaInput = document.getElementById("alpha");
 var alphaText = document.getElementById("alphaValue");
+
 var drawInput = document.getElementById("draw");
 var drawText = document.getElementById("drawValue");
+
 var modelInput = document.getElementById("model");
 var modelText = document.getElementById("modelValue");
 
-var time=0;
-function step()
+var speedInput = document.getElementById("speed");
+var speedText = document.getElementById("speedValue");
+
+//control--------------------------------------------------------------------------------------------------------------------------------
+function control()
 {
-	//HTML
-	ctx.globalAlpha = alphaInput.value;
-	alphaText.innerHTML = alphaInput.value;
-	
-	cam.distance = Number(drawInput.value*blockSize);
-	drawText.innerHTML = drawInput.value;
-	
-	modelDistance = Number(modelInput.value);
-	modelText.innerHTML = modelInput.value;
-	
-	if(time%3 == 0)
-	{
-		model();
-	}
-	if(time==0)
-	{
-		model();
-	}
-	checkWindow();
-	if(key.w)
+	/*if(key.w)
 	{
 		cam.x+=Math.sin(inRad(cam.directionXZ)) *speed;
 		cam.z+=Math.cos(inRad(cam.directionXZ)) *speed;
@@ -356,14 +369,84 @@ function step()
 		cam.z+=Math.cos(inRad(cam.direction+90)) *speed;
 	}
 	
+	if(key.shift)cam.y+=speed;
+	if(key.space)cam.y-=speed;*/
+	
 	if(key.left)cam.directionXZ-=3;
 	if(key.right)cam.directionXZ+=3;
 	if(key.up)cam.directionZY+=1;
 	if(key.down)cam.directionZY-=1;
 	
-	if(key.shift)cam.y+=speed;
-	if(key.space)cam.y-=speed;
+	player.fX=0;
+	player.fZ=0;
+	
+	var s = player.speed;
+	if(key.w)
+	{
+		player.fX = Math.sin(inRad(cam.directionXZ)) * s;
+		player.fZ = Math.cos(inRad(cam.directionXZ)) * s;
+	}
+	if(key.s)
+	{
+		player.fX = -Math.sin(inRad(cam.directionXZ)) * s;
+		player.fZ = -Math.cos(inRad(cam.directionXZ)) * s;
+	}
+	if(key.a)
+	{
+		player.fX = Math.sin(inRad(cam.direction-90)) * s;
+		player.fZ = Math.cos(inRad(cam.direction-90)) * s;
+	}
+	if(key.d)
+	{
+		player.fX = Math.sin(inRad(cam.direction+90)) * s;
+		player.fZ = Math.cos(inRad(cam.direction+90)) * s;
+	}
+	if(key.b)
+	{
+		bomb(3);
+	}
+	
+	if(key.space)
+	{
+		player.fY = -1000;
+	}
+
+	
+	
+}
+
+var k = 0;
+var playerDistance = 2;
+
+var time=0;
+function step()
+{
+	//HTML
+	ctx.globalAlpha = alphaInput.value;
+	alphaText.innerHTML = alphaInput.value;
+	
+	cam.distance = Number(drawInput.value*blockSize);
+	drawText.innerHTML = drawInput.value;
+	
+	modelDistance = Number(modelInput.value);
+	modelText.innerHTML = modelInput.value;
+	
+	player.speed = Number(speedInput.value);
+	speedText.innerHTML = speedInput.value;
+	
+	/*if(time%(21-FPS)==0)
+	{
+		model();
+	}*/	
+	model();
+	checkWindow();
+	control();	
 	player.move();
+	
+	cam.x = player.x-0*blockSize - playerDistance * blockSize * Math.sin(inRad(cam.directionXZ));
+	cam.y = player.y-2*blockSize + playerDistance * blockSize * Math.sin(inRad(cam.directionZY));
+	cam.z = player.z-0*blockSize - playerDistance * blockSize * Math.cos(inRad(cam.directionXZ));
+	
 	time++;
 	FRAMES++;
 	draw();
