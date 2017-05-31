@@ -133,7 +133,8 @@ var ctx = screen.getContext("2d");
 
 
 //instructions--------------------------------------------------------------------------------------------------------------------------------
-alert("Управление: \n Движение: w,a,s,d \n Поворот: leftkey, rightkey, мышка \n Изменение высоты: shift, space");
+alert("Управление: \n Движение: w,a,s,d \n Поворот: leftkey, rightkey, upkey, downkey, мышка \n Прыжок:  space");
+
 //--------------------------------------------------------------------------------------------------------------------------------
 function checkWindow()
 {
@@ -144,7 +145,45 @@ function checkWindow()
 	//ctx.imageSmoothingEnabled = false;
 }
 //camera--------------------------------------------------------------------------------------------------------------------------------
-var cam = {height: 1000, width: 1000, FOCUS: 500, x: 0, y: 98*1000, z: 0, distance: 20000, directionXZ: 0, directionZY: 0};
+var cam = {
+	height: 1000,
+	width: 1000,
+	FOCUS: 500,
+	x: 0,
+	y: 98*1000,
+	z: 0, distance: 20000,
+	directionXZ: 0,
+	directionZY: 0,
+	points: [
+		{x: 0, y: 0, z: 0},
+		{x: 0, y: 1000, z: 0},
+		{x: -1000, y: -500, z: -1000},
+		{x: -1000, y: -500, z: 1000},
+		{x: 1000, y: -500, z: -1000},
+		{x: 1000, y: -500, z: 1000}
+	],
+	inBlock: function()
+	{
+		for(var i=0; i<this.points.length; i++)
+		{
+			if ( playerCell(this.x + this.points[i].x) < 0 || playerCell(this.y + this.points[i].y) < 0 || playerCell(this.z + this.points[i].z) < 0 || 
+			     playerCell(this.x + this.points[i].x) > 99 || playerCell(this.y + this.points[i].y) > 99 || playerCell(this.z + this.points[i].z) > 99)
+			return false;
+				
+			
+			if ( blocks[playerCell(this.x + this.points[i].x)][playerCell(this.y + this.points[i].y)][playerCell(this.z + this.points[i].z)].value == 1)
+				return true;
+		}
+		return false;
+	},
+	cell: function()
+	{
+		var x = Math.round(this.x/blockSize);
+		var y = Math.round(this.y/blockSize);
+		var z = Math.round(this.z/blockSize);
+		return {x, y, z};
+	}
+};
 
 //points
 var points=[];
@@ -305,7 +344,7 @@ function draw()
 	//for(var i=0; i<polygonsOrder.length; i++)
 	for(var i=0; i<polygons.length; i++)
 	{
-		//drawPolygon(polygons[polygonsOrder[i]]);
+		if(polygons[i].distance<cam.distance)
 		drawPolygon(polygons[i]);
 	}
 	ctx.restore();
@@ -323,6 +362,7 @@ var choose=randomInterval(2,5);
 var time=0;
 //--------------------------------------------------------------------------------------------------------------------------------
 var speed = 400;
+var blockSize = 1000;
 
 var FRAMES = 0;
 var FPS=0;
@@ -345,33 +385,13 @@ var modelText = document.getElementById("modelValue");
 var speedInput = document.getElementById("speed");
 var speedText = document.getElementById("speedValue");
 
+var jumpInput = document.getElementById("jump");
+var jumpText = document.getElementById("jumpValue");
+
 //control--------------------------------------------------------------------------------------------------------------------------------
+var jumpHeight = 2*blockSize;
 function control()
 {
-	/*if(key.w)
-	{
-		cam.x+=Math.sin(inRad(cam.directionXZ)) *speed;
-		cam.z+=Math.cos(inRad(cam.directionXZ)) *speed;
-	}
-	if(key.s)
-	{
-		cam.x-=Math.sin(inRad(cam.directionXZ)) *speed;
-		cam.z-=Math.cos(inRad(cam.directionXZ)) *speed;
-	}
-	if(key.a)
-	{
-		cam.x+=Math.sin(inRad(cam.direction-90)) *speed;
-		cam.z+=Math.cos(inRad(cam.direction-90)) *speed;
-	}
-	if(key.d)
-	{
-		cam.x+=Math.sin(inRad(cam.direction+90)) *speed;
-		cam.z+=Math.cos(inRad(cam.direction+90)) *speed;
-	}
-	
-	if(key.shift)cam.y+=speed;
-	if(key.space)cam.y-=speed;*/
-	
 	if(key.left)cam.directionXZ-=3;
 	if(key.right)cam.directionXZ+=3;
 	if(key.up)cam.directionZY+=1;
@@ -406,10 +426,7 @@ function control()
 		bomb(3);
 	}
 	
-	if(key.space)
-	{
-		player.fY = -1000;
-	}
+	
 
 	
 	
@@ -421,11 +438,20 @@ var playerDistance = 2;
 var time=0;
 function step()
 {
+	
+	//return player to map
+	if(player.y>150*blockSize)
+	{
+		player.y = 0;
+		player.x = randomInterval(5,95)*blockSize;
+		player.z = randomInterval(5,95)*blockSize;
+	}
+	
 	//HTML
 	ctx.globalAlpha = alphaInput.value;
 	alphaText.innerHTML = alphaInput.value;
 	
-	cam.distance = Number(drawInput.value*blockSize);
+	cam.distance = Number(drawInput.value) *blockSize;
 	drawText.innerHTML = drawInput.value;
 	
 	modelDistance = Number(modelInput.value);
@@ -433,6 +459,9 @@ function step()
 	
 	player.speed = Number(speedInput.value);
 	speedText.innerHTML = speedInput.value;
+	
+	jumpHeight = Number(jumpInput.value) *blockSize;
+	jumpText.innerHTML = jumpInput.value;
 	
 	/*if(time%(21-FPS)==0)
 	{
@@ -443,9 +472,22 @@ function step()
 	control();	
 	player.move();
 	
-	cam.x = player.x-0*blockSize - playerDistance * blockSize * Math.sin(inRad(cam.directionXZ));
+	/*cam.x = player.x-0*blockSize - playerDistance * blockSize * Math.sin(inRad(cam.directionXZ));
 	cam.y = player.y-2*blockSize + playerDistance * blockSize * Math.sin(inRad(cam.directionZY));
-	cam.z = player.z-0*blockSize - playerDistance * blockSize * Math.cos(inRad(cam.directionXZ));
+	cam.z = player.z-0*blockSize - playerDistance * blockSize * Math.cos(inRad(cam.directionXZ));*/
+	cam.x = player.x;
+	cam.y = player.y- 2*blockSize;
+	cam.z = player.z;
+	for(var i = 0; i < playerDistance*blockSize; i++)
+	{
+		var c = cam.cell();
+		if(!cam.inBlock())
+		{
+			cam.x +=  -  Math.sin(inRad(cam.directionXZ));
+			cam.y +=  +  Math.sin(inRad(cam.directionZY));
+			cam.z +=  -  Math.cos(inRad(cam.directionXZ));
+		}
+	}
 	
 	time++;
 	FRAMES++;

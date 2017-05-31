@@ -8,6 +8,14 @@ var player =
 	fY: 0, 
 	fZ: 0,
 	speed: 100,
+	points: [
+		{x: 0, y: -500, z: 0},
+		{x: 0, y: -1500, z: 0},
+		{x: -500, y: -500, z: -500},
+		{x: -500, y: -500, z: 500},
+		{x: 500, y: -500, z: -500},
+		{x: 500, y: -500, z: 500}
+	],
 	cell: function()
 	{
 		var x = Math.round(this.x/blockSize);
@@ -15,22 +23,36 @@ var player =
 		var z = Math.round(this.z/blockSize);
 		return {x, y, z};
 	},
+	inBlock: function()
+	{
+		for(var i=0; i<this.points.length; i++)
+		{
+			
+			if ( playerCell(this.x + this.points[i].x) < 0 || playerCell(this.y + this.points[i].y) < 0 || playerCell(this.z + this.points[i].z) < 0 || 
+			     playerCell(this.x + this.points[i].x) > 99 || playerCell(this.y + this.points[i].y) > 99 || playerCell(this.z + this.points[i].z) > 99)
+			return false;
+			
+			if(blocks[playerCell(this.x + this.points[i].x)][playerCell(this.y + this.points[i].y)][playerCell(this.z + this.points[i].z)].value == 1)
+				return true;
+		}
+		return false;
+	},
 	move: function()
 	{
 		//Y		----------------------------------------------------------------
 		this.fY+=gravity;
 		for(var i=0; i<Math.abs(this.fY); i++)
 		{
-			if(blocks[this.cell().x][this.cell().y][this.cell().z].value==0 && player.fY>0)
+			if(!this.inBlock() && player.fY>0)
 			{
 				this.y++;
 			}
-			if(blocks[this.cell().x][this.cell().y][this.cell().z].value==0 && player.fY<0)
+			if(!this.inBlock() && player.fY<0)
 			{
 				this.y--;
 			}
 		}
-		if(blocks[this.cell().x][this.cell().y][this.cell().z].value==1){
+		if(this.inBlock()){
 			if(player.fY>0)
 			{
 				this.y--;
@@ -40,15 +62,19 @@ var player =
 				this.y++;
 			}
 			player.fY = 0;
+			if(key.space)
+			{
+				player.fY = -Math.sqrt(2*gravity*jumpHeight);
+			}
 		}
 		//X		----------------------------------------------------------------
 		for(var i=0; i<Math.abs(this.fX); i++)
 		{
-			if(blocks[this.cell().x][this.cell().y][this.cell().z].value==0 && player.fX>0)
+			if(!this.inBlock() && player.fX>0)
 			{
 				this.x++;
 			}
-			if(blocks[this.cell().x][this.cell().y][this.cell().z].value==0 && player.fX<0)
+			if(!this.inBlock() && player.fX<0)
 			{
 				this.x--;
 			}
@@ -64,11 +90,11 @@ var player =
 		//Z		----------------------------------------------------------------
 		for(var i=0; i<Math.abs(this.fZ); i++)
 		{
-			if(blocks[this.cell().x][this.cell().y][this.cell().z].value==0 && player.fZ>0)
+			if(!this.inBlock() && player.fZ>0)
 			{
 				this.z++;
 			}
-			if(blocks[this.cell().x][this.cell().y][this.cell().z].value==0 && player.fZ<0)
+			if(!this.inBlock() && player.fZ<0)
 			{
 				this.z--;
 			}
@@ -178,9 +204,14 @@ function bomb(r)
 		{
 			for(var z=0; z<100; z++)
 			{
+				if((p.x-x)*(p.x-x) + (p.y-y)*(p.y-y) + (p.z-z)*(p.z-z) < (r+1)*(r+1))
+				{
+					blocks[x][y][z].color = "rgb("+(102+randomInterval(-20,20))+","+randomInterval(0,20)+","+randomInterval(0,20)+")";
+					blocks[x][y][z].color_top = "rgb("+(50+randomInterval(-20,20))+","+randomInterval(0,20)+","+randomInterval(0,20)+")";
+				}
 				if((p.x-x)*(p.x-x) + (p.y-y)*(p.y-y) + (p.z-z)*(p.z-z) < r*r)
 				{
-					blocks[x][y][z].value=0;
+					blocks[x][y][z].value = 0;
 				}
 			}
 		}
