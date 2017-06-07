@@ -46,12 +46,12 @@ var nounsList = getXmlHttp();
 	nounsList.open('GET', 'words/nouns.txt', false);
 	nounsList.send(null);
 	var nouns = nounsList.responseText;
-	var nounsArray = nouns.split('\r\n');
+	var nounsArray = nouns.split(' ');
 var adjectivesList = getXmlHttp();
 	adjectivesList.open('GET', 'words/adjectives.txt', false);
 	adjectivesList.send(null);
 	var adjectives = adjectivesList.responseText;
-	var adjectivesArray = adjectives.split('\r\n');
+	var adjectivesArray = adjectives.split(' ');
 var verbsList = getXmlHttp();
 	verbsList.open('GET', 'words/verbs.txt', false);
 	verbsList.send(null);
@@ -74,7 +74,7 @@ var adverbsList = getXmlHttp();
 	adverbsList.open('GET', 'words/adverbs.txt', false);
 	adverbsList.send(null);
 	var adverbs = adverbsList.responseText;
-	var adverbsArray = adverbs.split('\r\n');
+	var adverbsArray = adverbs.split(' ');
 
 //case functions--------------------------------------------------------------------------------------------------------------------------------
 const male = 0;
