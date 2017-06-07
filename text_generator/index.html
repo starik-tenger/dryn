@@ -1,0 +1,33 @@
+﻿<!doctype HTML>
+<html>
+<head>
+	<link rel="stylesheet" href="style.css">
+	<title>Fanfic creator</title>
+</head>
+<body>
+	<p>
+		Добро пожаловать в генератор фанфиков!<br>
+		Эта программа поможет вам создать фанфик по любимому произведению.<br>
+		Просто введите текст в поле ввода и получите фанфик через несколько секунд.<br>
+	</p>
+	<hr>
+	Количество предложений:
+		<input type=number value = 10 id="size"></input>
+	<br>
+	<button onclick="generate()">Generate</button>
+	<text id="stata"></text>
+	<table id = "table">
+	
+		<td align="center" valign = "top">
+			<p>Введите текст, по которому будет написан фанфик</p>
+			<textarea id="input"></textarea>
+		</td>
+		<td valign = "top">
+			<p>Ваш фанфик:</p>
+			<div class=text id="paragraph">Здесь будет ваш фанфик</div>
+		</td>
+
+	</table>
+</body>
+<script src="script.js"></script>
+</html>

@@ -6,6 +6,10 @@ body{
 	text-align: center;
 
 }
+a{
+	text-decoration: none;
+	color: black;
+}
 @font-face{
     font-family: punk; 
     src: url(fonts/font.ttf); 
