@@ -1,0 +1,27 @@
+.text{
+	/*font: 100% Arial;*/
+	padding: 15px;
+}
+textarea{
+	width: 95%; 
+	height: 300px;
+	resize: none;
+}
+td{
+	width: 50%;
+	border: 4px solid transparent;
+}
+table{
+	width: 100%;
+}
+p{
+	font: 120% Arial;
+}
+button{
+	font: 150% Arial;
+	background-color: green;
+	border-color: green;
+}
+button:hover{
+	color: white;
+}
