@@ -1,0 +1,33 @@
+<!doctype HTML>
+<html>
+<head>
+	<link rel="stylesheet" href="style.css">
+	<title>Text degenerator</title>
+	<link rel="shortcut icon" href="icon.ico" />
+</head>
+<body>
+	<hr>
+	Количество слов:
+		<input type=number value = 10 id="size"></input>
+		<br>
+	С какого слова начать:
+		<input type=number value = 0 id="first"></input>
+	<br>
+	<button onclick="onButtonClick()" title = "Сбор материала с текста, генерация">Generate</button>
+	<button onclick="degenerate()" title = "Генерация по собранному материалу">Restart</button>
+	<text id="stata"></text>
+	<table id = "table">
+	
+		<td align="center" valign = "top">
+			<p>Введите текст, по которому будет написан фанфик</p>
+			<textarea id="input"></textarea>
+		</td>
+		<td valign = "top">
+			<p>Ваш фанфик:</p>
+			<div class=text id="paragraph">Здесь будет ваш фанфик</div>
+		</td>
+
+	</table>
+</body>
+<script src="script.js"></script>
+</html>
