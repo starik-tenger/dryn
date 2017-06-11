@@ -12,7 +12,7 @@ var p = document.getElementById("p1");
 
 xhr.onload = function() {
   //alert( this.responseText );
-  p.innerHTML = this.responseText;
+  p.innerHTML = decodeURI(this.responseText);
 }
 
 xhr.onerror = function() {
