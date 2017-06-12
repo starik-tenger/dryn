@@ -6,7 +6,7 @@ function getCookie(name) {
 }
 
 
-var adress = "http://192.168.0.101:8000";
+var adress = "http://95.79.7.26:8000/";
 
 var XHR = ("onload" in new XMLHttpRequest()) ? XMLHttpRequest : XDomainRequest;
 
