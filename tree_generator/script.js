@@ -84,16 +84,16 @@ function branch(x, y, angle, step)
 		{
 			if(detalDraw)
 				lines[step].push(new Line(x, y, newPoint.x, newPoint.y));
-			drawLine(x, y, newPoint.x, newPoint.y, 5/step);
+			drawLine(x, y, newPoint.x, newPoint.y, width/step);
 		}
 	}
 	
 }
-
+var width = 5;
 function draw()
 {
 	ctx.clearRect(0,0,1000,1000);
-	drawLine(startPointX, startPointY+length*2, startPointX, startPointY, 5);
+	drawLine(startPointX, startPointY+length*2, startPointX, startPointY, width);
 	if(invert)
 		for(var i=steps-1; i>=0; i--)
 		{
@@ -103,7 +103,7 @@ function draw()
 					+Math.round( startColor.r + (i+1) / (steps) * (endColor.r-startColor.r) )+ ","
 					+Math.round( startColor.g + (i+1) / (steps) * (endColor.g-startColor.g) )+ ","
 					+Math.round( startColor.b + (i+1) / (steps) * (endColor.b-startColor.b) )+ ")";
-				drawLine(lines[i][j].start.x, lines[i][j].start.y, lines[i][j].end.x, lines[i][j].end.y, 5/i);
+				drawLine(lines[i][j].start.x, lines[i][j].start.y, lines[i][j].end.x, lines[i][j].end.y, width/i);
 			}
 		}
 	else
@@ -115,7 +115,7 @@ function draw()
 					+Math.round( startColor.r + (i+1) / (steps) * (endColor.r-startColor.r) )+ ","
 					+Math.round( startColor.g + (i+1) / (steps) * (endColor.g-startColor.g) )+ ","
 					+Math.round( startColor.b + (i+1) / (steps) * (endColor.b-startColor.b) )+ ")";
-				drawLine(lines[i][j].start.x, lines[i][j].start.y, lines[i][j].end.x, lines[i][j].end.y, 5/i);
+				drawLine(lines[i][j].start.x, lines[i][j].start.y, lines[i][j].end.x, lines[i][j].end.y, width/i);
 			}
 		}
 }
