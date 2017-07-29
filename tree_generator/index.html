@@ -1,0 +1,17 @@
+<!doctype html>
+<html>
+	<link rel="stylesheet" href="style.css">
+	<canvas id = "screen" width = 1000 height = 1000>Ваш браузер - говно. Качайте новый.</canvas>
+	<!--create(branches1, steps1, angleWidth1, decrease1, length1, detal, invert1, leafesOnly1, startColor1, endColor1)-->
+	<button onclick="buttonClick()">Создать</button><br>
+	<input type = "number" id = "branches" value=2>Ветвистость</input><br>
+	<input type = "number" id = "steps" value=8>Размер</input><br>
+	<input type = "number" id = "angleWidth" value=180>Ширина</input><br>
+	<input type = "number" id = "decrease" value=2 step=0.05>Уменьшение</input><br>
+	<input type = "number" id = "length" value=100>Стартовая длина ветви</input><br>
+	<input type = "checkbox" id = "detal">Улучшеная детализация</input>
+	<input type = "checkbox" id = "invert">Обратный порядок ветвей</input>
+	<input type = "checkbox" id = "leafesOnly">Только листья</input>
+	
+	<script src = "script.js"></script>
+</html>
