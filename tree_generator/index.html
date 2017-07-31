@@ -9,15 +9,45 @@
 	<canvas id = "screen" width = 1000 height = 1000>Ваш браузер - говно. Качайте новый.</canvas>
 	<!--create(branches1, steps1, angleWidth1, decrease1, length1, detal, invert1, leafesOnly1, startColor1, endColor1)-->
 	<button onclick="buttonClick()">Создать</button><br>
-	<input type = "number" id = "branches" value=2>Ветвистость</input><br>
-	<input type = "number" id = "steps" value=8>Размер</input><br>
-	<input type = "number" id = "angleWidth" value=180>Ширина</input><br>
-	<input type = "number" id = "decrease" value=2 step=0.05>Уменьшение</input><br>
-	<input type = "number" id = "length" value=100>Стартовая длина ветви</input><br>
-	<input type = "checkbox" id = "detal">Улучшеная детализация</input>
-	<input type = "checkbox" id = "invert">Обратный порядок ветвей</input>
-	<input type = "checkbox" id = "leafesOnly">Только листья</input>
-	
+	<table>
+		<td>
+			
+			<input type = "number" id = "branches" value=2>Ветвистость</input><br>
+			<input type = "number" id = "steps" value=3>Размер</input><br>
+			<input type = "number" id = "angleWidth" value=180>Ширина</input><br>
+			<input type = "number" id = "decrease" value=2 step=0.05>Уменьшение</input><br>
+			<input type = "number" id = "length" value=100>Стартовая длина ветви</input><br>
+			<input type = "number" id = "startWidth" value=10>Стартовая ширина ветви</input><br>
+			<input type = "number" id = "endWidth" value=1>Конечная ширина ветви</input><br>
+			<input type = "checkbox" id = "detal">Улучшеная детализация</input><br>
+			<input type = "checkbox" id = "invert">Обратный порядок ветвей</input><br>
+			<input type = "checkbox" id = "leafesOnly">Только листья</input>
+			<input type = "checkbox" id = "blackBackground">Чёрный фон</input>
+		</td>
+		<td>
+			Start color:<br>
+			<input type = "range" id = "r" value=100 max=255>R</input>
+			<input type = "range" id = "g" value=50 max=255>G</input>
+			<input type = "range" id = "b" value=0 max=255>B</input>
+			<canvas width=20 height=20 id="startColor"></canvas>
+			<br>
+			End color:<br>
+			<input type = "range" id = "r1" value=0 max=255>R</input>
+			<input type = "range" id = "g1" value=200 max=255>G</input>
+			<input type = "range" id = "b1" value=0 max=255>B</input>
+			<canvas width=20 height=20 id="endColor"></canvas>
+		</td>
+		<td valign=top>
+
+			<input type = "number" id = "normalCoefficientAngle" value=3>	Коэффициент нормальности угла</input><br>
+			<input type = "number" id = "normalCoefficientLength" value=3>	Коэффициент нормальности длины</input><br>
+			<input type = "number" id = "normalCoefficientBranches" value=3>	Коэффициент нормальности ветвистости</input><br>
+			<input type = "number" id = "angleDispersion" value=0>Разброс угла</input><br>
+			<input type = "number" id = "lengthDispersion" value=0>Разброс длины</input><br>
+			<input type = "number" id = "branchesDispersion" value=0>Разброс ветвистости</input><br>
+			
+		</td>
+	</table>
 	<script src = "script.js"></script>
 </body>
 </html>

@@ -1,3 +1,6 @@
 input{
 	width: 50px;
 }
+canvas{
+	border:1px solid;
+}
