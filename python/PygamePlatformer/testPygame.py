@@ -22,18 +22,68 @@ class Point:
 class Player:
     x = 30
     y = 30
-    speed = 5
-    color = (255,100,100)
+    speed = 50
+    color = (255,255,100)
     fX = 0
     fY = 0
+    groundFX = 0
+    groundFY = 0
     onCeiling = False
     onGround = False
-    boxPoints = [Point(0,0), Point(0,10), Point(10,0), Point(10,10)]
+    boxPoints = [Point(-30,30), Point(30,30), Point(-30,-30), Point(30,-30)]
     def move(self):
         self.control()
         global gravity
         self.fY += gravity
-        for i in range(int(math.fabs(self.fY))):
+        for platform in platforms:
+            for point in self.boxPoints:
+                    if self.x+point.x>platform.x and self.x+point.x<platform.x+platform.sizeX and self.y+platform.fY+1+point.y>platform.y and self.y+platform.fY+1+point.y<platform.y+platform.sizeY:
+                        for i in range(int(math.fabs(platform.fX+1))):
+                            if not self.touch():
+                                if platform.fX>0:
+                                    self.x += 1
+                                if platform.fX<0:
+                                    self.x -= 1
+                        if platform.fX>0:
+                            self.x -= 1
+                        elif platform.fX<0:
+                            self.x += 1
+                        for i in range(int(math.fabs(platform.fY+1))):
+                            if not self.touch():
+                                if platform.fY>0:
+                                    self.y += 1
+                                if platform.fY<0:
+                                    self.y -= 1
+                        if platform.fY>0:
+                            self.y -= 1
+                        elif platform.fY<0:
+                            self.y += 1
+                        break
+                    if self.x+point.x>platform.x and self.x+point.x<platform.x+platform.sizeX and self.y+point.y>platform.y and self.y+point.y<platform.y+platform.sizeY:
+                        for i in range(int(math.fabs(platform.fX))):
+                            if not self.touch():
+                                if platform.fX>0:
+                                    self.x += 1
+                                if platform.fX<0:
+                                    self.x -= 1
+                        if platform.fX>0:
+                            self.x -= 1
+                        elif platform.fX<0:
+                            self.x += 1
+                        for i in range(int(math.fabs(platform.fY))):
+                            if not self.touch():
+                                if platform.fY>0:
+                                    self.y += 1
+                                if platform.fY<0:
+                                    self.y -= 1
+                        if platform.fY>0:
+                            self.y -= 1
+                        elif platform.fY<0:
+                            self.y += 1
+                        break
+
+
+        for i in range(int(math.fabs(self.fY+self.groundFY))):
             if not self.inBlock():
                 if self.fY>0:
                     self.y += 1
@@ -53,22 +103,22 @@ class Player:
             self.y += 1
         if self.onGround or self.onSeiling:
             self.fY = 0
-        for i in range(int(math.fabs(self.fX))):
+        for i in range(int(math.fabs(self.fX+self.groundFX))):
             if not self.inBlock():
-                if self.fX>0:
+                if self.fX+self.groundFX>0:
                     self.x += 1
                 else:
                     self.x -= 1
-        if self.fX>0:
+        if self.fX+self.groundFX>0:
             self.x -= 1
-        elif self.fX<0:
+        elif self.fX+self.groundFX<0:
             self.x += 1
         return 0
     def control(self):
         if keys.right:
-            self.fX += 1
+            self.fX += 5
         if keys.left:
-            self.fX -= 1
+            self.fX -= 5
         if self.fX > self.speed:
             self.fX = self.speed
         if self.fX < -self.speed:
@@ -76,24 +126,35 @@ class Player:
         if not keys.right and not keys.left:
             self.fX = 0
         if keys.up and self.onGround:
-            self.fY = -20
+            self.fY = -100
     def cell(self, n):
         return int(math.floor(n/blockSize))
     def inBlock(self):
+        self.groundFX = 0
         for point in self.boxPoints:
             x = self.cell(self.x + point.x)
             y = self.cell(self.y + point.y)
             if map.blocks[x*map.sizeX+y].type==1:
                 return True
+            for platform in platforms:
+                if self.x+point.x>platform.x and self.x+point.x<platform.x+platform.sizeX and self.y+point.y>platform.y and self.y+point.y<platform.y+platform.sizeY:
+                    return True
         return False
+    def touch(self):
+        self.groundFX = 0
+        for point in self.boxPoints:
+            x = self.cell(self.x + point.x)
+            y = self.cell(self.y + point.y)
+            if map.blocks[x*map.sizeX+y].type==1:
+                return True
     def draw(self):
-        pygame.draw.rect(screen, self.color, ((self.x-cam.x)*cam.scale, (self.y-cam.y)*cam.scale, 10*cam.scale, 10*cam.scale))
+        pygame.draw.rect(screen, self.color, ((self.x-30-cam.x)*cam.scale, (self.y-30-cam.y)*cam.scale, 60*cam.scale, 60*cam.scale))
         return 0
 
 class Camera:
     x = 0
     y = 0
-    scale = 3
+    scale = 0.5
     centerX = 375
     centerY = 375
     def __init__(self, x1, y1, scale1):
@@ -111,6 +172,25 @@ class Block:
     light = 0
     def __init__(self, type):
         self.type = type
+class Platform:
+    x = 0
+    y = 0
+    fX = 5
+    fY = 0
+    sizeX = 0
+    sizeY = 0
+    def __init__(self, x, y, sizeX,  sizeY):
+        self.x = x
+        self.y = y
+        self.sizeX = sizeX
+        self.sizeY = sizeY
+    def move(self):
+        self.x += self.fX
+        self.y += self.fY
+                    
+    def draw(self):
+        pygame.draw.rect(screen, (0,0,0), ((self.x-cam.x)*cam.scale, (self.y-cam.y)*cam.scale, self.sizeX*cam.scale, self.sizeY*cam.scale))
+
 class Map:
     sizeX = 200
     sizeY = 200
@@ -251,17 +331,19 @@ AIR = 0
 GROUND = 1
 
 # varaibles ----------------------------------------------------------------
-gravity = 1
+gravity = 5
 keys = Key()
 myPlayer = Player()
 cam = Camera(0,0,1)
 mouse = Mouse()
 window = Window()
-blockSize = 15
+blockSize = 100
 map = Map(100,100,5*blockSize,5*blockSize)
 map.start()
 map.load("level.l")
 lightMap = Light()
+platforms = []
+platforms.append(Platform(150, 700, 200, 200))
 
 
 # functions ----------------------------------------------------------------
@@ -294,7 +376,9 @@ def main():
 def play():
     for i in range(map.sizeX*map.sizeY):
         l = lightMap.blocks[i].light
-        map.blocks[i].color = (l*10, l*10, 0)
+        map.blocks[i].color = (l*15, l*13, 0)
+    for platform in platforms:
+        platform.move()
     if mouse.down:
         map.setBlock(myPlayer.cell(cam.x+mouse.x/cam.scale), myPlayer.cell(cam.y+mouse.y/cam.scale), 1)
     
@@ -351,6 +435,8 @@ def draw():
             for y in range(lightMap.startPoint.y, lightMap.endPoint.y):
                 #if map.blocks[x*map.sizeX+y].type == 1:
                     pygame.draw.rect(screen, map.blocks[x*map.sizeX+y].color, ((x*blockSize-cam.x)*cam.scale, (y*blockSize-cam.y)*cam.scale, blockSize*cam.scale, blockSize*cam.scale))
+    for platform in platforms:
+        platform.draw()
     myPlayer.draw()
     pygame.display.update()
 # main loop 
