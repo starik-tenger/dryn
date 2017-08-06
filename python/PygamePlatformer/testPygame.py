@@ -38,7 +38,7 @@ class Player:
         for platform in platforms:
             for point in self.boxPoints:
                     if self.x+point.x>platform.x and self.x+point.x<platform.x+platform.sizeX and self.y+platform.fY+1+point.y>platform.y and self.y+platform.fY+1+point.y<platform.y+platform.sizeY:
-                        for i in range(int(math.fabs(platform.fX+1))):
+                        for i in range(int(math.fabs(platform.fX)+1)):
                             if not self.touch():
                                 if platform.fX>0:
                                     self.x += 1
@@ -48,7 +48,7 @@ class Player:
                             self.x -= 1
                         elif platform.fX<0:
                             self.x += 1
-                        for i in range(int(math.fabs(platform.fY+1))):
+                        for i in range(int(math.fabs(platform.fY)+1)):
                             if not self.touch():
                                 if platform.fY>0:
                                     self.y += 1
@@ -176,7 +176,7 @@ class Platform:
     x = 0
     y = 0
     fX = 5
-    fY = 0
+    fY = -1
     sizeX = 0
     sizeY = 0
     def __init__(self, x, y, sizeX,  sizeY):
