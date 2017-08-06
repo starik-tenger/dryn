@@ -60,7 +60,7 @@ class Player:
                             self.y += 1
                         break
                     if self.x+point.x>platform.x and self.x+point.x<platform.x+platform.sizeX and self.y+point.y>platform.y and self.y+point.y<platform.y+platform.sizeY:
-                        for i in range(int(math.fabs(platform.fX))):
+                        for i in range(int(math.fabs(platform.fX+1))):
                             if not self.touch():
                                 if platform.fX>0:
                                     self.x += 1
@@ -70,7 +70,7 @@ class Player:
                             self.x -= 1
                         elif platform.fX<0:
                             self.x += 1
-                        for i in range(int(math.fabs(platform.fY))):
+                        for i in range(int(math.fabs(platform.fY+1))):
                             if not self.touch():
                                 if platform.fY>0:
                                     self.y += 1
