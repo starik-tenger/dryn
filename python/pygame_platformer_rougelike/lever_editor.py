@@ -23,7 +23,6 @@ image_wall = pygame.image.load("textures/stone_wall.png").convert_alpha()
 image_spikes = pygame.image.load("textures/spikes.png").convert_alpha()
 image_lever = pygame.image.load("textures/lever.png").convert_alpha()
 image_lever_pushed = pygame.image.load("textures/lever_pushed.png").convert_alpha()
-image_saw = pygame.image.load("textures/HUI.png").convert_alpha()
 
 
 # classes ----------------------------------------------------------------
@@ -187,15 +186,8 @@ class Monster(Player):
         self.type = type
         self.direction = RIGHT
         self.speed = 50
-        self.sizeX = 300
-        self.sizeY = 150
-        self.boxPoints = [Point(-self.sizeX/2,self.sizeY/2), Point(self.sizeX/2,self.sizeY/2), Point(-self.sizeX/2,-self.sizeY/2), Point(self.sizeX/2,-self.sizeY/2)]
-        self.time = 0
     def control(self):
-        self.time += 1
         if self.type == GUARDIAN:
-            if self.touch(myPlayer):
-                myPlayer.die()
             if self.direction==RIGHT:
                 self.fX = self.speed
             else:
@@ -204,24 +196,8 @@ class Monster(Player):
                 self.direction=RIGHT
             elif self.onRight:
                 self.direction=LEFT
-    def touch(self, entity):
-        if math.fabs(entity.x-self.x) < (entity.sizeX+self.sizeX)/2 and math.fabs(entity.y-self.y) < (entity.sizeY+self.sizeY)/2:
-            return True
-        return False
-    def draw(self):
-        self.time = self.time%360
-        (x, y) = image_saw.get_rect().size
-
-        image = pygame.transform.rotozoom(image_saw, float(-self.time*20), self.sizeX*cam.scale/x)
-        #image = pygame.transform.scale(image, (int(self.sizeX*cam.scale), int(self.sizeY*2*cam.scale)))
-        #image = pygame.transform.rotate(image, self.time*5)
-        (x1, y1) = image.get_rect().size
-        #print(x1)
-        newImage = pygame.Surface((int(self.sizeX*cam.scale), int(self.sizeY*cam.scale)), pygame.SRCALPHA)
-        newImage.blit(image, (int((self.sizeX/2-x1)*cam.scale), int((self.sizeX/2-y1)*cam.scale)))
-        screen.blit(newImage, (int((self.x-self.sizeX/2-cam.x)*cam.scale), int((self.y-self.sizeY/2-cam.y)*cam.scale)))
-
-
+    def touchPlayer(self):
+        myPlayer.die()
 #
 class Camera:
     x = 0
@@ -452,7 +428,7 @@ class LightBlock:
 #
 class Light:
     blocks = []
-    power = 10
+    power = 12
     startPoint = Point(0,0)
     endPoint = Point(0,0)
     def __init__(self):
@@ -605,28 +581,36 @@ def startLevel(level):
     levels[level].start()
 def makeLevels():
     def setup(self):
-        self.setMonster(36*blockSize, 22*blockSize, GUARDIAN)
-        self.load("level_1.l")
-        self.setPairDoors(4*blockSize,4*blockSize,8*blockSize,4*blockSize,False)
-        self.setPairDoors(21*blockSize,4*blockSize,22*blockSize,8*blockSize,False)
-        self.setPairDoors(36*blockSize,5*blockSize,36*blockSize,13*blockSize,False)
-        self.setPairDoors(47*blockSize,8*blockSize,26*blockSize,17*blockSize,True)
-        self.setButton(35*blockSize, 18*blockSize,1)
+        def platformSetup(self):
+            self.fX = 10
+            self.phase = True
+        def platformLoop(self):
+            if self.phase:
+                self.fX = 10
+            else:
+                self.fX = -10
+            if self.x>10*blockSize and self.phase or self.x<2*blockSize and not self.phase:
+                self.phase = not self.phase
+        self.setPlatform(400, 700, 200, 200, platformSetup, platformLoop)
+        self.setPairDoors(15*blockSize, 7*blockSize, 20*blockSize, 7*blockSize, True)
+        self.setButton(5*blockSize, 8*blockSize, 1)
+        self.setButton(32*blockSize, 2*blockSize, 2)
+        self.setMonster(21*blockSize, 5*blockSize, GUARDIAN)
+        self.load("level.l")
     def loop(self):
         if self.signal == 1:
-            self.doors[6].closed = False
-            self.doors[7].closed = False
+            self.doors[0].closed = False
+            self.doors[1].closed = False
             self.signal = 0
         if self.signal == 2:
             myPlayer.die()
             self.signal = 0
         return 0
-    levels.append(Map(100,100,4*blockSize,4*blockSize, setup, loop))
-makeLevels()
-map = levels[level]
-map.start()
+    levels.append(Map(100,100,5*blockSize,5*blockSize, setup, loop))
+
 
 # functions ----------------------------------------------------------------
+map = Map()
 frames = 0
 start = 0
 end = 0
@@ -656,16 +640,8 @@ def main():
     pygame.time.wait(1)
 # play 
 def play():
-    for platform in map.platforms:
-        platform.move()
-    for monster in map.monsters:
-        monster.control()
-        monster.move()
     if mouse.down:
         map.setBlock(myPlayer.cell(cam.x+mouse.x/cam.scale), myPlayer.cell(cam.y+mouse.y/cam.scale), 1)
-    myPlayer.move()
-    map.loop(map)
-    cam.move()
     return 0
 # events 
 def checkEvents():
@@ -716,7 +692,6 @@ def checkEvents():
 # draw 
 def draw():
     global screen
-    map.lightMap.border()
     screen.fill((0,0,0))
     
     global image_wall
@@ -727,8 +702,8 @@ def draw():
     image_spikes  = pygame.transform.scale(image_spikes, (int(blockSize*cam.scale), int(blockSize*cam.scale)))
 
     # draw blocks
-    for x in range(map.lightMap.startPoint.x-1, map.lightMap.endPoint.x+1):
-            for y in range(map.lightMap.startPoint.y-1, map.lightMap.endPoint.y+1):
+    for x in range(0, map.sizeX):
+            for y in range(0, map.sizeY):
                 if map.blocks[y*map.sizeX+x].type == 1:
                     screen.blit(image_block, ((x*blockSize-cam.x)*cam.scale, (y*blockSize-cam.y)*cam.scale))
                 else:
@@ -746,30 +721,9 @@ def draw():
     for monster in map.monsters:
         monster.draw()
 
-    myPlayer.draw()
 
     for button in map.buttons:
         button.draw()
-    
-    # draw light
-    block = pygame.Surface((int(blockSize*cam.scale), int(blockSize*cam.scale)), pygame.SRCALPHA) # block of darkness
-    for x in range(map.lightMap.startPoint.x-1, map.lightMap.endPoint.x+1):
-        for y in range(map.lightMap.startPoint.y-1, map.lightMap.endPoint.y+1):
-            #if map.blocks[x*map.sizeX+y].type == 0:
-                alphaValue = int(255-(map.lightMap.blocks[y*map.sizeX+x].light)*255/(map.lightMap.power))
-                #print((map.lightMap.blocks[y*map.sizeX+x].light)/(map.lightMap.power+1))
-                block.fill((0,0,0,alphaValue))
-                #block.set_alpha(int(map.lightMap.blocks[x*map.sizeX+y].light*255/map.lightMap.power))
-                screen.blit(block, ((x*blockSize-cam.x)*cam.scale, (y*blockSize-cam.y)*cam.scale))
-    
-    # draw margin
-    margin = pygame.Surface((int(window.width), int(window.height)), pygame.SRCALPHA)
-    pygame.draw.rect(margin, (0,0,0), (0, 0, (myPlayer.x-map.lightMap.power*blockSize-cam.x)*cam.scale, window.height))
-    pygame.draw.rect(margin, (0,0,0), (0, 0, window.width, (myPlayer.y-map.lightMap.power*blockSize-cam.y)*cam.scale))
-    pygame.draw.rect(margin, (0,0,0), ((myPlayer.x+map.lightMap.power*blockSize-cam.x)*cam.scale, 0, window.width, window.height))
-    pygame.draw.rect(margin, (0,0,0), (0, (myPlayer.y+map.lightMap.power*blockSize-cam.y)*cam.scale, window.width, window.height))
-
-    screen.blit(margin, (0,0))
     
     pygame.display.update()
 # set alpha channel to image

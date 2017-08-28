@@ -23,7 +23,6 @@ image_wall = pygame.image.load("textures/stone_wall.png").convert_alpha()
 image_spikes = pygame.image.load("textures/spikes.png").convert_alpha()
 image_lever = pygame.image.load("textures/lever.png").convert_alpha()
 image_lever_pushed = pygame.image.load("textures/lever_pushed.png").convert_alpha()
-image_saw = pygame.image.load("textures/HUI.png").convert_alpha()
 
 
 # classes ----------------------------------------------------------------
@@ -187,15 +186,8 @@ class Monster(Player):
         self.type = type
         self.direction = RIGHT
         self.speed = 50
-        self.sizeX = 300
-        self.sizeY = 150
-        self.boxPoints = [Point(-self.sizeX/2,self.sizeY/2), Point(self.sizeX/2,self.sizeY/2), Point(-self.sizeX/2,-self.sizeY/2), Point(self.sizeX/2,-self.sizeY/2)]
-        self.time = 0
     def control(self):
-        self.time += 1
         if self.type == GUARDIAN:
-            if self.touch(myPlayer):
-                myPlayer.die()
             if self.direction==RIGHT:
                 self.fX = self.speed
             else:
@@ -204,23 +196,7 @@ class Monster(Player):
                 self.direction=RIGHT
             elif self.onRight:
                 self.direction=LEFT
-    def touch(self, entity):
-        if math.fabs(entity.x-self.x) < (entity.sizeX+self.sizeX)/2 and math.fabs(entity.y-self.y) < (entity.sizeY+self.sizeY)/2:
-            return True
-        return False
-    def draw(self):
-        self.time = self.time%360
-        (x, y) = image_saw.get_rect().size
-
-        image = pygame.transform.rotozoom(image_saw, float(-self.time*20), self.sizeX*cam.scale/x)
-        #image = pygame.transform.scale(image, (int(self.sizeX*cam.scale), int(self.sizeY*2*cam.scale)))
-        #image = pygame.transform.rotate(image, self.time*5)
-        (x1, y1) = image.get_rect().size
-        #print(x1)
-        newImage = pygame.Surface((int(self.sizeX*cam.scale), int(self.sizeY*cam.scale)), pygame.SRCALPHA)
-        newImage.blit(image, (int((self.sizeX/2-x1)*cam.scale), int((self.sizeX/2-y1)*cam.scale)))
-        screen.blit(newImage, (int((self.x-self.sizeX/2-cam.x)*cam.scale), int((self.y-self.sizeY/2-cam.y)*cam.scale)))
-
+    #def touch
 
 #
 class Camera:
@@ -605,7 +581,7 @@ def startLevel(level):
     levels[level].start()
 def makeLevels():
     def setup(self):
-        self.setMonster(36*blockSize, 22*blockSize, GUARDIAN)
+        self.setMonster(36*blockSize, 21*blockSize, GUARDIAN)
         self.load("level_1.l")
         self.setPairDoors(4*blockSize,4*blockSize,8*blockSize,4*blockSize,False)
         self.setPairDoors(21*blockSize,4*blockSize,22*blockSize,8*blockSize,False)
@@ -621,7 +597,7 @@ def makeLevels():
             myPlayer.die()
             self.signal = 0
         return 0
-    levels.append(Map(100,100,4*blockSize,4*blockSize, setup, loop))
+    levels.append(Map(100,100,5*blockSize,5*blockSize, setup, loop))
 makeLevels()
 map = levels[level]
 map.start()

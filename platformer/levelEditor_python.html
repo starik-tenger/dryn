@@ -244,38 +244,49 @@ sizeY:
 	
 	function get()
 	{
-		var a = "blocks = [\n";
+		var a = sizeX + "#" + sizeY + "#\n";
 		for(var i=0;i<sizeX;i++)
 		{
-			a = a + "[";
+			
 			for(var j=0;j<sizeY;j++)
 			{
-				a = a + blocks[i][j] + ",";
+				
 				if(blocks[i][j]==undefined)
 				{
 					ctx.strokeStyle="rgb(255,255,255)";
 					ctx.strokeRect(j*size,i*size,size,size);
 					
 				}
+				
+				if(blocks[i][j]==1)
+				{
+					a+="X"
+					
+				}else if(blocks[i][j]==2)
+				{
+					a+="1"
+				}else
+				{
+					a+=" "
+				}
 			}
-			a = a + "],\n";
+			a += "\n"
 		}
-		a = a + "] \n";
 		
 		if(doors.length%2==0)
 		{
 			for(var i = 0; i<doors.length; i+=2)
 			{
-				a = a + "pairDoors(" + doors[i].x + "," + doors[i].y + "," + doors[i+1].x + "," + doors[i+1].y + ",true);";
+				a = a + "self.pairDoors(" + doors[i].x + "," + doors[i].y + "," + doors[i+1].x + "," + doors[i+1].y + ",true);";
 			}
 		}
 		
 		for(var i = 0; i<buttons.length; i++)
 		{
-			a = a + "setButton(" + buttons[i].x + "," + buttons[i].y + "," + buttons[i].signal + ");";
+			a = a + "self.setButton(" + buttons[i].x + "," + buttons[i].y + "," + buttons[i].signal + ");";
 		}
 		
-		a = a + "setButton(" + exit.x + "," + exit.y + ",EXIT);";
+		a = a + "self.setButton(" + exit.x + "," + exit.y + ",EXIT);";
 		
 		text.value = a;
 	}
