@@ -1,7 +1,8 @@
-window.addEventListener('keydown',this.check,false);
+﻿window.addEventListener('keydown',this.check,false);
 function check(e)                                    
 {
-	if(e.keyCode != 32){
+	
+	if(e.keyCode == 13){
 		document.getElementById("x").value = cam.cursorX;
 		document.getElementById("y").value = cam.cursorY;
 	}
@@ -10,7 +11,7 @@ function check(e)
 	}
 }
 
-
+var helpText = "Enter - указать координаты объекта на карте\nSpace  - пауза \nНаправление объекта указывается в градусах \nПоложение и масштаб регулируется с помощью мыши";
 
 var screen=document.getElementById("screen");
 var ctx=screen.getContext("2d");
@@ -301,6 +302,7 @@ ctx.globalAlpha = 0.8;
 var time = 0;
 function play()
 {
+	if (document.activeElement != document.body) document.activeElement.blur();
 	drawWay();
 	if(state){
 		document.getElementById("pause").innerHTML = "PAUSE";
