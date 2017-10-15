@@ -302,7 +302,7 @@ ctx.globalAlpha = 0.8;
 var time = 0;
 function play()
 {
-	if (document.activeElement != document.body) document.activeElement.blur();
+	if (document.activeElement.type == "button") document.activeElement.blur();
 	drawWay();
 	if(state){
 		document.getElementById("pause").innerHTML = "PAUSE";
