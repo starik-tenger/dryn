@@ -1,0 +1,51 @@
+<html>
+<head>
+    <title>Gravity</title>
+    </head>
+<body>
+
+<style>
+*{
+	margin: 0;
+	padding: 0;
+}
+</style>
+
+<canvas id=background style="position: absolute"></canvas>
+<canvas id=screen style="position: absolute; border: 1px solid" onmousemove="cam.checkMouse()" onmousedown="cam.mouseDown();" onmouseup="cam.mouseUp();" onwheel="cam.onWheel()"></canvas>
+<canvas id=graphic style="position: absolute; left: 820px;  border: 1px solid"></canvas>
+
+
+
+<div style="position: absolute; left: 820px; top: 470;">
+	<table>
+	<td style="border: 1px solid">
+		<button onclick="state = !state;" type="button" id="pause">PAUSE/RESUME</button><br/>
+		
+		Add object:<br/>
+		<input id=x placeholder="x"></input> <br/>
+		<input id=y placeholder="y"></input> <br/>
+		<input id=mass placeholder="mass"></input> <br/>
+		<input id=speed placeholder="speed"></input> <br/>
+		<input id=direction placeholder="direction"></input> <br/>
+		<input id=color placeholder="color"></input> <br/>
+		<button onclick="create()" type="button">CREATE OBJECT</button>
+		<br/>
+		X:<p id=cursorX >x</p>
+		Y: <p id=cursorY >y</p>
+		<br/>
+		SYSTEM MASS:
+		<div id=text style="font: 25px Arial"></div>
+		<button onclick="deleteObjects();" type="button">DELETE OBJECTS</button><br/>
+	</td>
+	<td>
+		<button onclick="state = !state;" style="font: 50px Arial" type="button">HELP</button><br/>
+	</td>
+	</table>
+</div>
+
+<script src="script.js"></script>
+
+
+</body>
+</html>
