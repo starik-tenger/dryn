@@ -28,6 +28,7 @@ screenG.width = screenG.height = 400;
 var output=document.getElementById("text");
 
 var state = true;
+var wayLength = 100;
 
 ctx.clearRect(0,0,1000,1000);
 var G=1;
@@ -69,17 +70,19 @@ class Camera{
 		document.getElementById("cursorY").innerHTML = this.cursorY;
 	}
 	onWheel(e) {
-		ctxB.clearRect(0,0,1000,1000);
+		//ctxB.clearRect(0,0,1000,1000);
 		e = e || window.event;
 		var delta = e.deltaY || e.detail || e.wheelDelta;
-		if(this.scale - (delta/20000) >0)
-			this.scale -= (delta/20000);
+		if(this.scale - (delta/10000) >0)
+			this.scale -= (delta/10000);
 		//this.x += (this.scale)/200;
 		//this.y += (this.scale)/200;
 	}
 }
 
 var cam = new Camera(500,500,0.5);
+
+
 
 class Object{
 	constructor(x, y, m, sX, sY, color){
@@ -95,6 +98,7 @@ class Object{
 		this.color = color;
 		this.index = 0;
 		this.radius = Math.sqrt(Math.sqrt(this.m/800));
+		this.way = [];
 	}
 	
 	calculate(n){
@@ -102,6 +106,7 @@ class Object{
 		this.radius = (Math.sqrt(this.m/800000)*1);
 		this.fX = 0;
 		this.fY = 0;
+		
 		for(var i=0; i<objects.length; i++){
 			var object = objects[i];
 			var dx = object.x-this.x;
@@ -135,6 +140,8 @@ class Object{
 	save(){
 		this.xPrev = this.x;
 		this.yPrev = this.y;
+		this.way.push({x: this.xPrev, y: this.yPrev});
+		
 	}
 	
 	join(){
@@ -205,9 +212,25 @@ function normal(a,b,n)
 
 function drawWay()
 {
+	ctxB.clearRect(0,0,800,800);
 	for(var i=0; i<objects.length; i++){
 		var object = objects[i];
-		drawLine(ctxB, object.xPrev, object.yPrev, object.x, object.y, object.color);
+		ctxB.beginPath();
+		var x = object.x;
+		var y = object.y;
+		
+		while(object.way.length>wayLength){
+			object.way.splice(0, 1);
+		}
+		
+		//c.moveTo((x-cam.x)*cam.scale+400, (y-cam.y)*cam.scale+400);
+		for(var j=0; j<object.way.length; j++){
+			var x = object.way[j].x;
+			var y = object.way[j].y;
+			ctxB.lineTo((x-cam.x)*cam.scale+400, (y-cam.y)*cam.scale+400);
+		}
+		ctxB.strokeStyle = object.color;
+		ctxB.stroke();
 	}
 }
 
@@ -302,6 +325,10 @@ ctx.globalAlpha = 0.8;
 var time = 0;
 function play()
 {
+	
+	wayLength = Number(getValue("trajectory"));
+	document.getElementById("trajectory_value").innerHTML = wayLength;
+	
 	if (document.activeElement.type == "button") document.activeElement.blur();
 	drawWay();
 	if(state){

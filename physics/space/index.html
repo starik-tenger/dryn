@@ -20,6 +20,10 @@
 <div style="position: absolute; left: 820px; top: 470;">
 	<table>
 	<td style="border: 1px solid">
+		VIEW<br>
+		Trajectory length: <text id=trajectory_value></text><br>
+		<input id=trajectory type=range max = 5000 min = 0></input><br>
+		
 		<button onclick="state = !state;" type="button" id="pause">PAUSE/RESUME</button><br/>
 		
 		Add object:<br/>
@@ -43,6 +47,7 @@
 	</td>
 	</table>
 </div>
+
 
 <script src="script.js"></script>
 
