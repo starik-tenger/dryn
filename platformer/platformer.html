@@ -1361,8 +1361,8 @@
 		centerX = screen.width/pixel-mouseX;
 		centerY = screen.height/pixel-mouseY;
 		
-		camX -= (player.x-centerX-camX)/20;
-		camY -= (player.y-centerY-camY)/20;
+		camX += (-player.x-centerX-camX)/20;
+		camY += (-player.y-centerY-camY)/20;
 		camX = Math.round(camX);
 		camY = Math.round(camY);
 		
