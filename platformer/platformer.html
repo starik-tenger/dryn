@@ -1368,8 +1368,8 @@
 		//camX1 = Math.round(camX1);
 		//camY1 = Math.round(camY1);
 		
-		camX = player.x + player.x - camX1;
-		camY = player.y + player.y - camY1;
+		camX = player.x - centerX + player.x - camX1;
+		camY = player.y - centerY + player.y - camY1;
 		
 		if(camX<0)
 		{
