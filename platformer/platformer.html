@@ -1355,21 +1355,16 @@
 	var centerY = screen.height/(2*pixel);
 	var camX = 0;
 	var camY = 0;
-	var camX1 = 0;
-	var camY1 = 0;
 	function camera()
 	{
 		
 		centerX = screen.width/pixel-mouseX;
 		centerY = screen.height/pixel-mouseY;
 		
-		camX1 += (player.x-centerX-camX1)/70;
-		camY1 += (player.y-centerY-camY1)/70;
-		//camX1 = Math.round(camX1);
-		//camY1 = Math.round(camY1);
-		
-		camX = player.x - centerX*2 + player.x - camX1;
-		camY = player.y - centerY*2 + player.y - camY1;
+		camX += (player.x-centerX-camX)/10;
+		camY += (player.y-centerY-camY)/10;
+		camX = Math.round(camX);
+		camY = Math.round(camY);
 		
 		if(camX<0)
 		{
