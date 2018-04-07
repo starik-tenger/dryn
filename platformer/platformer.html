@@ -88,7 +88,7 @@
 	
 	var frames = 0;
 
-	//клавиши
+	//ГЄГ«Г ГўГЁГёГЁ
 	const up = 87;
 	const right = 68;
 	const left = 65;
@@ -101,7 +101,7 @@
 	
 	const EXIT = 666;
 	
-	//типы монстров
+	//ГІГЁГЇГ» Г¬Г®Г­Г±ГІГ°Г®Гў
 	const guardian = 0;
 	const hunter = 1;
 	const bullet = 2;
@@ -168,7 +168,7 @@
 	
 	
 	
-	//уровни
+	//ГіГ°Г®ГўГ­ГЁ
 	{ //level 0
 		levels.push({});
 		levels[0].setup = function()
@@ -724,7 +724,7 @@
 	}
 	var _ = 0;
 	
-	//игровые объекты
+	//ГЁГЈГ°Г®ГўГ»ГҐ Г®ГЎГєГҐГЄГІГ»
 	var blocks = [];
 	
 	var sizeX;
@@ -1031,7 +1031,7 @@
 	return num * Math.PI / 180;
 }
 	
-	//отрисовка
+	//Г®ГІГ°ГЁГ±Г®ГўГЄГ 
 	var lazerType = 0;
 	
 	function drawMenu()
@@ -1114,7 +1114,7 @@
 					}
 			}
 		}
-		//двери
+		//Г¤ГўГҐГ°ГЁ
 		for(var i=0; i<doors.length; i++)
 		{
 			ctx.drawImage(door, (doors[i].x*size-camX)*pixel, (doors[i].y*size-camY)*pixel, size*pixel, size*2*pixel);
@@ -1147,7 +1147,7 @@
 		
 		ctx.drawImage(playerImg, (player.x-camX)*pixel, (player.y-camY)*pixel, (player.size)*pixel, player.size*pixel);
 		
-		//кнопки
+		//ГЄГ­Г®ГЇГЄГЁ
 		for(i=0; i<buttons.length; i++)
 		{
 			if(buttons[i].signal != EXIT)
@@ -1361,8 +1361,8 @@
 		centerX = screen.width/pixel-mouseX;
 		centerY = screen.height/pixel-mouseY;
 		
-		camX += (player.x-centerX-camX)/20;
-		camY += (player.y-centerY-camY)/20;
+		camX -= (player.x-centerX-camX)/20;
+		camY -= (player.y-centerY-camY)/20;
 		camX = Math.round(camX);
 		camY = Math.round(camY);
 		
